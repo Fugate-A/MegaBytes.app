@@ -87,5 +87,22 @@ app.post('/api/search', async (req, res, next) => {
     res.status(200).json(ret);
 });
 
+
+var https = require('https');
+var fs = require('fs');
+var https_options = {
+    key: fs.readFileSync("/etc/ssl/private/generated-private-key.key"),
+    cert: fs.readFileSync("/etc/ssl/certs/2541c4c881b019c0.crt"),
+    ca: [
+    fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+    fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt')
+] };
+
+https.createServer(options, function (req, res) {
+    res.writeHead(200);
+    res.end("Welcome to Node.js HTTPS Servern");
+}).listen(8443)
+
+port = 8443;
 console.log("Listening on port "+ port);
-app.listen(port); // start Node + Express server on port 5000
+//app.listen(port); // start Node + Express server on port 5000
