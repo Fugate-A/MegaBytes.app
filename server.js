@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 
+app.use(cors());
+app.use(bodyParser.json());
+
 const MongoClient = require('mongodb').MongoClient;
 const url =
 	'mongodb+srv://TheArchivist:R3c1p3Guard1an5K@cluster0.7i3llee.mongodb.net/?retryWrites=true&w=majority';
@@ -10,9 +13,6 @@ const client = new MongoClient(url);
 client.connect();
 
 const port = 8443;
-
-app.use(cors());
-app.use(bodyParser.json());
 
 app.use((req, res, next) =>{
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -49,21 +49,27 @@ app.post('/api/login', async (req, res, next) => {
     // outgoing: id, firstName, lastName, error
     var error = '';
     const { username, password } = req.body;
-    const db = client.db('MegaBitesLibrary');
-    const results = await
-        db.collection('User').find({ Username: username, Password: password }).toArray();
-    var id = -1;
-    var fn = '';
-    var ln = '';
-    if (results.length > 0) {
-        id = results[0].UserId;
-        fn = results[0].FirstName;
-        ln = results[0].LastName;
+    try {
+        const db = client.db('MegaBitesLibrary');
+        const results = await
+            db.collection('User').find({ Username: username, Password: password }).toArray();
+            var id = -1;
+            var fn = '';
+            var ln = '';
+            if (results.length > 0) {
+                id = results[0].UserId;
+                fn = results[0].FirstName;
+                ln = results[0].LastName;
+            }
+    } 
+    catch (e) {
+        error = e.message()
     }
     var ret = { id: id, firstName: fn, lastName: ln, error: '' };
     res.status(200).json(ret);
 });
 
+/*
 app.post('/api/search', async (req, res, next) => {
     // incoming: userId, search
     // outgoing: results[], error
@@ -84,7 +90,7 @@ app.post('/api/search', async (req, res, next) => {
     }
     var ret = { results: _ret, error: error };
     res.status(200).json(ret);
-});
+});*/
 
 
 var https = require('https');
