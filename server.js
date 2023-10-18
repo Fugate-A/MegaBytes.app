@@ -46,16 +46,15 @@ app.post('/api/register', async (req, res, next) => {
 
 app.post('/api/login', async (req, res, next) => {
     // incoming: login, password
-    // outgoing: id, firstName, lastName, email, error
+    // outgoing: id, firstName, lastName, error
     var error = '';
-    const { login, password } = req.body;
+    const { username, password } = req.body;
     const db = client.db('MegaBitesLibrary');
     const results = await
-        db.collection('User').find({ Login: login, Password: password }).toArray();
+        db.collection('User').find({ Username: username, Password: password }).toArray();
     var id = -1;
     var fn = '';
     var ln = '';
-    var em = '';
     if (results.length > 0) {
         id = results[0].UserId;
         fn = results[0].FirstName;
