@@ -60,9 +60,8 @@ app.post('/api/login', async (req, res, next) => {
         id = results[0].UserId;
         fn = results[0].FirstName;
         ln = results[0].LastName;
-        en = results[0].Email;
     }
-    var ret = { id: id, firstName: fn, lastName: ln, email: em, error: '' };
+    var ret = { id: id, firstName: fn, lastName: ln, error: '' };
     res.status(200).json(ret);
 });
 
