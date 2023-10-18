@@ -89,7 +89,7 @@ app.post('/api/search', async (req, res, next) => {
 
 var https = require('https');
 var fs = require('fs');
-var https_options = {
+var options = {
     key: fs.readFileSync("/etc/ssl/private/generated-private-key.key"),
     cert: fs.readFileSync("/etc/ssl/certs/2541c4c881b019c0.crt"),
     ca: [
