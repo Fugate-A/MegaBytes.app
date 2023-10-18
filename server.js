@@ -9,7 +9,7 @@ const url =
 const client = new MongoClient(url);
 client.connect();
 
-const port = 5000;
+const port = 8443;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -102,6 +102,5 @@ https.createServer(options, function (req, res) {
     res.end("Welcome to Node.js HTTPS Servern");
 }).listen(8443)
 
-port = 8443;
 console.log("Listening on port "+ port);
 //app.listen(port); // start Node + Express server on port 5000
