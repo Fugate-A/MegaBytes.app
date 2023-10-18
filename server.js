@@ -49,13 +49,13 @@ app.post('/api/login', async (req, res, next) => {
     // outgoing: id, firstName, lastName, error
     var error = '';
     const { username, password } = req.body;
+    var id = -1;
+    var fn = '';
+    var ln = '';
     try {
         const db = client.db('MegaBitesLibrary');
         const results = await
             db.collection('User').find({ Username: username, Password: password }).toArray();
-            var id = -1;
-            var fn = '';
-            var ln = '';
             if (results.length > 0) {
                 id = results[0].UserId;
                 fn = results[0].FirstName;
