@@ -104,7 +104,7 @@ var options = {
 
 https.createServer(options, function (req, res) {
     res.writeHead(200);
-    res.end("Good");
+    
 }).listen(8443)
 
 console.log("Listening on port "+ port);
