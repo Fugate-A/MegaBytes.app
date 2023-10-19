@@ -102,10 +102,7 @@ var options = {
     fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt')
 ] };
 
-https.createServer(options, function (req, res) {
-    res.writeHead(200);
-    
-}).listen(8443)
+https.createServer(options, app).listen(8443);
 
 console.log("Listening on port "+ port);
 //app.listen(port); // start Node + Express server on port 5000
