@@ -92,7 +92,6 @@ app.post('/api/search', async (req, res, next) => {
     res.status(200).json(ret);
 });*/
 
-
 var https = require('https');
 var fs = require('fs');
 var options = {
@@ -105,7 +104,7 @@ var options = {
 
 https.createServer(options, function (req, res) {
     res.writeHead(200);
-    //res.end("Welcome to Node.js HTTPS Servern");
+    res.end("Good");
 }).listen(8443)
 
 console.log("Listening on port "+ port);
