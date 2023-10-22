@@ -7,9 +7,30 @@ export default function LoginScreen({ navigation }){
 
     const [debugMessage, setDebugMessage] = useState('');
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
 
         // Check if login information is correct, if so, proceed to HomePage
+        try {
+            const response = await fetch('http://147.182.177.169:5000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: email,
+                    password: password,
+                }),
+            });
+
+            const data = await response.json();
+            if(data.id >= 0){
+                setEmail(`${data.firstName}`);
+            }else{
+                setEmail('Error: Login Failed');
+            }
+        } catch(error){
+            setEmail('Error: AN error has occured');
+        }
 
         setDebugMessage(true);
         
