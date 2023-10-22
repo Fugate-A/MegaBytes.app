@@ -44,6 +44,25 @@ app.post('/api/register', async (req, res, next) => {
     res.status(200).json(ret);
 });
 
+/*
+import React from 'react';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>Welcome to our website :)</h1>
+        <p>Take a MEGA bite!!!</p>
+      </header>
+    </div>
+  );
+}
+
+export default App;
+
+*/
+
 app.post('/api/login', async (req, res, next) => {
     // incoming: login, password
     // outgoing: id, firstName, lastName, error
@@ -92,17 +111,17 @@ app.post('/api/search', async (req, res, next) => {
     res.status(200).json(ret);
 });*/
 
-var https = require('https');
-var fs = require('fs');
-var options = {
-    key: fs.readFileSync("/etc/ssl/private/generated-private-key.key"),
-    cert: fs.readFileSync("/etc/ssl/certs/2541c4c881b019c0.crt"),
-    ca: [
-    fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-    fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt')
-] };
+// var https = require('https');
+// var fs = require('fs');
+// var options = {
+//     key: fs.readFileSync("/etc/ssl/private/generated-private-key.key"),
+//     cert: fs.readFileSync("/etc/ssl/certs/2541c4c881b019c0.crt"),
+//     ca: [
+//     fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+//     fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt')
+// ] };
 
-https.createServer(options, app).listen(8443);
+// https.createServer(options, app).listen(8443);
 
 console.log("Listening on port "+ port);
-//app.listen(port); // start Node + Express server on port 5000
+app.listen(5000); // start Node + Express server on port 5000
