@@ -1,15 +1,17 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
+import LoginPage from './pages/LoginPage';
+import AccountPage from './pages/AccountPage';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Welcome to our website :)</h1>
-        <p>Take a MEGA bite!!!</p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/acc" element={<AccountPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
 export default App;
