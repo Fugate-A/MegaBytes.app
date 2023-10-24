@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const https = require('https');
+const fs = require('fs');
+
 const app = express();
 
 app.use(cors());
@@ -15,7 +18,8 @@ client.connect();
 var api = require('./api.js');
 api.setApp(app, client);
 
-const port = 8443;
+// HTTP port for regular HTTP traffic (if needed)
+const httpPort = 5000;
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,35 +34,26 @@ app.use((req, res, next) => {
     next();
 });
 
-/*
-import React from 'react';
-import './App.css';
+// Create an HTTPS server with SSL configuration
+const httpsOptions = {
+    key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
+    cert: fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+    ca: [
+        fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+        fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
+    ],
+};
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Welcome to our website :)</h1>
-        <p>Take a MEGA bite!!!</p>
-      </header>
-    </div>
-  );
-}
+const httpsPort = 8443;
 
-export default App;
-*/
+const httpsServer = https.createServer(httpsOptions, app);
 
-// var https = require('https');
-// var fs = require('fs');
-// var options = {
-//     key: fs.readFileSync("/etc/ssl/private/generated-private-key.key"),
-//     cert: fs.readFileSync("/etc/ssl/certs/2541c4c881b019c0.crt"),
-//     ca: [
-//     fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-//     fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt')
-// ] };
+// Start the HTTPS server on port 8443
+httpsServer.listen(httpsPort, () => {
+    console.log(`HTTPS Server is running on port ${httpsPort}`);
+});
 
-// https.createServer(options, app).listen(8443);
-
-console.log("Listening on port 5000");
-app.listen(5000); // start Node + Express server on port 5000
+// Start the HTTP server on port 5000 (if needed)
+app.listen(httpPort, () => {
+    console.log(`HTTP Server is running on port ${httpPort}`);
+});
