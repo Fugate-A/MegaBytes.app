@@ -43,7 +43,7 @@ const httpsOptions = {
     ],
 };
 
-const httpsPort = 8443;
+const httpsPort = 443;
 
 const httpsServer = https.createServer(httpsOptions, app);
 
