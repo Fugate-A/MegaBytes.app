@@ -10,8 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const MongoClient = require('mongodb').MongoClient;
-const url =
-    'mongodb+srv://TheArchivist:R3c1p3Guard1an5K@cluster0.7i3llee.mongodb.net/?retryWrites=true&w=majority';
+const url = 'mongodb+srv://TheArchivist:R3c1p3Guard1an5K@cluster0.7i3llee.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 client.connect();
 
