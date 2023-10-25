@@ -1,8 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
+const httpPort = 5000;
+const httpsPort = 443;
+
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -12,53 +19,51 @@ const url =
 const client = new MongoClient(url);
 client.connect();
 
-var api = require('./api.js');
-api.setApp(app, client);
+// Import your API configuration
+var api = require('./api.js'); // Adjust the path as needed
 
-const port = 8443;
+// Set up the API routes
+api.setApp(app, client); // Adjust the client as needed
 
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-    res.setHeader(
-        'Access-Control-Allow-Methods',
-        'GET, POST, PATCH, DELETE, OPTIONS'
-    );
-    next();
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+	);
+	res.setHeader(
+		'Access-Control-Allow-Methods',
+		'GET, POST, PATCH, DELETE, OPTIONS'
+	);
+	next();
 });
 
-/*
-import React from 'react';
-import './App.css';
+// Serve static files from your React app's "build" directory
+app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Welcome to our website :)</h1>
-        <p>Take a MEGA bite!!!</p>
-      </header>
-    </div>
-  );
-}
+// Create an HTTPS server with SSL configuration
+const httpsOptions = {
+    key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
+    cert: fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+    ca: [
+        fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+        fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
+    ],
+};
 
-export default App;
-*/
+const httpsServer = https.createServer(httpsOptions, app);
 
-// var https = require('https');
-// var fs = require('fs');
-// var options = {
-//     key: fs.readFileSync("/etc/ssl/private/generated-private-key.key"),
-//     cert: fs.readFileSync("/etc/ssl/certs/2541c4c881b019c0.crt"),
-//     ca: [
-//     fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-//     fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt')
-// ] };
+// Serve the React application for both root URL and "/megabytes.app"
+app.get(['/megabytes.app', '/'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'web_frontend', 'build', 'index.html'));
+});
 
-// https.createServer(options, app).listen(8443);
+// Start the HTTPS server on port 443
+httpsServer.listen(httpsPort, () => {
+    console.log(`HTTPS Server is running on port ${httpsPort}`);
+});
 
-console.log("Listening on port 5000");
-app.listen(5000); // start Node + Express server on port 5000
+// Start the HTTP server on port 5000
+app.listen(httpPort, () => {
+    console.log(`HTTP Server is running on port ${httpPort}`);
+});
