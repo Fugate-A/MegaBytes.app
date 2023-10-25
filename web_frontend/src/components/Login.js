@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 function Login() {
-	var loginName;
+	var loginInfo;
 	var loginPassword;
 	var bp = require('./Path.js');
 	const [message, setMessage] = useState('');
 	const doLogin = async event => {
 		event.preventDefault();
-		var obj = { login: loginName.value, password: loginPassword.value };
+		var obj = { login: loginInfo.value, password: loginPassword.value };
 		var js = JSON.stringify(obj);
 		try {
 			const response = await fetch(bp.buildPath('api/login'),
@@ -37,7 +37,7 @@ function Login() {
 		<div id="loginDiv">
 			<form onSubmit={doLogin}>
 				<span id="inner-title">Get To Cookin</span><br />
-				<input type="text" id="loginName" placeholder="Username" ref={(c) => loginName = c} /><br />
+				<input type="text" id="loginInfo" placeholder="Username/Email" ref={(c) => loginInfo = c} /><br />
 				<input type="password" id="loginPassword" placeholder="Password" ref={(c) => loginPassword = c} /><br />
 				<input type="submit" id="loginButton" class="buttons" value="Do It"
 					onClick={doLogin} />
