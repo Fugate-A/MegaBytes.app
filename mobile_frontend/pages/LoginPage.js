@@ -8,8 +8,6 @@ export default function LoginScreen({ navigation }){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [debugMessage, setDebugMessage] = useState('');
-
     const handleLogin = async () => {
 
 
@@ -30,6 +28,8 @@ export default function LoginScreen({ navigation }){
             if(data.id >= 0){
                 navigation.navigate('Home');
             }else{
+                console.log(email);
+                console.log(password);
                 console.log("Invalid username or password\n");
             }
         } catch(error){
@@ -43,7 +43,7 @@ export default function LoginScreen({ navigation }){
     }
 
     return (
-        <View style={styles.screen}>
+        <View style={styles.container}>
             <Header title="Megabytes"/>
             <Text style={styles.loginText}>Login</Text>
             <View style={styles.loginBox}>
@@ -76,21 +76,21 @@ export default function LoginScreen({ navigation }){
 }
 
 const styles = StyleSheet.create({
-    screen: {
+    container: {
         flex: 1,
         justifyContent: 'center',
         alignContent: 'center',
-        backgroundColor: '#fde6c6', 
+        backgroundColor: '#fde6c6',
+        padding: 20, // Added padding for consistent spacing
     },
     loginText: {
         fontSize: 32,
         color: '#E57451',
-        marginTop: 100,
         marginLeft: 40,
+        marginTop: 15,
     },
     loginBox: {
         alignSelf: 'center',
-
         alignItems: 'center',
         width: '80%',
         padding: 20,
@@ -98,9 +98,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         elevation: 3,
         shadowColor: 'black',
-        shadowOffset: {width: 0, height: 2},
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 2,
+        marginTop: 15, // Adjusted margin-top for consistency
     },
     input: {
         width: '80%',
