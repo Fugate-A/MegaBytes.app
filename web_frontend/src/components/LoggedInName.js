@@ -9,7 +9,7 @@ function LoggedInName() {
     const doLogout = event => {
         event.preventDefault();
         localStorage.removeItem("user_data")
-        window.location.href = '/login';
+        window.location.href = '/';
     };
 
     return (
