@@ -3,35 +3,18 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
+const httpPort = 5000;
+const httpsPort = 443;
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb+srv://TheArchivist:R3c1p3Guard1an5K@cluster0.7i3llee.mongodb.net/?retryWrites=true&w=majority';
-const client = new MongoClient(url);
-client.connect();
-
-var api = require('./api.js');
-api.setApp(app, client);
-
-// HTTP port for regular HTTP traffic (if needed)
-const httpPort = 5000;
-
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-    res.setHeader(
-        'Access-Control-Allow-Methods',
-        'GET, POST, PATCH, DELETE, OPTIONS'
-    );
-    next();
-});
+// Serve static files from /var/www/megabytes/web_frontend/src/
+app.use(express.static(path.join(__dirname, 'web_frontend', 'src'));
 
 // Create an HTTPS server with SSL configuration
 const httpsOptions = {
@@ -43,16 +26,14 @@ const httpsOptions = {
     ],
 };
 
-const httpsPort = 443;
-
 const httpsServer = https.createServer(httpsOptions, app);
 
-// Start the HTTPS server on port 8443
+// Start the HTTPS server on port 443
 httpsServer.listen(httpsPort, () => {
     console.log(`HTTPS Server is running on port ${httpsPort}`);
 });
 
-// Start the HTTP server on port 5000 (if needed) and this is to push and pull easy 
+// Start the HTTP server on port 5000
 app.listen(httpPort, () => {
     console.log(`HTTP Server is running on port ${httpPort}`);
 });
