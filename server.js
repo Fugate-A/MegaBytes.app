@@ -4,20 +4,39 @@ const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-
-// Import your API configuration
-const api = require('./api.js'); // Adjust the path as needed
-
 const app = express();
+
 const httpPort = 5000;
 const httpsPort = 443;
-
-// Set up the API routes
-api.setApp(app, client); // Adjust the client as needed
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+
+const MongoClient = require('mongodb').MongoClient;
+const url =
+    'mongodb+srv://TheArchivist:R3c1p3Guard1an5K@cluster0.7i3llee.mongodb.net/?retryWrites=true&w=majority';
+const client = new MongoClient(url);
+client.connect();
+
+// Import your API configuration
+var api = require('./api.js'); // Adjust the path as needed
+
+// Set up the API routes
+api.setApp(app, client); // Adjust the client as needed
+
+app.use((req, res, next) => {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+	);
+	res.setHeader(
+		'Access-Control-Allow-Methods',
+		'GET, POST, PATCH, DELETE, OPTIONS'
+	);
+	next();
+});
 
 // Serve static files from your React app's "build" directory
 app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));

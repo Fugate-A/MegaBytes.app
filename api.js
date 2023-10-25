@@ -1,12 +1,12 @@
-const express = require('express');
-const { MongoClient } = require('mongodb');
+require('express');
+require('mongodb');
 
 exports.setApp = function (app, client) {
 	app.post('/api/register', async (req, res, next) => {
-		// incoming: userId, fname, lname, username, password, email
+		// incoming:  fname, lname, username, password, email
 		// outgoing: error
 		const { fname, lname, username, password, email } = req.body;
-		const newUser = { FirstName: fname, LastName: lname, Username: username, Password: password, Email: email };
+		const newUser = { UserID: Date.now(), FirstName: fname, LastName: lname, Username: username, Password: password, Email: email };
 		var error = '';
 		try {
 			const db = client.db('MegaBitesLibrary');
