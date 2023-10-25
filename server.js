@@ -5,16 +5,22 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
+// Import your API configuration
+const api = require('./api.js'); // Adjust the path as needed
+
 const app = express();
 const httpPort = 5000;
 const httpsPort = 443;
+
+// Set up the API routes
+api.setApp(app, client); // Adjust the client as needed
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Serve static files from /var/www/megabytes/web_frontend/src/
-app.use(express.static(path.join(__dirname, 'web_frontend', 'src'));
+// Serve static files from your React app's "build" directory
+app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
 
 // Create an HTTPS server with SSL configuration
 const httpsOptions = {
@@ -27,6 +33,11 @@ const httpsOptions = {
 };
 
 const httpsServer = https.createServer(httpsOptions, app);
+
+// Serve the React application for both root URL and "/megabytes.app"
+app.get(['/megabytes.app', '/'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'web_frontend', 'build', 'index.html'));
+});
 
 // Start the HTTPS server on port 443
 httpsServer.listen(httpsPort, () => {

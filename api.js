@@ -1,5 +1,5 @@
-require('express');
-require('mongodb');
+const express = require('express');
+const { MongoClient } = require('mongodb');
 
 exports.setApp = function (app, client) {
 	app.post('/api/register', async (req, res, next) => {
