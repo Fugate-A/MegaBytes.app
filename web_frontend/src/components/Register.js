@@ -9,7 +9,7 @@ function Register() {
 	const [message, setMessage] = useState('');
 	const registerUser = async event => {
 		event.preventDefault();
-		var obj = { FirstName: regFname.value, LastName: regLname.value, Username: regUsername.value, Password: regPassword.value, Email: regEmail.value };
+		var obj = { fname: regFname.value, lname: regLname.value, username: regUsername.value, password: regPassword.value, email: regEmail.value };
 		var js = JSON.stringify(obj);
 		try {
 			const response = await fetch(bp.buildPath('api/register'),
