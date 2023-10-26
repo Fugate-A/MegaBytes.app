@@ -10,8 +10,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="https://www.megabytes.app/acc" element={<AccountPage />} />
-        <Route path="https://www.megabytes.app/reg" element={<RegisterPage />} />
+        <Route path="/acc" element={<AccountPage />} />
+        <Route path="/reg" element={<RegisterPage />} />
       </Routes>
     </BrowserRouter>
   );
