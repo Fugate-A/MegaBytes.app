@@ -33,6 +33,11 @@ function Login() {
 			return;
 		}
 	};
+
+	const goToRegister = event => {
+		window.location.href = '/reg';
+	};
+
 	return (
 		<div id="loginDiv">
 			<form onSubmit={doLogin}>
@@ -41,6 +46,8 @@ function Login() {
 				<input type="password" id="loginPassword" placeholder="Password" ref={(c) => loginPassword = c} /><br />
 				<input type="submit" id="loginButton" class="buttons" value="Do It"
 					onClick={doLogin} />
+				<button type="button" id="goRegButton" class="buttons"
+					onClick={goToRegister}> Register </button>
 			</form>
 			<span id="loginResult">{message}</span>
 		</div>
