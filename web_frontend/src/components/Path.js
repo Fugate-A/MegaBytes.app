@@ -1,4 +1,4 @@
-const app_name = '147.182.177.169:5000/'
+const app_name = 'https://www.megabytes.app/'
 exports.buildPath =
 	function buildPath(route) {
 		if (process.env.NODE_ENV === 'production') {
