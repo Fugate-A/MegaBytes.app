@@ -6,7 +6,7 @@ function Login() {
 	const [message, setMessage] = useState('');
 	const doLogin = async event => {
 		event.preventDefault();
-		var obj = { login: loginInfo.value, password: loginPassword.value };
+		var obj = { Username: loginInfo.value, Password: loginPassword.value };
 		var js = JSON.stringify(obj);
 		try {
 			const response = await fetch(bp.buildPath('api/login'),
