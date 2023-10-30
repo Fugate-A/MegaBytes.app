@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
         marginTop: -50,
         padding: 15,
         alignItems: 'center',
-        marginBottom: 50,
+        marginBottom: 25,
     },
     title: {
         fontSize: 30,

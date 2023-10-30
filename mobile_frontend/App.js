@@ -13,14 +13,14 @@ import HomePage from './pages/HomePage';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  let [fontsLoaded] = useFonts({
-    'Tilt-Neon': require('./assets/fonts/TiltNeon-Regular-VariableFont.ttf')
-  });
+	let [fontsLoaded] = useFonts({
+		'Tilt-Neon': require('./assets/fonts/TiltNeon-Regular-VariableFont.ttf')
+	});
 
   useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
-    }
+	async function prepare() {
+		await SplashScreen.preventAutoHideAsync();
+	}
     prepare();
   }, []);
 
@@ -31,13 +31,13 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="login">
-        <Stack.Screen name="Auth" component={AuthPage} />
-        <Stack.Screen name="Login" component={LoginPage} />
-        <Stack.Screen name="Register" component={RegisterPage} />
-        <Stack.Screen name="Home" component={HomePage} />
-      </Stack.Navigator>
-    </NavigationContainer>
+	<NavigationContainer>
+		<Stack.Navigator initialRouteName="login">
+			<Stack.Screen name="Auth" component={AuthPage} />
+			<Stack.Screen name="Login" component={LoginPage} />
+			<Stack.Screen name="Register" component={RegisterPage} />
+			<Stack.Screen name="Home" component={HomePage} />
+		</Stack.Navigator>
+	</NavigationContainer>
   );
 }
