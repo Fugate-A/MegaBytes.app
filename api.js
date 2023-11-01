@@ -10,7 +10,7 @@ exports.setApp = function (app, client) {
 		var error = '';
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const result = db.collection('User').insertOne(newUser);
+			db.collection('User').insertOne(newUser);
 		}
 		catch (e) {
 			error = e.toString();
@@ -44,26 +44,129 @@ exports.setApp = function (app, client) {
 		res.status(200).json(ret);
 	});
 
-	/*
-	app.post('/api/search', async (req, res, next) => {
-		// incoming: userId, search
-		// outgoing: results[], error
+	app.post('/api/addRecipe', async (req, res, next) => {
+		// incoming: recipeId, userId, recipeName, recipeFileName, ingredientList, tagList, likeList, dislikeList
+		// outgoing: error
+
 		var error = '';
-		const { userId, search } = req.body;
+		const { recipeId, userId, recipeName, recipeFileName, ingredientList,
+			tagList, likeList, dislikeList } = req.body;
+		const newRecipe = {
+			RecipeId: recipeId, UserId: userId, RecipeName: recipeName,
+			RecipeFileName: recipeFileName, IngredientList: ingredientList,
+			TagList: tagList, LikeList: likeList, DislikeList: dislikeList
+		};
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			db.collection('Recipes').insertOne(newRecipe);
+		} catch (e) {
+			error = e.toString();
+		}
+
+		var ret = { error: error };
+		res.status(200).json(ret);
+	});
+
+	app.post('/api/deleteRecipe', async (req, res, next) => {
+		// incoming: recipeId
+		// outgoing: error
+
+		var error = '';
+		const { recipeId } = req.body;
+		const filter = { RecipeId: recipeId };
+
+		const db = client.db('MegaBitesLibrary');
+		db.collection('Recipes').deleteOne(filter, (err, result) => {
+			if (err) {
+				console.error('Error deleting document:', err);
+			} else {
+				console.log('Deleted document successfully');
+			}
+		});
+
+		var ret = { error: error };
+		res.status(200).json(ret);
+	});
+
+	app.post('/api/getRecipes', async (req, res, next) => {
+		// incoming: search
+		// outgoing: results[], error
+
+		var error = '';
+		const { search } = req.body;
 		var _search = search.trim();
-		const db = client.db('COP4331Cards');
+		const db = client.db('MegaBitesLibrary');
 		const results = await
-			db.collection('Cards').find({
-				"Card": {
+			db.collection('Recipes').find({
+				"RecipeName": {
 					$regex: _search + '.*',
-					$options: 'r'
+					$options: 'i'
 				}
 			}).toArray();
-		var _ret = [];
-		for (var i = 0; i < results.length; i++) {
-			_ret.push(results[i].Card);
+
+		var ret = { results: results, error: error };
+		res.status(200).json(ret);
+	});
+
+	app.post('/api/addComment', async (req, res, next) => {
+		// incoming: recipeId, userId, commentId, commentText
+		// outgoing: error
+
+		var error = '';
+		const { recipeId, userId, commentId, commentText } = req.body;
+		const newComment = {
+			RecipeId: recipeId, UserId: userId, CommentId: commentId, CommentText: commentText
+		};
+		try {
+			const db = client.db('MegaBitesLibrary');
+			db.collection('Comments').insertOne(newComment);
+		} catch (e) {
+			error = e.toString();
 		}
-		var ret = { results: _ret, error: error };
+
+		var ret = { error: error };
+		res.status(200).json(ret);
+	});
+
+	app.post('/api/deleteComment', async (req, res, next) => {
+		// incoming: recipeId
+		// outgoing: error
+
+		var error = '';
+		const { commentId } = req.body;
+		const filter = { CommentId: commentId };
+		const db = client.db('MegaBitesLibrary');
+		db.collection('Comments').deleteOne(filter, (err, result) => {
+			if (err) {
+				console.error('Error deleting document:', err);
+			} else {
+				console.log('Deleted document successfully');
+			}
+		});
+
+		var ret = { error: error };
+		res.status(200).json(ret);
+	});
+
+	/*
+	app.post('/api/getComments', async (req, res, next) => {
+		// incoming: search
+		// outgoing: results[], error
+
+		var error = '';
+		const { search } = req.body;
+		var _search = search.trim();
+		const db = client.db('MegaBitesLibrary');
+		const results = await
+			db.collection('Comments').find({
+				"RecipeName": {
+					$regex: _search + '.*',
+					$options: 'i'
+				}
+			}).toArray();
+
+		var ret = { results: results, error: error };
 		res.status(200).json(ret);
 	});*/
 }
