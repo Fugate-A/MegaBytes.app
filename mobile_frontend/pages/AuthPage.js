@@ -37,8 +37,11 @@ function AuthPage( { navigation }){
 				}),
 			});
 			
+			console.log('Logging User in:');
+			console.log(`\nUsername: ${email}\nPassword: ${passwordText}`);
 			const data = await response.json();
 			if(data.firstName.length >= 1){
+				console.log('Success');
 				navigation.navigate('Home');
 			}else{
 				setErrorMessage('Invalid Username or Password');
@@ -67,8 +70,11 @@ function AuthPage( { navigation }){
 				}),
 			});
 			
+			console.log('Adding new User:');
+			console.log(`\nUsername: ${username}\nPassword: ${passwordText}`);
 			const data = await response.json();
 			if(response.ok){
+				console.log('Success');
 				setIsSignIn(true);
 			}else{
 				console.error("Invalid username or password\n");
