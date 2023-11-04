@@ -1,6 +1,6 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Header from '../components/Header';
@@ -17,14 +17,12 @@ function AuthPage( { navigation }){
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-
-
 	const handleSignIn = async () => {
 		// Check if login information is correct, if so, proceed to HomePage
 
-		if(email.size == 0 || passwordText.size == 0){
+		const login = email;
+
+		if(login.size == 0 || passwordText.size == 0){
 			setErrorMessage('Please fill in the required fields');
 			setShowErrorModal(true);
 			return;
@@ -37,30 +35,37 @@ function AuthPage( { navigation }){
 					'Content-Type': 'application/json',
 				},
 
-				// TODO API Needs to change 'Username' to Login and add support for email login
 				body: JSON.stringify({
-					username: email,
+					username: login,
 					password: passwordText,
 				}),
 			});
 			
-			console.log('Logging User in:');
-			console.log(`\nUsername: ${email}\nPassword: ${passwordText}`);
+			console.log('\tLogging User in:');
+			console.log(`\n\tUsername: ${login}\nPassword: ${passwordText}`);
+
 			const data = await response.json();
-			if(data.firstName.length >= 1){
-				console.log('Success');
+
+			if(response.ok){
+				console.log('\tSuccess!');
+
+				await AsyncStorage.setItem('userID', data.id);
+
 				navigation.navigate('Home');
 			}else{
 				setErrorMessage('Invalid Username or Password');
 				setShowErrorModal(true);
 			}
 		} catch(error){
-			console.error("ERROR CONNECTING TO DATABASE\n");
+			console.error("\tERROR CONNECTING TO DATABASE\n", error);
 		}
 	};
 
 	const handleSignUp = async () => {
 		// Check if register information is correct, if so, proceed to LoginPage
+
+		//TODO Send email verification before adding credentials into database
+
 		if(email.size == 0 || passwordText.size == 0 || username.size == 0){
 			setErrorMessage('Please fill in the required fields');
 			setShowErrorModal(true);
@@ -82,17 +87,20 @@ function AuthPage( { navigation }){
 				}),
 			});
 			
-			console.log('Adding new User:');
-			console.log(`\nUsername: ${username}\nPassword: ${passwordText}`);
+			console.log('\tAdding new User:');
+			console.log(`\n\tEmail: ${email}\tUsername: ${username}\tPassword: ${passwordText}`);
 			const data = await response.json();
 			if(response.ok){
-				console.log('Success');
+				console.log('\tSuccess');
+				
+				await AsyncStorage.setItem('userID', data.id);
+
 				setIsSignIn(true);
 			}else{
-				console.error("Invalid username or password\n");
+				console.error("\tError\n");
 			}
 		} catch(error){
-			console.error("ERROR CONNECTING TO DATABASE\n");
+			console.error("\tERROR CONNECTING TO DATABASE\n");
 		}
 	};
 

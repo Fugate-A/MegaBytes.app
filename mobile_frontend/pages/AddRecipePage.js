@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
+
+import ErrorMessageModal from '../components/ErrorMessageModal';
 
 
 function AddRecipePage(){
@@ -8,14 +11,64 @@ function AddRecipePage(){
     const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
     const [tagInput, setTag] = useState('');
+
+    const [userID, setUserID] = useState(null);
+    useEffect( () => {
+        const fetchUserID = async () => {
+            try {
+                const storedUserID = await AsyncStorage.getItem('userID');
+                setUserID(storedUserID);
+            } catch (error) {
+                console.error('Error retrieving userID from cache', error);
+            }
+        };
+
+        fetchUserID();
+    }, []);
     
-    const handleAddRecipe = () => {
+    const handleAddRecipe = async () => {
+        const [showErrorModal, setShowErrorModal] = useState(false);
+        const [errorMessage, setErrorMessage] = useState('');
         
-        console.log(`Title: ${title}`);
-        console.log(`Content: ${content}`);
-        console.log(`Tags: ${tags}`);
+        try {
+            const response = await fetch('http://164.90.130.112:5000/api/addRecipe', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+
+				body: JSON.stringify({
+					userId: userID,
+                    RecipeName: title,
+                    recipeContents: content,
+                    tagList: tags,
+                    LikeList: [],
+				}),
+		});
+
+            console.log('\tAdding Recipe');
+            const data = await response.json();
+
+            if(response.ok){
+                console.log('\tSuccess');
+
+                //TODO Redirect to the recipe page
+            }else{
+                console.error('\tError adding Recipe');
+
+                setErrorMessage('Error adding Reicpe');
+				setShowErrorModal(true);
+            }
+        } catch(error) {
+            console.error("\tERROR CONNECTING TO DATABASE\n", error);
+        }
+        
 
     };
+
+	const closeErrorModal = () => {
+		setShowErrorModal(false);
+	};
 
     return (
 
@@ -52,6 +105,12 @@ function AddRecipePage(){
                     style={styles.input}
                 />
             </View>
+
+            <ErrorMessageModal
+				visible={showErrorModal}
+				message={errorMessage}
+				onClose={closeErrorModal}
+			/>
 
         </KeyboardAvoidingView>
         
