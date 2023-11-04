@@ -37,7 +37,7 @@ exports.setApp = function (app, client) {
 					db.collection('User').find({ Username: username, Password: password }).toArray();
 			}
 			if (results.length > 0) {
-				id = results[0].UserId;
+				id = results[0]._id;
 			}
 		}
 		catch (e) {
