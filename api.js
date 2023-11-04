@@ -22,20 +22,16 @@ exports.setApp = function (app, client) {
 	app.post('/api/login', async (req, res, next) => {
 		// incoming: login, password
 		// outgoing: id, error
-		var error = '';
+		let error = '';
 		const { username, password } = req.body;
-		var id = -1;
-		var isEmail = username.includes("@");
+		const isEmail = username.includes("@");
 		try {
 			const db = client.db('MegaBitesLibrary');
-			if (isEmail) {
-				const results = await 
-					db.collection('User').find({ Email: username, Password: password }).toArray();
-			}
-			else {
-				const results = await
-					db.collection('User').find({ Username: username, Password: password }).toArray();
-			}
+			const results = await (isEmail
+				? db.collection('User').find({ Email: username, Password: password }).toArray()
+				: db.collection('User').find({ Username: username, Password: password }).toArray());
+			
+			var id = -1;
 			if (results.length > 0) {
 				id = results[0]._id;
 			}
@@ -43,7 +39,7 @@ exports.setApp = function (app, client) {
 		catch (e) {
 			error = e.message()
 		}
-		var ret = { id: id, error: '' };
+		let ret = { id: id, error: error };
 		res.status(200).json(ret);
 	});
 
