@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -23,6 +23,13 @@ function AuthPage( { navigation }){
 
 	const handleSignIn = async () => {
 		// Check if login information is correct, if so, proceed to HomePage
+
+		if(email.size == 0 || passwordText.size == 0){
+			setErrorMessage('Please fill in the required fields');
+			setShowErrorModal(true);
+			return;
+		}
+
 		try {
 			const response = await fetch('http://164.90.130.112:5000/api/login', {
 				method: 'POST',
@@ -54,6 +61,11 @@ function AuthPage( { navigation }){
 
 	const handleSignUp = async () => {
 		// Check if register information is correct, if so, proceed to LoginPage
+		if(email.size == 0 || passwordText.size == 0 || username.size == 0){
+			setErrorMessage('Please fill in the required fields');
+			setShowErrorModal(true);
+			return;
+		}
 		try {
 			const response = await fetch('http://164.90.130.112:5000/api/register', {
 				method: 'POST',

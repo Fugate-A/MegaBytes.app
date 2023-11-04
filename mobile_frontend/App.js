@@ -6,9 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 
 import AuthPage from './pages/AuthPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
+import AddRecipePage from './pages/AddRecipePage';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,12 +31,11 @@ export default function App() {
 
   return (
 	<NavigationContainer>
-		<Stack.Navigator initialRouteName="login">
+		<Stack.Navigator initialRouteName="Auth">
 			<Stack.Screen name="Auth" component={AuthPage} />
-			<Stack.Screen name="Login" component={LoginPage} />
-			<Stack.Screen name="Register" component={RegisterPage} />
 			<Stack.Screen name="Home" component={HomePage} />
+			<Stack.Screen name="AddRecipe" component={AddRecipePage} />
 		</Stack.Navigator>
-	</NavigationContainer>
+</NavigationContainer>
   );
 }
