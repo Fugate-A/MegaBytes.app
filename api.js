@@ -3,10 +3,10 @@ require('mongodb');
 
 exports.setApp = function (app, client) {
 	app.post('/api/register', async (req, res, next) => {
-		// incoming:  fname, lname, username, password, email
+		// incoming:  username, password, email
 		// outgoing: error
-		const { fname, lname, username, password, email } = req.body;
-		const newUser = { UserID: Date.now(), FirstName: fname, LastName: lname, Username: username, Password: password, Email: email };
+		const { username, password, email } = req.body;
+		const newUser = { UserID: Date.now(), Username: username, Password: password, Email: email };
 		var error = '';
 		try {
 			const db = client.db('MegaBitesLibrary');
@@ -21,40 +21,43 @@ exports.setApp = function (app, client) {
 
 	app.post('/api/login', async (req, res, next) => {
 		// incoming: login, password
-		// outgoing: id, firstName, lastName, error
+		// outgoing: id, error
 		var error = '';
 		const { username, password } = req.body;
 		var id = -1;
-		var fn = '';
-		var ln = '';
+		var isEmail = username.includes("@");
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const results = await
-				db.collection('User').find({ Username: username, Password: password }).toArray();
+			if (isEmail) {
+				const results = await 
+					db.collection('User').find({ Email: username, Password: password }).toArray();
+			}
+			else {
+				const results = await
+					db.collection('User').find({ Username: username, Password: password }).toArray();
+			}
 			if (results.length > 0) {
 				id = results[0].UserId;
-				fn = results[0].FirstName;
-				ln = results[0].LastName;
 			}
 		}
 		catch (e) {
 			error = e.message()
 		}
-		var ret = { id: id, firstName: fn, lastName: ln, error: '' };
+		var ret = { id: id, error: '' };
 		res.status(200).json(ret);
 	});
 
 	app.post('/api/addRecipe', async (req, res, next) => {
-		// incoming: recipeId, userId, recipeName, recipeFileName, ingredientList, tagList, likeList, dislikeList
+		// incoming: userId, recipeName, recipeContents, tagList, likeList
 		// outgoing: error
 
 		var error = '';
-		const { recipeId, userId, recipeName, recipeFileName, ingredientList,
-			tagList, likeList, dislikeList } = req.body;
+		const { userId, recipeName, recipeContents,
+			tagList, likeList } = req.body;
 		const newRecipe = {
-			RecipeId: recipeId, UserId: userId, RecipeName: recipeName,
-			RecipeFileName: recipeFileName, IngredientList: ingredientList,
-			TagList: tagList, LikeList: likeList, DislikeList: dislikeList
+			UserId: userId, RecipeName: recipeName,
+			recipeContents: recipeContents,
+			TagList: tagList, LikeList: likeList
 		};
 
 		try {
