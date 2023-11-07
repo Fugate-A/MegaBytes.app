@@ -6,14 +6,15 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import ErrorMessageModal from '../components/ErrorMessageModal';
 
-function AuthPage( { navigation }){
+function AuthPage( { navigation } ){
     const [isSignIn, setIsSignIn] = useState(true);
+
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
+	const [password, setpassword] = useState('');
 
 	const [showPassword, setShowPassword] = useState(false);
-    const [passwordText, setPasswordText] = useState('');
-
+    
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -22,7 +23,7 @@ function AuthPage( { navigation }){
 
 		const login = email;
 
-		if(login.size == 0 || passwordText.size == 0){
+		if(login.size == 0 || password.size == 0){
 			setErrorMessage('Please fill in the required fields');
 			setShowErrorModal(true);
 			return;
@@ -37,12 +38,12 @@ function AuthPage( { navigation }){
 
 				body: JSON.stringify({
 					username: login,
-					password: passwordText,
+					password: password,
 				}),
 			});
 			
 			console.log('\tLogging User in:');
-			console.log(`\n\tUsername: ${login}\nPassword: ${passwordText}`);
+			console.log(`\n\tUsername: ${login}\nPassword: ${password}`);
 
 			const data = await response.json();
 
@@ -50,6 +51,8 @@ function AuthPage( { navigation }){
 				console.log('\tSuccess!');
 
 				await AsyncStorage.setItem('userID', data.id);
+				await AsyncStorage.setItem('username', username);
+				await AsyncStorage.setItem('email', email);
 
 				navigation.navigate('Home');
 			}else{
@@ -66,7 +69,7 @@ function AuthPage( { navigation }){
 
 		//TODO Send email verification before adding credentials into database
 
-		if(email.size == 0 || passwordText.size == 0 || username.size == 0){
+		if(email.size == 0 || password.size == 0 || username.size == 0){
 			setErrorMessage('Please fill in the required fields');
 			setShowErrorModal(true);
 			return;
@@ -78,17 +81,14 @@ function AuthPage( { navigation }){
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					userId: 999,
-					fname: "DUMMY",
-					lname: "DUMMY 2",
 					username: username,
-					password: passwordText,
+					password: password,
 					email: email,
 				}),
 			});
 			
 			console.log('\tAdding new User:');
-			console.log(`\n\tEmail: ${email}\tUsername: ${username}\tPassword: ${passwordText}`);
+			console.log(`\n\tEmail: ${email}\tUsername: ${username}\tPassword: ${password}`);
 			const data = await response.json();
 			if(response.ok){
 				console.log('\tSuccess');
@@ -176,8 +176,8 @@ function AuthPage( { navigation }){
 					<TextInput
 						style={styles.passwordInput}
 						placeholder="Password"
-						value={passwordText}
-						onChangeText={text => setPasswordText(text)}
+						value={password}
+						onChangeText={text => setpassword(text)}
 						secureTextEntry={!showPassword}   
 					/>
 					<MaterialCommunityIcons 
