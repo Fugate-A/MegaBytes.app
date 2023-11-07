@@ -3,20 +3,51 @@ require('mongodb');
 
 exports.setApp = function (app, client) {
 	app.post('/api/register', async (req, res, next) => {
-		// incoming:  username, password, email
-		// outgoing: error
-		const { username, password, email } = req.body;
-		const newUser = { UserID: Date.now(), Username: username, Password: password, Email: email };
-		var error = '';
-		try {
-			const db = client.db('MegaBitesLibrary');
-			db.collection('User').insertOne(newUser);
+	  // incoming: email, password
+	  // outgoing: error
+	  const { email, password } = req.body;
+	  var error = '';
+	  try {
+		const db = client.db('MegaBitesLibrary');
+
+		// Check if the email is unique
+		const existingUser = await db.collection('User').findOne({ email });
+		if (existingUser) {
+		  return res.status(400).json({ error: 'Email already exists' });
 		}
-		catch (e) {
+	
+		// Create a new user document in MongoDB
+		const newUser = { Email: email, Password: password, FirstName: '', LastName: '', Username: '' };
+		db.collection('User').insertOne(newUser);
+	
+		} catch (e) {
 			error = e.toString();
+	  }
+	  var ret = {error: error};
+	  res.status(200).json(ret);
+	});
+	
+	app.put('/update-profile/:email', async (req, res) => {
+	  const userEmail = req.params.email;
+	  const { firstName, lastName, username } = req.body;
+	
+	  try {
+		const db = client.db('MegaBitesLibrary');
+	
+		// Find the user by email
+		const userToUpdate = await db.collection('User').findOne({ email: userEmail });
+		if (!userToUpdate) {
+		  return res.status(404).json({ error: 'User not found' });
 		}
-		var ret = { error: error };
-		res.status(200).json(ret);
+	
+		// Update the user's profile
+		db.collection('User').updateOne({ email: userEmail }, { $set: { firstName, lastName, username } });
+	  
+	  } catch (e) {
+		error = e.toString();
+	  }
+	  var ret = {error: error};
+	  res.status(200).json(ret);
 	});
 
 	app.post('/api/login', async (req, res, next) => {
@@ -49,11 +80,11 @@ exports.setApp = function (app, client) {
 
 		var error = '';
 		const { userId, recipeName, recipeContents,
-			tagList, likeList } = req.body;
+			tagList, likeList, publicBool } = req.body;
 		const newRecipe = {
 			UserId: userId, RecipeName: recipeName,
 			recipeContents: recipeContents,
-			TagList: tagList, LikeList: likeList
+			TagList: tagList, LikeList: likeList, Public: publicBool
 		};
 
 		try {
@@ -108,14 +139,27 @@ exports.setApp = function (app, client) {
 		res.status(200).json(ret);
 	});
 
+	app.post('/api/getRecipeById', async (req, res, next) => {
+		// incoming: recipeId
+		// outgoing: recipe
+
+		var error = '';
+		const { id } = req.body;
+		var _id = id.trim();
+		const db = client.db('MegaBitesLibrary');
+		const result = await db.collection('Recipes').find({"RecipeID": _id});
+		var ret = { result: result, error: error };
+		res.status(200).json(ret);
+	});
+
 	app.post('/api/addComment', async (req, res, next) => {
 		// incoming: recipeId, userId, commentId, commentText
 		// outgoing: error
 
 		var error = '';
-		const { recipeId, userId, commentId, commentText } = req.body;
+		const { recipeId, userId, commentId, commentText, likeList } = req.body;
 		const newComment = {
-			RecipeId: recipeId, UserId: userId, CommentId: commentId, CommentText: commentText
+			RecipeId: recipeId, UserId: userId, CommentId: commentId, CommentText: commentText, LikeList: likeList
 		};
 		try {
 			const db = client.db('MegaBitesLibrary');
