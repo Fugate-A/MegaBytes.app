@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 
-function RecipeContainer() {
+function RecipeContainer( {recipe} ) {
 
     return (
         <View style={styles.container}>
 
-            <Text>CONTAINER</Text>
+            <Text style={styles.recipeTitleText}>{recipe.title}</Text>
+            <Text style={styles.recipeContentText}>{recipe.content}</Text>
 
         </View>
     )
@@ -18,8 +19,18 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: 150,
-        backgroundColor: 'red',
+        padding: 15,
+        borderWidth: 2,
+        borderRadius: 15,
     },
+    recipeTitleText: {
+        fontSize: 20,
+        fontFamily: 'Tilt-Neon',
+    },
+    recipeContentText: {
+        fontSize: 14,
+        fontFamily: 'Tilt-Neon',
+    }
 });
 
 export default RecipeContainer;

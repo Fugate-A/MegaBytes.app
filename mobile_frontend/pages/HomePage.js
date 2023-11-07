@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text,StyleSheet, ScrollView } from 'react-native';
+import { View, Text,StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
 
 import NavigationBar from '../components/NavigationBar';
 import RecipeContainer from '../components/RecipeContainer';
@@ -27,13 +28,22 @@ const recipes = [
 ];
 
 function HomePage(){
+    const navigation = useNavigation();
+
     return (
         <View style={styles.container}>
             <Text>HomePage</Text>
 
-            <ScrollView>
+            <ScrollView style={styles.scrollViewContainer}>
                 {recipes.map((recipe) => (
-                    <RecipeContainer />
+                    <TouchableOpacity
+                        key={recipe.id}
+                        onPress={() => navigation.navigate('RecipePage', {recipe})}>
+
+                        <RecipeContainer recipe={recipe}/>
+
+                    </TouchableOpacity>
+
                 ))}
             </ScrollView>
 
@@ -46,6 +56,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFF0DC',
+        alignItems: 'center',
+        width: '100%',
+        borderWidth: 3,
+    },
+    scrollViewContainer: {
+        width: '100%',
     }
 });
 

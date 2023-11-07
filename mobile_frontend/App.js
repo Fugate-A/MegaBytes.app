@@ -8,6 +8,7 @@ import { useFonts } from 'expo-font';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import AddRecipePage from './pages/AddRecipePage';
+import RecipePage from './pages/RecipePage';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +36,7 @@ export default function App() {
 			<Stack.Screen name="Auth" component={AuthPage} />
 			<Stack.Screen name="Home" component={HomePage} />
 			<Stack.Screen name="AddRecipe" component={AddRecipePage} />
+			<Stack.Screen name="RecipePage" component={RecipePage} />
 		</Stack.Navigator>
 </NavigationContainer>
   );
