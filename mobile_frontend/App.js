@@ -41,3 +41,5 @@ export default function App() {
 </NavigationContainer>
   );
 }
+
+// REACT_NATIVE_PACKAGER_HOSTNAME='100.74.230.134' npm start

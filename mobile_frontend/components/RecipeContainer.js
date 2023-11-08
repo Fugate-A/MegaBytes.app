@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderWidth: 2,
         borderRadius: 15,
+        marginBottom: 5,
     },
     recipeTitleText: {
         fontSize: 20,

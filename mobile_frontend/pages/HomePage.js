@@ -9,7 +9,7 @@ const recipes = [
     {
         id: 1,
         title: 'Delicious Pasta Carbonara',
-        author: 'u/ChefJohn',
+        author: 'ChefJohn',
         content: 'Here\'s the recipe for a mouthwatering pasta carbonara...',
         image: 'your_image_url_1',
         upvotes: 350,
@@ -18,7 +18,7 @@ const recipes = [
     {
         id: 2,
         title: 'Awesome Chocolate Cake',
-        author: 'u/BakerJane',
+        author: 'BakerJane',
         content: 'Indulge in this amazing chocolate cake recipe...',
         image: 'your_image_url_2',
         upvotes: 200,
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     },
     scrollViewContainer: {
         width: '100%',
+        padding: 10, 
     }
 });
 

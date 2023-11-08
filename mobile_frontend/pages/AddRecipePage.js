@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ErrorMessageModal from '../components/ErrorMessageModal';
 
@@ -11,6 +11,9 @@ function AddRecipePage(){
     const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
     const [tagInput, setTag] = useState('');
+
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const [userID, setUserID] = useState(null);
     useEffect( () => {
@@ -27,8 +30,6 @@ function AddRecipePage(){
     }, []);
     
     const handleAddRecipe = async () => {
-        const [showErrorModal, setShowErrorModal] = useState(false);
-        const [errorMessage, setErrorMessage] = useState('');
         
         try {
             const response = await fetch('http://164.90.130.112:5000/api/addRecipe', {
