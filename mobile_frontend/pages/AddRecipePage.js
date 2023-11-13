@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from "@react-navigation/native";
 
 import ErrorMessageModal from '../components/ErrorMessageModal';
 
 
 function AddRecipePage(){
+    const navigation = useNavigation();
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -40,10 +42,10 @@ function AddRecipePage(){
 
 				body: JSON.stringify({
 					userId: userID,
-                    RecipeName: title,
+                    recipeName: title,
                     recipeContents: content,
-                    tagList: tags,
-                    LikeList: [],
+                    tagList: tags || [],
+                    likeList: [],
 				}),
 		});
 
@@ -53,7 +55,7 @@ function AddRecipePage(){
             if(response.ok){
                 console.log('\tSuccess');
 
-                //TODO Redirect to the recipe page
+                navigation.navigate('Home');
             }else{
                 console.error('\tError adding Recipe');
 

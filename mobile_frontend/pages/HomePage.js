@@ -1,34 +1,66 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text,StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import NavigationBar from '../components/NavigationBar';
 import RecipeContainer from '../components/RecipeContainer';
 
-const recipes = [
-    {
-        id: 1,
-        title: 'Delicious Pasta Carbonara',
-        author: 'ChefJohn',
-        content: 'Here\'s the recipe for a mouthwatering pasta carbonara...',
-        image: 'your_image_url_1',
-        upvotes: 350,
-        comments: 25,
-    },
-    {
-        id: 2,
-        title: 'Awesome Chocolate Cake',
-        author: 'BakerJane',
-        content: 'Indulge in this amazing chocolate cake recipe...',
-        image: 'your_image_url_2',
-        upvotes: 200,
-        comments: 15,
-    },
-    // Add more recipe objects as needed
-];
-
-function HomePage(){
+function HomePage({ route }){
     const navigation = useNavigation();
+    const [recipes, setRecipes] = useState([]);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const getRecipes = async () => {
+
+                try {
+                    const response = await fetch('http://164.90.130.112:5000/api/getUserRecipes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+        
+                        body: JSON.stringify({
+                            userID: await AsyncStorage.getItem('userID')
+                        }),
+                    });
+    
+                    const data = await response.json();
+                    if(response.ok){
+                        const detailedRecipes = await Promise.all(
+                            data.results.map(async (recipeID) => {
+                                const recipeResponse = await fetch('http://164.90.130.112:5000/api/getRecipeByID', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        recipeID: recipeID,
+                                    }),
+                                });
+                                const recipeData = await recipeResponse.json();
+    
+                                if(recipeResponse.ok){
+                                    return recipeData.results;
+                                }else{
+                                    console.error('\tFailed to fetch recipe details', recipeData.error);
+                                    return null;
+                                }
+                            })
+                        );
+                        setRecipes(detailedRecipes.filter(recipe => recipe != null));
+                    }else{
+                        console.error('\tFailed to fetch recipes', data.error);
+                    }
+                } catch(error){
+                    console.error('\tError fetching recipes', error);
+                }
+        
+            }
+            getRecipes();
+        }, [])
+    );
 
     return (
         <View style={styles.container}>
@@ -37,7 +69,7 @@ function HomePage(){
             <ScrollView style={styles.scrollViewContainer}>
                 {recipes.map((recipe) => (
                     <TouchableOpacity
-                        key={recipe.id}
+                        key={recipe._id}
                         onPress={() => navigation.navigate('RecipePage', {recipe})}>
 
                         <RecipeContainer recipe={recipe}/>
@@ -58,11 +90,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF0DC',
         alignItems: 'center',
         width: '100%',
+        justifyContent: 'space-between',
         borderWidth: 3,
     },
     scrollViewContainer: {
+        flex: 1,
         width: '100%',
-        padding: 10, 
+        padding: 5, 
+        marginBottom: 100,
     }
 });
 

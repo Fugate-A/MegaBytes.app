@@ -6,8 +6,8 @@ function RecipeContainer( {recipe} ) {
     return (
         <View style={styles.container}>
 
-            <Text style={styles.recipeTitleText}>{recipe.title}</Text>
-            <Text style={styles.recipeContentText}>{recipe.content}</Text>
+            <Text style={styles.recipeTitleText}>{recipe.RecipeName}</Text>
+            <Text style={styles.recipeContentText}>{recipe.RecipeContents}</Text>
 
         </View>
     )
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderWidth: 2,
         borderRadius: 15,
-        marginBottom: 5,
+        marginBottom: 10,
     },
     recipeTitleText: {
         fontSize: 20,

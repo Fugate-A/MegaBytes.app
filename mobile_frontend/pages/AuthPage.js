@@ -43,7 +43,7 @@ function AuthPage( { navigation } ){
 			});
 			
 			console.log('\tLogging User in:');
-			console.log(`\n\tUsername: ${login}\nPassword: ${password}`);
+			console.log(`\tUsername: ${login}   Password: ${password}`);
 
 			const data = await response.json();
 

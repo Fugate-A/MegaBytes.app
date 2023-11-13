@@ -9,7 +9,7 @@ function RecipePage() {
     const { recipe } = route.params;
 
     const [liked, setLiked] = useState(false);
-    const [likeNumber, setLikeNumber] = useState(recipe.upvotes);
+    const [likeNumber, setLikeNumber] = useState(recipe.LikeList.length || 0);
 
     const toggleLike = () => {
         if(liked){
@@ -26,16 +26,15 @@ function RecipePage() {
             
             <View style={styles.recipeAuthorContainer}>
                 <Text style={styles.recipeAuthorText}>u/{recipe.author}</Text>
-                
             </View>
 
             <View style={styles.recipeTitleContainer}>
-                <Text style={styles.recipeTitleText}>{recipe.title}</Text>
+                <Text style={styles.recipeTitleText}>{recipe.RecipeName}</Text>
                 <GlutenFreeTag />
             </View>
             
             <View style={styles.recipeContentContainer}>
-                <Text style={styles.recipeContentText}>{recipe.content}</Text>
+                <Text style={styles.recipeContentText}>{recipe.RecipeContents}</Text>
             </View>
 
             <View style={styles.extrasBar}>
