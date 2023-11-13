@@ -1,53 +1,24 @@
 require('express');
 require('mongodb');
 
+const { ObjectId } = require('mongodb');
+
 exports.setApp = function (app, client) {
 	app.post('/api/register', async (req, res, next) => {
-	  // incoming: email, password
-	  // outgoing: error
-	  const { email, password } = req.body;
-	  var error = '';
-	  try {
-		const db = client.db('MegaBitesLibrary');
-
-		// Check if the email is unique
-		const existingUser = await db.collection('User').findOne({ email });
-		if (existingUser) {
-		  return res.status(400).json({ error: 'Email already exists' });
+		// incoming:  username, password, email
+		// outgoing: error
+		const { username, password, email } = req.body;
+		const newUser = { UserID: Date.now(), Username: username, Password: password, Email: email };
+		var error = '';
+		try {
+			const db = client.db('MegaBitesLibrary');
+			db.collection('User').insertOne(newUser);
 		}
-	
-		// Create a new user document in MongoDB
-		const newUser = { Email: email, Password: password, FirstName: '', LastName: '', Username: '' };
-		db.collection('User').insertOne(newUser);
-	
-		} catch (e) {
+		catch (e) {
 			error = e.toString();
-	  }
-	  var ret = {error: error};
-	  res.status(200).json(ret);
-	});
-	
-	app.put('/update-profile/:email', async (req, res) => {
-	  const userEmail = req.params.email;
-	  const { firstName, lastName, username } = req.body;
-	
-	  try {
-		const db = client.db('MegaBitesLibrary');
-	
-		// Find the user by email
-		const userToUpdate = await db.collection('User').findOne({ email: userEmail });
-		if (!userToUpdate) {
-		  return res.status(404).json({ error: 'User not found' });
 		}
-	
-		// Update the user's profile
-		db.collection('User').updateOne({ email: userEmail }, { $set: { firstName, lastName, username } });
-	  
-	  } catch (e) {
-		error = e.toString();
-	  }
-	  var ret = {error: error};
-	  res.status(200).json(ret);
+		var ret = { error: error };
+		res.status(200).json(ret);
 	});
 
 	app.post('/api/login', async (req, res, next) => {
@@ -78,29 +49,41 @@ exports.setApp = function (app, client) {
 		res.status(200).json(ret);
 	});
 
-	app.post('/api/addRecipe', async (req, res, next) => {
+	app.post('/api/addRecipe', async (req, res) => {
 		// incoming: userId, recipeName, recipeContents, tagList, likeList
 		// outgoing: error
-
-		var error = '';
-		const { userId, recipeName, recipeContents,
-			tagList, likeList, publicBool } = req.body;
+	  
+		const { userId, recipeName, recipeContents, tagList, likeList } = req.body;
 		const newRecipe = {
-			UserId: userId, RecipeName: recipeName,
-			recipeContents: recipeContents,
-			TagList: tagList, LikeList: likeList, Public: publicBool
+		  UserId: new ObjectId(userId),
+		  RecipeName: recipeName,
+		  RecipeContents: recipeContents,
+		  TagList: tagList,
+		  LikeList: likeList,
 		};
-
+	  
 		try {
-			const db = client.db('MegaBitesLibrary');
-			db.collection('Recipes').insertOne(newRecipe);
-		} catch (e) {
-			error = e.toString();
-		}
+		  const db = client.db('MegaBitesLibrary');
+	  
+		  // Insert new recipe into Recipes collection
+		  const insertResult = await db.collection('Recipes').insertOne(newRecipe);
 
-		var ret = { error: error };
-		res.status(200).json(ret);
-	});
+		  const recipeId = insertResult.insertedId;
+	  
+		  // Update the user's RecipeList with the new recipe
+		  const updateResult = await db.collection('User').updateOne(
+			{ _id: new ObjectId(userId) },
+			{ $push: { RecipeList: {_id: recipeId} } }
+		  );
+			
+		  console.log(updateResult);
+
+		  res.status(200).json({ error: null });
+		} catch (error) {
+		  console.error(error);
+		  res.status(500).json({ error: 'Internal Server Error' });
+		}
+	  });
 
 	app.post('/api/deleteRecipe', async (req, res, next) => {
 		// incoming: recipeId
@@ -123,6 +106,63 @@ exports.setApp = function (app, client) {
 		res.status(200).json(ret);
 	});
 
+	app.post('/api/getUserRecipes', async(req, res, netx) => {
+		// incoming: userID
+		// outgoing: results[], error
+
+		try {
+			const { userID } = req.body;
+
+			if(!userID){
+				return res.status(400).json({error: 'userID is required'});
+			}
+
+			const db = client.db('MegaBitesLibrary');
+
+			const user = await db.collection('User').findOne({_id: new ObjectId(userID)});
+
+			if(!user){
+				return res.status(404).json({error: 'User not found'});
+			}
+
+			const recipeList = user.RecipeList || [];
+
+			const recipeIds = recipeList.map(recipe => recipe._id);
+
+			res.json({results: recipeIds, error: ''});
+		} catch(error){
+			console.error(error);
+			res.status(500).json({error: 'Internal error'});
+		}
+	});
+
+	app.post('/api/getRecipeByID', async(req, res, next) => {
+		// incoming recipeID
+		// outgoing: recipe, error
+
+		try {
+			const { recipeID } = req.body;
+
+			if(!recipeID){
+				return res.status(400).json({error: 'recipeID is required'});
+			}
+
+			const db = client.db('MegaBitesLibrary');
+
+			const recipe = await db.collection('Recipes').findOne({_id: new ObjectId(recipeID)});
+
+			if(!recipe){
+				return res.status(404).json({error: 'Recipe not found'});
+			}
+
+			res.json({results: recipe, error: ''});
+		} catch(error){
+			console.error(error);
+			res.status(500).json({error: 'Internal error'});
+		}
+
+	});
+
 	app.post('/api/getRecipes', async (req, res, next) => {
 		// incoming: search
 		// outgoing: results[], error
@@ -143,27 +183,14 @@ exports.setApp = function (app, client) {
 		res.status(200).json(ret);
 	});
 
-	app.post('/api/getRecipeById', async (req, res, next) => {
-		// incoming: recipeId
-		// outgoing: recipe
-
-		var error = '';
-		const { id } = req.body;
-		var _id = id.trim();
-		const db = client.db('MegaBitesLibrary');
-		const result = await db.collection('Recipes').find({"RecipeID": _id});
-		var ret = { result: result, error: error };
-		res.status(200).json(ret);
-	});
-
 	app.post('/api/addComment', async (req, res, next) => {
 		// incoming: recipeId, userId, commentId, commentText
 		// outgoing: error
 
 		var error = '';
-		const { recipeId, userId, commentId, commentText, likeList } = req.body;
+		const { recipeId, userId, commentId, commentText } = req.body;
 		const newComment = {
-			RecipeId: recipeId, UserId: userId, CommentId: commentId, CommentText: commentText, LikeList: likeList
+			RecipeId: recipeId, UserId: userId, CommentId: commentId, CommentText: commentText
 		};
 		try {
 			const db = client.db('MegaBitesLibrary');
