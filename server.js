@@ -14,7 +14,7 @@ const httpPort = 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-const url = MongoURL;
+const url = process.env.MongoURL;
 const client = new MongoClient(url);
 
 client.connect()
