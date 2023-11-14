@@ -39,7 +39,7 @@ function AuthPage( { navigation } ){
 				body: JSON.stringify({
 					username: login,
 					password: password,
-				}),``
+				}),
 			});
 			
 			console.log('\tLogging User in:');

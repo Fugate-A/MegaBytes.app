@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native';
 
 import GlutenFreeTag from '../components/tags/GlutenFreeTag';
+import TagComponent from '../components/tags/TagComponent';
 
 function RecipePage() {
     const route = useRoute();
@@ -30,7 +31,7 @@ function RecipePage() {
 
             <View style={styles.recipeTitleContainer}>
                 <Text style={styles.recipeTitleText}>{recipe.RecipeName}</Text>
-                <GlutenFreeTag />
+                <TagComponent name="Gluten-Free" emoji="💚" color="#4CAF50" />
             </View>
             
             <View style={styles.recipeContentContainer}>

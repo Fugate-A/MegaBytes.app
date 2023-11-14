@@ -80,10 +80,6 @@ function HomePage({ route }){
                 ))}
             </ScrollView>
 
-            <TagSelectionModal>
-                
-            </TagSelectionModal>
-
             <NavigationBar/>
         </View>
     )

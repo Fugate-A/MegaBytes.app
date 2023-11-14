@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 
 import ErrorMessageModal from '../components/ErrorMessageModal';
+import TagComponent from '../components/tags/TagComponent';
 
 
 function AddRecipePage(){
