@@ -139,6 +139,37 @@ exports.setApp = function (app, client) {
 		}
 	});
 
+	app.post('/api/updateRecipeLikes', async (req, res, next) => {
+		// incoming: userID, recipeID
+
+		const { userID, recipeID } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const recipe = await db.collection('Recipes').findOne( {_id: new ObjectId(recipeID)} );
+
+			if(!recipe){
+				return res.status(404).json( {error: 'Reicpe not found'} );
+			}
+
+			if( !(recipe.LikeList.includes(userID)) ){
+				await db.collection('Recipes').updateOne(
+					{ _id: new ObjectId(recipeID) },
+					{ $push: {LikeList: userID}}
+				);
+			}else{
+				await db.collection('Recipes').updateOne(
+					{ _id: new ObjectId(recipeID) },
+					{ $pull: { LikeList: userID }}
+				);
+			}
+			res.status(200);
+		} catch(error){
+			console.error('Error updating likes', error);
+			res.status(500).json({ error: 'Internal Server Error'} );
+		}
+	});
+
 	app.post('/api/deleteRecipe', async (req, res, next) => {
 		// incoming: recipeId
 		// outgoing: error
@@ -294,6 +325,37 @@ exports.setApp = function (app, client) {
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({ error: 'Internal Server Error' });
+		}
+	});
+
+	app.post('/api/updateCommentLikes', async (req, res, next) => {
+		// incoming: userID, commentID
+
+		const { userID, commentID } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const comment = await db.collection('Comments').findOne( {_id: new ObjectId(commentID)} );
+
+			if(!comment){
+				return res.status(404).json( {error: 'Comment not found'} );
+			}
+
+			if( !(comment.LikeList.includes(userID)) ){
+				await db.collection('Comments').updateOne(
+					{ _id: new ObjectId(commentID) },
+					{ $push: {LikeList: userID}}
+				);
+			}else{
+				await db.collection('Comments').updateOne(
+					{ _id: new ObjectId(commentID) },
+					{ $pull: { LikeList: userID }}
+				);
+			}
+			res.status(200);
+		} catch(error){
+			console.error('Error updating likes', error);
+			res.status(500).json({ error: 'Internal Server Error'} );
 		}
 	});
 
