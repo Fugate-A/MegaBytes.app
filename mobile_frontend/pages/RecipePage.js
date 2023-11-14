@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native';
 
 import GlutenFreeTag from '../components/tags/GlutenFreeTag';
@@ -8,9 +8,29 @@ import TagComponent from '../components/tags/TagComponent';
 function RecipePage() {
     const route = useRoute();
     const { recipe } = route.params;
+    const [tags, setTags] = useState([]);
 
     const [liked, setLiked] = useState(false);
     const [likeNumber, setLikeNumber] = useState(recipe.LikeList.length || 0);
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await fetch('http://164.90.130.112:5000/api/tags');
+                const data = await response.json();
+      
+                if (response.ok) {
+                    setTags(data);
+                } else {
+                    console.error('Error retrieving tags from server');
+                }
+            } catch (error) {
+                console.error('Error connecting to server', error);
+            }
+        };
+      
+        fetchTags();
+    }, []);
 
     const toggleLike = () => {
         if(liked){
@@ -31,7 +51,13 @@ function RecipePage() {
 
             <View style={styles.recipeTitleContainer}>
                 <Text style={styles.recipeTitleText}>{recipe.RecipeName}</Text>
-                <TagComponent name="Gluten-Free" emoji="💚" color="#4CAF50" />
+                
+                <View style={styles.tagsContainer}>
+                    {tags.map((tag, index) => {
+                        <TagComponent key={index} name={tag.name} emoji={tag.emoji} color={tag.color} />
+                    })}
+                </View>
+
             </View>
             
             <View style={styles.recipeContentContainer}>
@@ -78,6 +104,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontFamily: 'Tilt-Neon',
         width: '90%',
+    },
+    tagsContainer: {
+        flexDirection: 'row',
+        matginTop: 5,
     },
     recipeContentContainer: {
         borderBottomWidth: 1,
