@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagComponent from '../components/tags/TagComponent';
+import TagSelectionModal from '../components/TagSelectionModal';
 
 
 function AddRecipePage(){
@@ -12,11 +13,11 @@ function AddRecipePage(){
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [tags, setTags] = useState([]);
-    const [tagInput, setTag] = useState('');
+    const [recipeTags, setRecipeTags] = useState([]);
 
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
 
     const [userID, setUserID] = useState(null);
     useEffect( () => {
@@ -29,22 +30,6 @@ function AddRecipePage(){
             }
         };
 
-        const fetchTags = async () => {
-            try {
-                const response = await fetch('http://164.90.130.112:5000/api/tags');
-                const data = await response.json();
-      
-                if (response.ok) {
-                    setTags(data);
-                } else {
-                    console.error('Error retrieving tags from server');
-                }
-            } catch (error) {
-                console.error('Error connecting to server', error);
-            }
-        };
-      
-        fetchTags();
         fetchUserID();
     }, []);
     
@@ -61,7 +46,7 @@ function AddRecipePage(){
 					userId: userID,
                     recipeName: title,
                     recipeContents: content,
-                    tagList: tags || [],
+                    tagList: recipeTags || [],
                     likeList: [],
 				}),
 		});
@@ -86,53 +71,76 @@ function AddRecipePage(){
 
     };
 
+    const handleUpdateRecipeTags = (updatedTages) => {
+        setRecipeTags(updatedTages);
+    }
+
 	const closeErrorModal = () => {
 		setShowErrorModal(false);
 	};
 
+    const openTagSelectionModal = () => {
+        setShowTagSelectionModal(true);
+    }
+
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+    };
+
     return (
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : null}
+                style={styles.container}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
+		    >
+                <TouchableOpacity 
+                    onPress={handleAddRecipe}
+                    style={styles.submittButton}
+                >
+                    <Text>Submit</Text>
+                </TouchableOpacity>
 
-        <KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'padding' : null}
-			style={styles.container}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
-		>
-            <TouchableOpacity 
-                onPress={handleAddRecipe}
-                style={styles.submittButton}
-            >
-                <Text>Submit</Text>
-            </TouchableOpacity>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        placeholder='Title'
+                        value = {title}
+                        onChangeText={(text) => setTitle(text)}
+                        style={styles.titleInput}
+                    />
+                    <TextInput
+                        placeholder='Ingredients and Directions'
+                        value = {content}
+                        onChangeText={(text) => setContent(text)}
+                        style={styles.contentInput}
+                        multiline
+                    />
 
-            <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder='Title'
-                    value = {title}
-                    onChangeText={(text) => setTitle(text)}
-                    style={styles.titleInput}
+                    <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
+                        <Text>Add Tags</Text>
+                    </TouchableOpacity>
+                    
+                    {showTagSelectionModal && (
+                        <TagSelectionModal
+                            visible={true}
+                            onUpdateRecipeTags={handleUpdateRecipeTags}
+                            onClose={() => setShowTagSelectionModal(false)}
+                            currentTags={recipeTags}
+                        />
+                    )}
+
+                    <Text >{JSON.stringify(recipeTags)}</Text>
+                </View>
+
+                <ErrorMessageModal
+                    visible={showErrorModal}
+                    message={errorMessage}
+                    onClose={closeErrorModal}
                 />
-                <TextInput
-                    placeholder='Ingredients and Directions'
-                    value = {content}
-                    onChangeText={(text) => setContent(text)}
-                    style={styles.contentInput}
-                    multiline
-                />
-                <TextInput
-                    placeholder='Add tags'
-                    value = {tags}
-                    onChangeText={(text) => setTags(text)}
-                    style={styles.input}
-                />
-            </View>
 
-            <ErrorMessageModal
-				visible={showErrorModal}
-				message={errorMessage}
-				onClose={closeErrorModal}
-			/>
+            </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
 
-        </KeyboardAvoidingView>
         
     );
 
@@ -177,6 +185,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 15,
         padding: 10,
+    },
+    addTagsButton: {
+        borderWidth: 1,
+        borderRadius: 15,
+        padding: 10,
+        marginTop: 10,
     },
 });
 

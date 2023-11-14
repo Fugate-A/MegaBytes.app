@@ -54,7 +54,7 @@ function RecipePage() {
                 
                 <View style={styles.tagsContainer}>
                     {tags.map((tag, index) => {
-                        <TagComponent key={index} name={tag.name} emoji={tag.emoji} color={tag.color} />
+                        return <TagComponent key={index} name={tag.name} emoji={tag.emoji} color={tag.color} />
                     })}
                 </View>
 
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     },
     tagsContainer: {
         flexDirection: 'row',
-        matginTop: 5,
+        marginTop: 5,
     },
     recipeContentContainer: {
         borderBottomWidth: 1,

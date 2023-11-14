@@ -1,24 +1,63 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import TagComponent from './tags/TagComponent';
 
-const TagSelectionModal = ({ allTags, selectedTags, visible }) => {
-    const availableTags = allTags.filter(tag => !selectedTags.includes(tag));
+const TagSelectionModal = ({ visible, onClose, onUpdateRecipeTags, currentTags }) => {
+    const [tags, setTags] = useState([]);
+    const [recipeTags, setRecipeTags] = useState(currentTags);
 
-    const [showTagPopup, setShowTagPopup] = useState(false);
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await fetch('http://164.90.130.112:5000/api/tags');
+                const data = await response.json();
+      
+                if (response.ok) {
+                    setTags(data);
+                } else {
+                    console.error('Error retrieving tags from server');
+                }
+            } catch (error) {
+                console.error('Error connecting to server', error);
+            }
+        };
+      
+        fetchTags();
+    }, []);
 
-    const openTagPopup = () => {
-        setShowTagPopup(true);
-        const allTags = ['Vegetarian', 'Vegan', 'Dessert', 'Easy', 'Quick'];
-        setTags(allTags);
+    useEffect(() => {
+
+        onUpdateRecipeTags(recipeTags);
+    }, [recipeTags, onUpdateRecipeTags]);
+
+    const toggleTagSelection = (tagIndex) => {
+
+        if (recipeTags.includes(tagIndex)) {
+            setRecipeTags(recipeTags.filter(index => index !== tagIndex));
+
+        } else {
+            setRecipeTags([...recipeTags, tagIndex]);
+        }
+
+        onUpdateRecipeTags(recipeTags);
     };
 
-    const selectTag = (selectedTag) => {
-        setTags([...tags, selectedTag]);
-        setShowTagPopup(false);
-    };
+    const renderItem = ({ item, index }) => {
+        const isSelected = recipeTags.includes(index);
 
-    const removeTag = (tagToRemove) => {
-        setTags(tags.filter(tag => tag !== tagToRemove));
+        return (
+            <TouchableOpacity
+                style={[styles.tagItem]}
+                onPress={() => toggleTagSelection(index)}
+            >
+                <TagComponent 
+                    name={item.name}
+                    emoji={item.emoji}
+                    color={item.color}
+                    isSelected={isSelected}
+                />
+            </TouchableOpacity>
+        );
     };
 
     return (
@@ -27,19 +66,24 @@ const TagSelectionModal = ({ allTags, selectedTags, visible }) => {
             animationType='slide'
             visible={visible}
         >
-            
-            <View style={styles.tagContainer}>
-                <FlatList
-                    data={availableTags}
-                    keyExtractor={(item) => item}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => onRemove(item)}>
-                            <Text style={styles.selectedTagItem}>{item}</Text>
+            <TouchableWithoutFeedback onPress={onClose}>
+                <View style={styles.container}>
+                    <View style={styles.tagContainer}>
+                        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                            <Text>X</Text>
                         </TouchableOpacity>
-                    )}
-                >
-                </FlatList>
-            </View>    
+                        <FlatList
+                            data={tags}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={renderItem}
+                            numColumns={2}
+                        />
+                    </View>
+                    <Text >{JSON.stringify(recipeTags)}</Text>
+                </View>    
+            </TouchableWithoutFeedback>
+
+            
         </Modal>
     );
 };
@@ -49,17 +93,20 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     tagContainer: {
-
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 15,
+        width: '90%',
+        maxHeight: '80%',
     },
-    selectedTagItem: {
-        fontSize: 16,
-        marginVertical: 5, 
-        color: 'red',
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 10,
     },
-
 });
 
 export default TagSelectionModal;

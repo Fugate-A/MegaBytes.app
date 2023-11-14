@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet } from 'react-native';
 
-function TagComponent({ name, emoji, color }){
+function TagComponent({ name, emoji, color, isSelected }){
     return (
-        <View style={[styles.tagContainer, {backgroundColor: color}]}>
+        <View style={[styles.tagContainer, {backgroundColor: color}, isSelected && styles.dimmedTagContainer]}>
             <Text style={styles.tagText}>{emoji} {name}</Text>
         </View>
     );
@@ -17,10 +17,15 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         marginRight: 10,
     },
+    dimmedTagContainer: {
+        opacity: 0.5,
+    },
     tagText: {
         color: 'white',
         fontSize: 14,
+        fontFamily: 'Tilt-Neon',
     },
+
 });
 
 export default TagComponent;
