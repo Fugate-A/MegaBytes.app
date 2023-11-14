@@ -1,12 +1,11 @@
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 let transporter;
 
 exports.setApp = function (app, client) {
   app.post('/api/register', async (req, res, next) => {
-    // incoming: username, password, email
-    // outgoing: error
     const { username, password, email } = req.body;
     const newUser = { UserID: Date.now(), Username: username, Password: password, Email: email };
     let error = '';
@@ -21,8 +20,6 @@ exports.setApp = function (app, client) {
   });
 
   app.post('/api/login', async (req, res, next) => {
-    // incoming: login, password
-    // outgoing: id, error
     let error = '';
     const { username, password } = req.body;
     const isEmail = username.includes("@");
@@ -44,9 +41,6 @@ exports.setApp = function (app, client) {
   });
 
   app.post('/api/addRecipe', async (req, res, next) => {
-    // incoming: userId, recipeName, recipeContents, tagList, likeList
-    // outgoing: error
-
     let error = '';
     const { userId, recipeName, recipeContents, tagList, likeList } = req.body;
     const newRecipe = {
@@ -66,9 +60,6 @@ exports.setApp = function (app, client) {
   });
 
   app.post('/api/deleteRecipe', async (req, res, next) => {
-    // incoming: recipeId
-    // outgoing: error
-
     let error = '';
     const { recipeId } = req.body;
     const filter = { RecipeId: recipeId };
@@ -86,9 +77,6 @@ exports.setApp = function (app, client) {
   });
 
   app.post('/api/getRecipes', async (req, res, next) => {
-    // incoming: search
-    // outgoing: results[], error
-
     let error = '';
     const { search } = req.body;
     const _search = search.trim();
@@ -105,9 +93,6 @@ exports.setApp = function (app, client) {
   });
 
   app.post('/api/addComment', async (req, res, next) => {
-    // incoming: recipeId, userId, commentId, commentText
-    // outgoing: error
-
     let error = '';
     const { recipeId, userId, commentId, commentText } = req.body;
     const newComment = {
@@ -125,9 +110,6 @@ exports.setApp = function (app, client) {
   });
 
   app.post('/api/deleteComment', async (req, res, next) => {
-    // incoming: recipeId
-    // outgoing: error
-
     let error = '';
     const { commentId } = req.body;
     const filter = { CommentId: commentId };
@@ -155,14 +137,18 @@ exports.setApp = function (app, client) {
     from: process.env.VerificationEmail
   });
 
-  app.post('/api/sendEmail', (req, res) => {
+  app.post('/api/verifyEmail', (req, res) => {
     const { to, subject, text } = req.body;
+
+    const token = jwt.sign({ email: to }, process.env.KeyTheJWT, { expiresIn: '1h' });
+
+    const verificationLink = `https://megabytes.app/verify?token=${token}`;
 
     const mailOptions = {
       from: process.env.VerificationEmail,
       to,
       subject,
-      text
+      text: `${text}\n\nVerification Link: ${verificationLink}`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -172,6 +158,23 @@ exports.setApp = function (app, client) {
       } else {
         console.log('Email sent: ' + info.response);
         res.status(200).send('Email sent successfully');
+      }
+    });
+  });
+
+  app.get('/verify', (req, res) => {
+    const token = req.query.token;
+  
+    jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
+      if (err) {
+        console.error('Error verifying token:', err);
+        res.status(400).send('Invalid token');
+      } else {
+        // Log the token to the console
+        console.log('Verified token:', decoded);
+  
+        // You can also send a response to the client if needed
+        res.status(200).send(`Verification successful. Token: ${token}`);
       }
     });
   });
