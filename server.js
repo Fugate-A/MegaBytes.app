@@ -5,6 +5,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+require('dotenv').config();
 
 const httpPort = 5000;
 const httpsPort = 443;
@@ -14,8 +15,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const MongoClient = require('mongodb').MongoClient;
-const url =
-	'mongodb+srv://TheArchivist:R3c1p3Guard1an5K@cluster0.7i3llee.mongodb.net/?retryWrites=true&w=majority';
+const url =	MongoURL;
 const client = new MongoClient(url);
 client.connect();
 
