@@ -1,69 +1,38 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const https = require('https');
-const fs = require('fs');
+const http = require('http');
+const nodemailer = require('nodemailer');
 const path = require('path');
 const app = express();
+const { MongoClient } = require('mongodb');
+require('dotenv').config();
 
 const httpPort = 5000;
-const httpsPort = 443;
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-const MongoClient = require('mongodb').MongoClient;
-const url =
-	'mongodb+srv://TheArchivist:R3c1p3Guard1an5K@cluster0.7i3llee.mongodb.net/?retryWrites=true&w=majority';
+const url = process.env.MongoURL;
 const client = new MongoClient(url);
-client.connect();
 
-// Import your API configuration
-var api = require('./api.js'); // Adjust the path as needed
+client.connect()
+  .then(() => {
+    console.log('Connected to MongoDB');
+    const api = require('./api'); // Import the API functionality
 
-// Set up the API routes
-api.setApp(app, client); // Adjust the client as needed
+    // Set up the API routes
+    api.setApp(app, client); // Connect API functionality to your server
 
-app.use((req, res, next) => {
-	res.setHeader('Access-Control-Allow-Origin', '*');
-	res.setHeader(
-		'Access-Control-Allow-Headers',
-		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-	);
-	res.setHeader(
-		'Access-Control-Allow-Methods',
-		'GET, POST, PATCH, DELETE, OPTIONS'
-	);
-	next();
-});
+    // Serve static files or other configurations
+    app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
 
-// Serve static files from your React app's "build" directory
-app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
-
-// Create an HTTPS server with SSL configuration
-const httpsOptions = {
-	key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
-	cert: fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-	ca: [
-		fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-		fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
-	],
-};
-
-const httpsServer = https.createServer(httpsOptions, app);
-
-// Serve the React application for both root URL and "/megabytes.app"
-app.get('*', (req, res) => {
-	res.sendFile(path.join(__dirname, 'web_frontend', 'build', 'index.html'));
-});
-
-// Start the HTTPS server on port 443
-httpsServer.listen(httpsPort, () => {
-	console.log(`HTTPS Server is running on port ${httpsPort}`);
-});
-
-// Start the HTTP server on port 5000
-app.listen(httpPort, () => {
-	console.log(`HTTP Server is running on port ${httpPort}`);
-});
+    // Start the HTTP server on port 5000
+    app.listen(httpPort, () => {
+      console.log(`HTTP Server is running on port ${httpPort}`);
+    });
+  })
+  .catch(err => {
+    console.error('Error connecting to MongoDB:', err);
+  });
