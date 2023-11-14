@@ -35,13 +35,33 @@ function RecipePage() {
         fetchTags();
     }, []);
 
-    const toggleLike = () => {
-        if(liked){
-            setLiked(false);
-            setLikeNumber(likeNumber - 1);
-        }else{
-            setLiked(true);
-            setLikeNumber(likeNumber + 1);
+    const toggleLike = async () => {
+        try {
+			const response = await fetch('http://164.90.130.112:5000/api/updateRecipeLikes', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+
+				body: JSON.stringify({
+					userID: userID,
+					recipeID: recipe._id,
+				}),
+			});
+
+            console.log(response);
+            const data = await response.json();
+            console.log(data);
+
+            if(data.update > 0){
+                setLiked(true);
+                setLikeNumber(likeNumber + 1);
+            }else{
+                setLiked(false);
+                setLikeNumber(likeNumber - 1);
+            }
+        } catch(error){
+            console.error(error);
         }
     }
 
