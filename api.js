@@ -372,7 +372,7 @@ exports.setApp = function (app, client) {
 		try {
 			const db = client.db('MegaBitesLibrary');
 			const comment = await db.collection('Comments').findOne( {_id: new ObjectId(commentID)} );
-			let update = 0;
+			let updateStatus = 0;
 
 			if(!comment){
 				return res.status(404).json( {error: 'Comment not found'} );
@@ -383,15 +383,15 @@ exports.setApp = function (app, client) {
 					{ _id: new ObjectId(commentID) },
 					{ $push: {LikeList: userID}}
 				);
-				update = 1;
+				updateStatus = 1;
 			}else{
 				await db.collection('Comments').updateOne(
 					{ _id: new ObjectId(commentID) },
 					{ $pull: { LikeList: userID }}
 				);
-				update = -1;
+				updateStatus = -1;
 			}
-			res.status(200).json({ update: update, error: null});
+			res.json({ update: updateStatus, error: ''});
 		} catch(error){
 			console.error('Error updating likes', error);
 			res.status(500).json({ error: 'Internal Server Error'} );
