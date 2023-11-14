@@ -60,7 +60,6 @@ exports.setApp = function (app, client) {
       }
     });
   });
-};
 
 	app.post('/api/register', async (req, res, next) => {
 		// incoming:  username, password, email
