@@ -56,7 +56,7 @@ function RecipePage() {
                 <Text style={styles.recipeTitleText}>{recipe.RecipeName}</Text>
                 
                 <View style={styles.tagsContainer}>
-                    {tags.map((tag, index) => {
+                    {recipeTags.map((tag, index) => {
                         return <TagComponent key={index} name={tag.name} emoji={tag.emoji} color={tag.color} />
                     })}
                 </View>
