@@ -162,16 +162,13 @@ exports.setApp = function (app, client) {
 					{ $push: {LikeList: userID}}
 				);
 				update = 1;
-				update = 1;
 			}else{
 				await db.collection('Recipes').updateOne(
 					{ _id: new ObjectId(recipeID) },
 					{ $pull: { LikeList: userID }}
 				);
 				update = -1;
-				update = -1;
 			}
-			res.status(200).json({ update: update, error: null});
 			res.status(200).json({ update: update, error: null});
 		} catch(error){
 			console.error('Error updating likes', error);
