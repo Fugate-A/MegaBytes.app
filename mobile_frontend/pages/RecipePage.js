@@ -1,16 +1,19 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import GlutenFreeTag from '../components/tags/GlutenFreeTag';
 import TagComponent from '../components/tags/TagComponent';
 
 function RecipePage() {
+    const userID = AsyncStorage.getItem('userID');
+
     const route = useRoute();
     const { recipe } = route.params;
-    const [tags, setTags] = useState([]);
 
-    const [liked, setLiked] = useState(false);
+    const [recipeTags, setRecipeTags] = useState([]);
+
+    const [liked, setLiked] = useState(recipe.LikeList.includes(userID));
     const [likeNumber, setLikeNumber] = useState(recipe.LikeList.length || 0);
 
     useEffect(() => {
@@ -20,7 +23,7 @@ function RecipePage() {
                 const data = await response.json();
       
                 if (response.ok) {
-                    setTags(data);
+                    setRecipeTags(data);
                 } else {
                     console.error('Error retrieving tags from server');
                 }
@@ -28,7 +31,7 @@ function RecipePage() {
                 console.error('Error connecting to server', error);
             }
         };
-      
+        
         fetchTags();
     }, []);
 
