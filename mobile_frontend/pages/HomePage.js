@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import NavigationBar from '../components/NavigationBar';
 import RecipeContainer from '../components/RecipeContainer';
+import TagSelectionModal from '../components/TagSelectionModal';
 
 function HomePage({ route }){
     const navigation = useNavigation();
@@ -78,6 +79,10 @@ function HomePage({ route }){
 
                 ))}
             </ScrollView>
+
+            <TagSelectionModal>
+                
+            </TagSelectionModal>
 
             <NavigationBar/>
         </View>

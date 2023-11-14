@@ -12,7 +12,7 @@ function AuthPage( { navigation } ){
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
 	const [password, setpassword] = useState('');
-
+	
 	const [showPassword, setShowPassword] = useState(false);
     
     const [showErrorModal, setShowErrorModal] = useState(false);
@@ -39,7 +39,7 @@ function AuthPage( { navigation } ){
 				body: JSON.stringify({
 					username: login,
 					password: password,
-				}),
+				}),``
 			});
 			
 			console.log('\tLogging User in:');
