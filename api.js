@@ -24,10 +24,9 @@ exports.setApp = function (app, client) {
 	app.post('/api/login', async (req, res, next) => {
 		// incoming: login, password
 		// outgoing: id, error
-		var error = '';
+		let error = '';
 		const { username, password } = req.body;
-		var id = -1;
-		var isEmail = username.includes("@");
+		const isEmail = username.includes("@");
 		try {
 			const db = client.db('MegaBitesLibrary');
 			const results = await (isEmail
@@ -42,7 +41,7 @@ exports.setApp = function (app, client) {
 		catch (e) {
 			error = e.message()
 		}
-		var ret = { id: id, error: '' };
+		let ret = { id: id, error: error };
 		res.status(200).json(ret);
 	});
 
