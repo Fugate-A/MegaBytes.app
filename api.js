@@ -5,6 +5,7 @@ require('dotenv').config();
 let transporter;
 
 const { ObjectId } = require('mongodb');
+const fs = require('fs').promises;
 
 exports.setApp = function (app, client) {
 
@@ -359,6 +360,21 @@ exports.setApp = function (app, client) {
 
 		var ret = { error: error };
 		res.status(200).json(ret);
+	});
+
+	const getTags = async () => {
+		try {
+			const data = await fs.readFile('./tags.json', 'utf8');
+			return JSON.parse(data);
+		} catch(error) {
+			console.error('Error reading tags from file', error);
+			return [];
+		}
+	};
+
+	app.get('/api/tags', async(req, res) => {
+		const tags = await getTags();
+		res.json(tags);
 	});
 
 	/*
