@@ -15,7 +15,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const MongoClient = require('mongodb').MongoClient;
-const url =	MongoURL;
+const url =	process.env.MongoURL;
 const client = new MongoClient(url);
 client.connect();
 
