@@ -6,11 +6,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import TagComponent from '../components/tags/TagComponent';
 
 function RecipePage() {
-    const userID = AsyncStorage.getItem('userID');
+    const userID = AsyncStorage.getItem('userID')._j;
 
     const route = useRoute();
     const { recipe } = route.params;
 
+    const [allRecipeTags, setAllRecipeTags] = useState([]);
     const [recipeTags, setRecipeTags] = useState([]);
 
     const [liked, setLiked] = useState(recipe.LikeList.includes(userID));
@@ -23,7 +24,7 @@ function RecipePage() {
                 const data = await response.json();
       
                 if (response.ok) {
-                    setRecipeTags(data);
+                    setAllRecipeTags(data);
                 } else {
                     console.error('Error retrieving tags from server');
                 }
@@ -49,9 +50,7 @@ function RecipePage() {
 				}),
 			});
 
-            console.log(response);
             const data = await response.json();
-            console.log(data);
 
             if(data.update > 0){
                 setLiked(true);
@@ -75,11 +74,14 @@ function RecipePage() {
             <View style={styles.recipeTitleContainer}>
                 <Text style={styles.recipeTitleText}>{recipe.RecipeName}</Text>
                 
-                <View style={styles.tagsContainer}>
-                    {recipeTags.map((tag, index) => {
-                        return <TagComponent key={index} name={tag.name} emoji={tag.emoji} color={tag.color} />
-                    })}
-                </View>
+                {allRecipeTags.length > 0 && (
+                    <View style={styles.tagsContainer}>
+                        {recipe.TagList.map((tag, index) => {
+                            return <TagComponent key={index} name={allRecipeTags[tag].name} emoji={allRecipeTags[tag].emoji} color={allRecipeTags[tag].color} />
+                        })}
+                    </View>
+                )}
+                
 
             </View>
             
