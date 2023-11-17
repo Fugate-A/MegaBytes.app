@@ -1,10 +1,11 @@
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useFocusEffect } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import TagComponent from '../components/TagComponent';
 import AddComment from '../components/AddComment';
+import CommentContainer from '../components/CommentContainer';
 
 function RecipePage() {
     const userID = AsyncStorage.getItem('userID')._j;
@@ -12,8 +13,12 @@ function RecipePage() {
     const route = useRoute();
     const { recipe } = route.params;
 
+    console.log(recipe);
+
     const [allRecipeTags, setAllRecipeTags] = useState([]);
     const [author, setAuthor] = useState('');
+
+    const [comments, setComments] = useState([]);
 
     const [liked, setLiked] = useState(recipe.LikeList.includes(userID));
     const [likeNumber, setLikeNumber] = useState(recipe.LikeList.length || 0);
@@ -61,6 +66,40 @@ function RecipePage() {
         fetchUser();
         fetchTags();
     }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const getComments = async () => {
+                try {
+                    const allComments = await Promise.all(
+                        recipe.CommentList.map(async (commentID) => {
+                            const response = await fetch('http://164.90.130.112:5000/api/getCommentByID', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    commentID: commentID,
+                                }),
+                            });
+                            const commentData = await response.json();
+
+                            if(response.ok){
+                                return commentData.results;
+                            }else{
+                                console.error('Failed to fetch recipe details', commentData.error);
+                                return null;
+                            }
+                        })
+                    );
+                    setRecipes(allComments.filter(comment => comment != null));
+                } catch(error){
+                    console.error('Error fetching comments', error);
+                }
+            }
+            getComments();
+        }, [])
+    );
 
     const toggleLike = async () => {
         try {
@@ -122,6 +161,15 @@ function RecipePage() {
             </View>
             
             <AddComment recipe={recipe} />
+
+            {comments.map((comment) => (
+                <TouchableOpacity key={comment._id}>
+
+                    <CommentContainer comment={comment}/>
+
+                </TouchableOpacity>
+
+            ))}
             
 
         </ScrollView>
