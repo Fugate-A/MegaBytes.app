@@ -57,6 +57,7 @@ exports.setApp = function (app, client) {
 			RecipeContents: recipeContents,
 			TagList: tagList,
 			LikeList: likeList,
+			CommentList: [],
 		};
 
 		try {
