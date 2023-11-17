@@ -275,6 +275,32 @@ exports.setApp = function (app, client) {
 		}
 	});
 
+	app.post('api/getCommentByID', async (req, res, next) => {
+		// incoming: commentID
+		// outgoing: comment information
+
+		try {
+			const { commentID } = req.body;
+
+			if (!commentID) {
+				return res.status(400).json({ error: 'commentID is required' });
+			}
+
+			const db = client.db('MegaBitesLibrary');
+
+			const comment = await db.collection('Comments').findOne({ _id: new ObjectId(commentID) });
+
+			if (!comment) {
+				return res.status(404).json({ error: 'Comment not found' });
+			}
+
+			res.json({ results: comment, error: '' });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal error' });
+		}
+	});
+
 	app.post('/api/updateCommentLikes', async (req, res, next) => {
 		// incoming: userID, commentID
 
