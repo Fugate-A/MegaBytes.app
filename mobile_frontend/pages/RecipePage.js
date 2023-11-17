@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import TagComponent from '../components/tags/TagComponent';
+import TagComponent from '../components/TagComponent';
+import AddComment from '../components/AddComment';
 
 function RecipePage() {
     const userID = AsyncStorage.getItem('userID')._j;
@@ -12,7 +13,7 @@ function RecipePage() {
     const { recipe } = route.params;
 
     const [allRecipeTags, setAllRecipeTags] = useState([]);
-    const [recipeTags, setRecipeTags] = useState([]);
+    const [author, setAuthor] = useState('');
 
     const [liked, setLiked] = useState(recipe.LikeList.includes(userID));
     const [likeNumber, setLikeNumber] = useState(recipe.LikeList.length || 0);
@@ -22,7 +23,7 @@ function RecipePage() {
             try {
                 const response = await fetch('http://164.90.130.112:5000/api/tags');
                 const data = await response.json();
-      
+  
                 if (response.ok) {
                     setAllRecipeTags(data);
                 } else {
@@ -32,7 +33,32 @@ function RecipePage() {
                 console.error('Error connecting to server', error);
             }
         };
+
+        const fetchUser = async () => {
+            try {
+                const response = await fetch('http://164.90.130.112:5000/api/getUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+
+                    body: JSON.stringify({
+                        userId: recipe.UserId,
+                    }),
+                });
+                const data = await response.json();
+
+                if(response.ok) {
+                    setAuthor(data.results.Username);
+                } else{
+                    console.error('Error retrieving user');
+                }
+            } catch(error){
+                console.error('Error connecting to database', error);
+            }
+        };
         
+        fetchUser();
         fetchTags();
     }, []);
 
@@ -68,7 +94,7 @@ function RecipePage() {
         <ScrollView style={styles.container}>
             
             <View style={styles.recipeAuthorContainer}>
-                <Text style={styles.recipeAuthorText}>u/{recipe.author}</Text>
+                <Text style={styles.recipeAuthorText}>u/{author}</Text>
             </View>
 
             <View style={styles.recipeTitleContainer}>
@@ -82,7 +108,6 @@ function RecipePage() {
                     </View>
                 )}
                 
-
             </View>
             
             <View style={styles.recipeContentContainer}>
@@ -95,6 +120,8 @@ function RecipePage() {
                 </TouchableOpacity>
                 <Text style={styles.likeCount}>{likeNumber}</Text>
             </View>
+            
+            <AddComment recipe={recipe} />
             
 
         </ScrollView>

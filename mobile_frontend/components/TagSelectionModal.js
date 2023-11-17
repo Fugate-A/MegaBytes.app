@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import TagComponent from './tags/TagComponent';
+import TagComponent from './TagComponent';
 
-const TagSelectionModal = ({ visible, onClose, onUpdateRecipeTags, currentTags }) => {
+function TagSelectionModal ({ visible, onClose, onUpdateRecipeTags, currentTags }){
     const [tags, setTags] = useState([]);
     const [recipeTags, setRecipeTags] = useState(currentTags);
 
@@ -26,7 +26,6 @@ const TagSelectionModal = ({ visible, onClose, onUpdateRecipeTags, currentTags }
     }, []);
 
     useEffect(() => {
-
         onUpdateRecipeTags(recipeTags);
     }, [recipeTags, onUpdateRecipeTags]);
 
