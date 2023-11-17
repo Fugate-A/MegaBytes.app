@@ -4,6 +4,7 @@ import { View, StyleSheet, Text } from 'react-native';
 function CommentBox ( {comment} ) {
 
     const [author, setAuthor] = useState('');
+    const [content, setContent] = useState(comment.CommentContents)
 
     const fetchUser = async () => {
         try {
@@ -35,7 +36,7 @@ function CommentBox ( {comment} ) {
     return (
         <View>
             <Text>u/{author}</Text>
-            <Text style={styles.commentContentText}>{comment.CommentContents}</Text>
+            <Text style={styles.commentContentText}>{content}</Text>
         </View>
     );
 }
