@@ -1,127 +1,69 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const app = express();
+require('dotenv').config();
 
+const httpPort = 5000;
+const httpsPort = 443;
+
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
 const MongoClient = require('mongodb').MongoClient;
-const url =
-	'mongodb+srv://TheArchivist:R3c1p3Guard1an5K@cluster0.7i3llee.mongodb.net/?retryWrites=true&w=majority';
+const url =	process.env.MongoURL;
 const client = new MongoClient(url);
 client.connect();
 
-const port = 8443;
+// Import your API configuration
+var api = require('./api.js'); // Adjust the path as needed
 
-app.use((req, res, next) =>{
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-    res.setHeader(
-        'Access-Control-Allow-Methods',
-        'GET, POST, PATCH, DELETE, OPTIONS'
-    );
-    next();
+// Set up the API routes
+api.setApp(app, client); // Adjust the client as needed
+
+app.use((req, res, next) => {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+	);
+	res.setHeader(
+		'Access-Control-Allow-Methods',
+		'GET, POST, PATCH, DELETE, OPTIONS'
+	);
+	next();
 });
 
-app.post('/api/register', async (req, res, next) => {
-    // incoming: userId, fname, lname, username, password, email
-    // outgoing: error
-    const { userId, fname, lname, username, password, email } = req.body;
-    const newUser = { UserId: userId, FirstName: fname, LastName: lname, Username: username, Password: password, Email: email };
-    var error = '';
-    try {
-        const db = client.db('MegaBitesLibrary');
-        const result = db.collection('User').insertOne(newUser);
-    }
-    catch (e) {
-        error = e.toString();
-    }
-    var ret = { error: error };
-    res.status(200).json(ret);
+// Serve static files from your React app's "build" directory
+app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
+
+// Create an HTTPS server with SSL configuration
+const httpsOptions = {
+	key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
+	cert: fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+	ca: [
+		fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+		fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
+	],
+};
+
+const httpsServer = https.createServer(httpsOptions, app);
+
+// Serve the React application for both root URL and "/megabytes.app"
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname, 'web_frontend', 'build', 'index.html'));
 });
 
-/*
-import React from 'react';
-import './App.css';
-
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Welcome to our website :)</h1>
-        <p>Take a MEGA bite!!!</p>
-      </header>
-    </div>
-  );
-}
-
-export default App;
-
-*/
-
-app.post('/api/login', async (req, res, next) => {
-    // incoming: login, password
-    // outgoing: id, firstName, lastName, error
-    var error = '';
-    const { username, password } = req.body;
-    var id = -1;
-    var fn = '';
-    var ln = '';
-    try {
-        const db = client.db('MegaBitesLibrary');
-        const results = await
-            db.collection('User').find({ Username: username, Password: password }).toArray();
-            if (results.length > 0) {
-                id = results[0].UserId;
-                fn = results[0].FirstName;
-                ln = results[0].LastName;
-            }
-    } 
-    catch (e) {
-        error = e.message()
-    }
-    var ret = { id: id, firstName: fn, lastName: ln, error: '' };
-    res.status(200).json(ret);
+// Start the HTTPS server on port 443
+httpsServer.listen(httpsPort, () => {
+	console.log(`HTTPS Server is running on port ${httpsPort}`);
 });
 
-/*
-app.post('/api/search', async (req, res, next) => {
-    // incoming: userId, search
-    // outgoing: results[], error
-    var error = '';
-    const { userId, search } = req.body;
-    var _search = search.trim();
-    const db = client.db('COP4331Cards');
-    const results = await
-        db.collection('Cards').find({
-            "Card": {
-                $regex: _search + '.*',
-                $options: 'r'
-            }
-        }).toArray();
-    var _ret = [];
-    for (var i = 0; i < results.length; i++) {
-        _ret.push(results[i].Card);
-    }
-    var ret = { results: _ret, error: error };
-    res.status(200).json(ret);
-});*/
-
-// var https = require('https');
-// var fs = require('fs');
-// var options = {
-//     key: fs.readFileSync("/etc/ssl/private/generated-private-key.key"),
-//     cert: fs.readFileSync("/etc/ssl/certs/2541c4c881b019c0.crt"),
-//     ca: [
-//     fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-//     fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt')
-// ] };
-
-// https.createServer(options, app).listen(8443);
-
-console.log("Listening on port "+ port);
-app.listen(5000); // start Node + Express server on port 5000
+// Start the HTTP server on port 5000
+app.listen(httpPort, () => {
+	console.log(`HTTP Server is running on port ${httpPort}`);
+});

@@ -33,6 +33,11 @@ function Login() {
 			return;
 		}
 	};
+
+	const goToRegister = event => {
+		window.location.href = '/reg';
+	};
+
 	return (
 		<div id="loginDiv">
 			<form onSubmit={doLogin}>
