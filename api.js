@@ -151,7 +151,6 @@ exports.setApp = function (app, client) {
 			const db = client.db('MegaBitesLibrary');
 			const recipe = await db.collection('Recipes').findOne( {_id: new ObjectId(recipeID)} );
 			let update = 0;
-			let update = 0;
 
 			if(!recipe){
 				return res.status(404).json( {error: 'Reicpe not found'} );
