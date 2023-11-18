@@ -13,8 +13,6 @@ function RecipePage() {
     const route = useRoute();
     const { recipe } = route.params;
 
-    console.log(recipe);
-
     const [allRecipeTags, setAllRecipeTags] = useState([]);
     const [author, setAuthor] = useState('');
 
@@ -62,44 +60,46 @@ function RecipePage() {
                 console.error('Error connecting to database', error);
             }
         };
-        
+
+        console.log(recipe._id);
+
+        console.log(recipe.CommentList);
+        const getComments = async () => {
+            try {
+                const allComments = await Promise.all(
+                    recipe.CommentList.map(async (commentID) => {
+                        const response = await fetch('http://164.90.130.112:5000/api/getCommentByID', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                commentID: commentID,
+                            }),
+                        });
+                        const commentData = await response.json();
+
+                        if(response.ok){
+                            return commentData.results;
+                        }else{
+                            console.error('Failed to fetch recipe details', commentData.error);
+                            return null;
+                        }
+                    })
+                );
+                console.log('poop');
+                setComments(allComments.filter(comment => comment != null));
+            } catch(error){
+                console.error('Error fetching comments', error);
+            }
+        }
+
+        getComments();
         fetchUser();
         fetchTags();
     }, []);
 
-    useFocusEffect(
-        React.useCallback(() => {
-            const getComments = async () => {
-                try {
-                    const allComments = await Promise.all(
-                        recipe.CommentList.map(async (commentID) => {
-                            const response = await fetch('http://164.90.130.112:5000/api/getCommentByID', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    commentID: commentID,
-                                }),
-                            });
-                            const commentData = await response.json();
-
-                            if(response.ok){
-                                return commentData.results;
-                            }else{
-                                console.error('Failed to fetch recipe details', commentData.error);
-                                return null;
-                            }
-                        })
-                    );
-                    setRecipes(allComments.filter(comment => comment != null));
-                } catch(error){
-                    console.error('Error fetching comments', error);
-                }
-            }
-            getComments();
-        }, [])
-    );
+    console.log(comments);
 
     const toggleLike = async () => {
         try {
@@ -159,7 +159,7 @@ function RecipePage() {
                 </TouchableOpacity>
                 <Text style={styles.likeCount}>{likeNumber}</Text>
             </View>
-            
+
             <AddComment recipe={recipe} />
 
             {comments.map((comment) => (

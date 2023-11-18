@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function AddComment() {
     const navigation = useNavigation();
-    const userID = AsyncStorage.getItem('userID');
 
     const route = useRoute();
     const { recipe } = route.params;
@@ -15,6 +14,10 @@ function AddComment() {
     const handleAddComment = async () => {
 
         try{
+
+            const userID = await AsyncStorage.getItem('userID');
+            console.log(userID);
+
             const response = await fetch('http://164.90.130.112:5000/api/addComment', {
                 method: 'POST',
                 headers: {
@@ -29,6 +32,8 @@ function AddComment() {
             });
 
             if(response.ok){
+                console.log('Comment added successfully');
+
                 navigation.navigate('RecipePage', {recipe});
             }else{
                 console.error('Error adding comment');
