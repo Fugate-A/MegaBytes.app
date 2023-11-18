@@ -257,7 +257,7 @@ exports.setApp = function (app, client) {
 		try {
 			const db = client.db('MegaBitesLibrary');
 
-			const insertResult = db.collection('Comments').insertOne(newComment);
+			const insertResult = await db.collection('Comments').insertOne(newComment);
 
 			const commentId = insertResult.insertedId;
 
@@ -269,7 +269,7 @@ exports.setApp = function (app, client) {
 
 			console.log(updateResult);
 
-			res.status(200).json({ error: null });
+			res.status(200).json({ commentId: commentId, error: null });
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({ error: 'Internal Server Error' });
