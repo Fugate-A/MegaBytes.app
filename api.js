@@ -1,10 +1,67 @@
-require('express');
-require('mongodb');
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+let transporter;
 
 const { ObjectId } = require('mongodb');
 const fs = require('fs').promises;
 
 exports.setApp = function (app, client) {
+
+  transporter = nodemailer.createTransport({
+    host: 'smtp.forwardemail.net',
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.VerificationEmail,
+      pass: process.env.VerificationEmailPassword
+    },
+    from: process.env.VerificationEmail
+  });
+
+  app.post('/api/verifyEmail', (req, res) => {
+    const { to, subject, text } = req.body;
+
+    const token = jwt.sign({ email: to }, process.env.KeyTheJWT, { expiresIn: '1h' });
+
+    const verificationLink = `https://megabytes.app/verify?token=${token}`;
+
+    const mailOptions = {
+      from: process.env.VerificationEmail,
+      to,
+      subject,
+      text: `${text}\n\nVerification Link: ${verificationLink}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        res.status(500).send('Error sending email');
+      } else {
+        console.log('Email sent: ' + info.response);
+        res.status(200).send('Email sent successfully');
+      }
+    });
+  });
+
+  app.get('/verify', (req, res) => {
+    const token = req.query.token;
+  
+    jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
+      if (err) {
+        console.error('Error verifying token:', err);
+        res.status(400).send('Invalid token');
+      } else {
+        // Log the token to the console
+        console.log('Verified token:', decoded);
+  
+        // You can also send a response to the client if needed
+        res.status(200).send(`Verification successful. Token: ${token}`);
+      }
+    });
+  });
+
 	app.post('/api/register', async (req, res, next) => {
 		// incoming:  username, password, email
 		// outgoing: error
@@ -276,7 +333,7 @@ exports.setApp = function (app, client) {
 		}
 	});
 
-	app.post('api/getCommentByID', async (req, res, next) => {
+	app.post('/api/getCommentByID', async (req, res, next) => {
 		// incoming: commentID
 		// outgoing: comment information
 

@@ -118,7 +118,7 @@ function Register() {
 
 						<p className="mt-7 text-center text-sm text-neutral-950">
 							Already Have Your Apron?{' '}
-							<a href="https://www.megabytes.app/" className="font-semibold leading-6 text-orange-500 hover:text-indigo-500">
+							<a href="http://localhost:3000/" className="font-semibold leading-6 text-orange-500 hover:text-indigo-500">
 								Sign In!
 							</a>
 						</p>
