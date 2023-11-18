@@ -333,7 +333,7 @@ exports.setApp = function (app, client) {
 		}
 	});
 
-	app.post('api/getCommentByID', async (req, res, next) => {
+	app.post('/api/getCommentByID', async (req, res, next) => {
 		// incoming: commentID
 		// outgoing: comment information
 
