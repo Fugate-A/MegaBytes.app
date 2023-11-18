@@ -4,9 +4,9 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 //name for location, href: location address, current: if active on that page
 let currentUrl = window.location.href;
-let recipeLink = "http://localhost:3000/rec";
-let createLink = "http://localhost:3000/cre";
-let communityLink = "http://localhost:3000/com";
+let recipeLink = "https://www.megabytes.app/rec";
+let createLink = "https://www.megabytes.app/cre";
+let communityLink = "https://www.megabytes.app/com";
 const navigation = [
 	{ name: 'Recipes', href: recipeLink, current: (currentUrl == recipeLink)},
 	{ name: 'Create', href: createLink, current: (currentUrl == createLink) },
@@ -38,7 +38,7 @@ export default function NavBar() {
 							</div>
 							<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 								<div className="flex flex-shrink-0 items-center">
-									<a href='http://localhost:3000/i'>
+									<a href='https://www.megabytes.app/i'>
 										<img
 											className="h-8 w-auto"
 											//src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
