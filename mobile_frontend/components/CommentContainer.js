@@ -4,7 +4,7 @@ import { View, StyleSheet, Text } from 'react-native';
 function CommentBox ( {comment} ) {
 
     const [author, setAuthor] = useState('');
-    const [content, setContent] = useState('');
+    const [content, setContent] = useState(comment.CommentText || 'Error');
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -16,15 +16,16 @@ function CommentBox ( {comment} ) {
                     },
     
                     body: JSON.stringify({
-                        userId: comment.UserID,
+                        userId: comment.UserId,
                     }),
                 });
                 const data = await response.json();
+                //console.log('USERID IS: ', comment.UserId);
     
                 if(response.ok) {
                     setAuthor(data.results.Username);
                 } else{
-                    console.error('Error retrieving user');
+                    console.error('Error retrieving user', data.error);
                 }
             } catch(error){
                 console.error('Error connecting to database', error);
@@ -35,8 +36,12 @@ function CommentBox ( {comment} ) {
 
 
     return (
-        <View>
-            <Text>u/{author}</Text>
+        <View style={styles.container}>
+
+            <View style={styles.commentAuthorContainer}>
+                <Text style={styles.commentAuthorText}>u/{author}</Text>
+            </View>
+
             <Text style={styles.commentContentText}>{content}</Text>
         </View>
     );
@@ -50,6 +55,14 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 15,
         marginBottom: 10,
+    },
+    commentAuthorContainer: {
+        borderBottomWidth: 1,
+        width: '50%',
+    },
+    commentAuthorText: {
+        fontSize: 14,
+        fontFamily: 'Tilt-Neon',
     },
     commentContentText: {
         fontSize: 14,

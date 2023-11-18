@@ -3,11 +3,8 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, Text,TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function AddComment() {
+function AddComment({ recipe, onCommentSubmit }) {
     const navigation = useNavigation();
-
-    const route = useRoute();
-    const { recipe } = route.params;
 
     const [content, setContent] = useState('');
 
@@ -33,7 +30,7 @@ function AddComment() {
 
             if(response.ok){
                 console.log('Comment added successfully');
-
+                onCommentSubmit();
                 navigation.navigate('RecipePage', {recipe});
             }else{
                 console.error('Error adding comment');
@@ -57,12 +54,13 @@ function AddComment() {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
 		    >
                 <View style={styles.inputContainer}>
-                <TextInput
-                    value = {content}
-                    onChangeText={(text) => setContent(text)}
-                    style={styles.contentInput}
-                    multiline
-                />
+                    <TextInput
+                        value = {content}
+                        placeholder='Comment something...'
+                        onChangeText={(text) => setContent(text)}
+                        style={styles.contentInput}
+                        multiline
+                    />
                 </View>
 
                 <TouchableOpacity 
@@ -82,24 +80,20 @@ function AddComment() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignContent: 'center',
         backgroundColor: '#FFF0DC',
         padding: 10,
+        marginTop: -5,
     },
     inputContainer: {
         padding: 10,
     },
     contentInput: {
         width: '100%',
-        height: '65%',
+        height: 75,
         marginVertical: 10,
         padding: 8,
         fontFamily: 'Tilt-Neon',
-        borderLeftColor: 'grey',
-        borderRightColor: 'grey',
-        borderLeftWidth: 1,
-        borderRightWidth: 1,
+        borderWidth: 1,
         borderRadius: 15,
     },
     submittButton: {
@@ -108,6 +102,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 15,
         padding: 10,
+        marginTop: -10,
     },
 });
 
