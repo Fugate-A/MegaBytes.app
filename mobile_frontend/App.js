@@ -7,6 +7,7 @@ import { useFonts } from 'expo-font';
 
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
+import ExplorePage from './pages/ExplorePage';
 import AddRecipePage from './pages/AddRecipePage';
 import RecipePage from './pages/RecipePage';
 
@@ -35,6 +36,7 @@ export default function App() {
 		<Stack.Navigator initialRouteName="Auth">
 			<Stack.Screen name="Auth" component={AuthPage} />
 			<Stack.Screen name="Home" component={HomePage} />
+			<Stack.Screen name="Explore" component={ExplorePage} />
 			<Stack.Screen name="AddRecipe" component={AddRecipePage} />
 			<Stack.Screen name="RecipePage" component={RecipePage} />
 		</Stack.Navigator>

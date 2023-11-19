@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 
@@ -13,6 +13,7 @@ function AddRecipePage(){
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [recipeTags, setRecipeTags] = useState([]);
+    const [visibility, setVisibility] = useState(false);
 
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -42,23 +43,24 @@ function AddRecipePage(){
 				},
 
 				body: JSON.stringify({
-					userId: userID,
+                    userId: userID,
                     recipeName: title,
                     recipeContents: content,
                     tagList: recipeTags || [],
                     likeList: [],
+                    isPublic: visibility,
 				}),
 		});
 
-            console.log('\tAdding Recipe');
+            console.log('Adding Recipe');
             const data = await response.json();
 
             if(response.ok){
-                console.log('\tSuccess');
+                console.log('Success');
 
                 navigation.navigate('Home');
             }else{
-                console.error('\tError adding Recipe');
+                console.error('Error adding Recipe');
 
                 setErrorMessage('Error adding Reicpe');
 				setShowErrorModal(true);
@@ -82,65 +84,75 @@ function AddRecipePage(){
         setShowTagSelectionModal(true);
     }
 
+    const toggleVisibility = () => {
+        setVisibility(!visibility);
+    }
+
     const dismissKeyboard = () => {
         Keyboard.dismiss();
     };
 
     return (
-        <TouchableWithoutFeedback onPress={dismissKeyboard}>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : null}
-                style={styles.container}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
-		    >
-                <TouchableOpacity 
-                    onPress={handleAddRecipe}
-                    style={styles.submittButton}
+        <ScrollView style={styles.container}>
+            <TouchableWithoutFeedback onPress={dismissKeyboard}>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : null}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
                 >
-                    <Text>Submit</Text>
-                </TouchableOpacity>
-
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        placeholder='Title'
-                        value = {title}
-                        onChangeText={(text) => setTitle(text)}
-                        style={styles.titleInput}
-                    />
-                    <TextInput
-                        placeholder='Ingredients and Directions'
-                        value = {content}
-                        onChangeText={(text) => setContent(text)}
-                        style={styles.contentInput}
-                        multiline
-                    />
-
-                    <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
-                        <Text>Add Tags</Text>
+                    <TouchableOpacity 
+                        onPress={handleAddRecipe}
+                        style={styles.submittButton}
+                    >
+                        <Text>Submit</Text>
                     </TouchableOpacity>
-                    
-                    {showTagSelectionModal && (
-                        <TagSelectionModal
-                            visible={true}
-                            onUpdateRecipeTags={handleUpdateRecipeTags}
-                            onClose={() => setShowTagSelectionModal(false)}
-                            currentTags={recipeTags}
+
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            placeholder='Title'
+                            value = {title}
+                            onChangeText={(text) => setTitle(text)}
+                            style={styles.titleInput}
                         />
-                    )}
+                        <TextInput
+                            placeholder='Ingredients and Directions'
+                            value = {content}
+                            onChangeText={(text) => setContent(text)}
+                            style={styles.contentInput}
+                            multiline
+                        />
 
-                    <Text >{JSON.stringify(recipeTags)}</Text>
-                </View>
+                        <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
+                            <Text>Add Tags</Text>
+                        </TouchableOpacity>
+                        
+                        {showTagSelectionModal && (
+                            <TagSelectionModal
+                                visible={true}
+                                onUpdateRecipeTags={handleUpdateRecipeTags}
+                                onClose={() => setShowTagSelectionModal(false)}
+                                currentTags={recipeTags}
+                            />
+                        )}
 
-                <ErrorMessageModal
-                    visible={showErrorModal}
-                    message={errorMessage}
-                    onClose={closeErrorModal}
-                />
+                        <View style={styles.visibilityContainer}>
+                            <Text style={styles.visibilityLabel}>Visibility:</Text>
+                            <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
+                                <View style={[styles.radioCircle, {backgroundColor: visibility ? 'green' : 'white'}]} />
+                            </TouchableOpacity>
+                            <Text>{visibility ? 'Public': 'Private'}</Text>
+                        </View>
 
-            </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+                    </View>
 
-        
+                    <ErrorMessageModal
+                        visible={showErrorModal}
+                        message={errorMessage}
+                        onClose={closeErrorModal}
+                    />
+
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+        </ScrollView>
     );
 
 }
@@ -190,6 +202,27 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         padding: 10,
         marginTop: 10,
+    },
+    visibilityContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    visibilityLabel: {
+        marginRight: 10,
+        fontFamily: 'Tilt-Neon',
+    },
+    visibilityButton: {
+        padding: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    radioCircle: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 1,
+        marginRight: 5,
     },
 });
 

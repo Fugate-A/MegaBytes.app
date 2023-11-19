@@ -1,6 +1,6 @@
-import { useRoute, useFocusEffect } from '@react-navigation/native';
+import { useRoute, useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import TagComponent from '../components/TagComponent';
@@ -8,6 +8,7 @@ import AddComment from '../components/AddComment';
 import CommentContainer from '../components/CommentContainer';
 
 function RecipePage() {
+    const navigation = useNavigation();
     const userID = AsyncStorage.getItem('userID')._j;
 
     const [loading, setLoading] = useState(true);
@@ -114,6 +115,46 @@ function RecipePage() {
         }
     }
 
+    const deleteRecipe = async () => {
+
+
+        Alert.alert(
+            'Delete Recipe',
+            'Are you sure you want to delete this recipe?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Yes',
+                    onPress: async () => {
+                        try {
+                            const response = await fetch('http://164.90.130.112:5000/api/deleteRecipe', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    recipeId: recipe._id,
+                                }),
+                            });
+                            
+                            if(response.ok){
+                                navigation.navigate('Home');
+                            }else{
+                                console.error('Error deleting recipe');
+                            }
+                        } catch(error){
+                            console.error('Error connecting to database');
+                        }
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
+
     useEffect(() => {
 
         fetchComments();
@@ -170,9 +211,9 @@ function RecipePage() {
 
     const handleCommentSubmit = async () => {
         try {
-            await fetchRecipe(); // Wait for fetchRecipe to complete
-            await fetchComments(); // Wait for fetchComments to complete
-            renderComments(); // Render comments after both fetchRecipe and fetchComments are done
+            await fetchRecipe();
+            await fetchComments();
+            renderComments(); 
         } catch (error) {
             console.error('Error fetching comments', error);
         }
@@ -182,15 +223,25 @@ function RecipePage() {
         return null;
     }
 
-
     return (
 
 
         <ScrollView style={styles.container}>
         
-            <View style={styles.recipeAuthorContainer}>
-                <Text style={styles.recipeAuthorText}>u/{author}</Text>
+            <View style={styles.topBar}>
+                <View style={styles.recipeAuthorContainer}>
+                    <Text style={styles.recipeAuthorText}>u/{author}</Text>
+                </View>
+
+                {(userID == recipe.UserID) && (
+                    <TouchableOpacity style={styles.deleteButton} onPress={deleteRecipe}>
+                        <Text style={styles.deleteButtonText}>Delete Recipe</Text>
+                    </TouchableOpacity>
+                )}
+
+
             </View>
+            
 
             <View style={styles.recipeTitleContainer}>
                 <Text style={styles.recipeTitleText}>{recipe.RecipeName}</Text>
@@ -238,10 +289,16 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     recipeAuthorContainer: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'gray',
         padding: 10,
         marginBottom: 10,
+    },
+    topBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flex: 1,
+        borderBottomWidth: 1,
+        borderBottomColor: 'gray',
+        paddingRight: 10,
     },
     recipeAuthorText: {
         fontSize: 14,
@@ -293,6 +350,19 @@ const styles = StyleSheet.create({
     },
     likedButton: {
         color: 'green',
+    },
+    deleteButton: {
+        backgroundColor: 'red',
+        alignItems: 'cemter',
+        justifyContent: 'center',
+        borderRadius: 15,
+        padding: 5,
+        height: 30,
+    },  
+    deleteButtonText: {
+        fontSize: 14,
+        fontFamily: 'Tilt-Neon',
+        color: 'white',
     },
     likeCount: {
         fontSize: 16,

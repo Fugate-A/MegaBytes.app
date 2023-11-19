@@ -17,7 +17,7 @@ function NavigationBar() {
                 <Text style={styles.iconText}>Home</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.iconContainer} >
+            <TouchableOpacity style={styles.iconContainer} onPress={() => navigateToScreen('Explore')} >
                 <Entypo name='compass' size={30} color='black' />
                 <Text style={styles.iconText}>Explore</Text>
             </TouchableOpacity>

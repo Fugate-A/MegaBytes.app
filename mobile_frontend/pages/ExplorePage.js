@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NavigationBar from '../components/NavigationBar';
 import RecipeContainer from '../components/RecipeContainer';
 
-function HomePage({ route }){
+function ExplorePage({ route }){
     const navigation = useNavigation();
     const [recipes, setRecipes] = useState([]);
 
@@ -15,17 +15,13 @@ function HomePage({ route }){
             const getRecipes = async () => {
 
                 try {
-                    const response = await fetch('http://164.90.130.112:5000/api/getUserRecipes', {
+                    const response = await fetch('http://164.90.130.112:5000/api/getPublicRecipes', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-        
-                        body: JSON.stringify({
-                            userID: await AsyncStorage.getItem('userID')
-                        }),
                     });
-    
+                    
                     const data = await response.json();
                     if(response.ok){
                         const detailedRecipes = await Promise.all(
@@ -51,10 +47,10 @@ function HomePage({ route }){
                         );
                         setRecipes(detailedRecipes.filter(recipe => recipe != null));
                     }else{
-                        console.error('\tFailed to fetch recipes', data.error);
+                        console.error('Failed to fetch recipes', data.error);
                     }
                 } catch(error){
-                    console.error('\tError fetching recipes', error);
+                    console.error('Error fetching recipes', error);
                 }
         
             }
@@ -64,22 +60,23 @@ function HomePage({ route }){
 
     return (
         <View style={styles.container}>
-            <Text>HomePage</Text>
+            <Text>ExplorePage</Text>
 
             <ScrollView style={styles.scrollViewContainer}>
+
                 {(recipes.length != 0) ? (
-                        recipes.map((recipe) => (
-                            <TouchableOpacity
-                                key={recipe._id}
-                                onPress={() => navigation.navigate('RecipePage', {recipe})}>
-        
-                                <RecipeContainer recipe={recipe}/>
-        
-                            </TouchableOpacity>
-        
-                        ))
-                    ) : (
-                        <Text>No recipes available</Text>
+                    recipes.map((recipe) => (
+                        <TouchableOpacity
+                            key={recipe._id}
+                            onPress={() => navigation.navigate('RecipePage', {recipe})}>
+    
+                            <RecipeContainer recipe={recipe}/>
+    
+                        </TouchableOpacity>
+    
+                    ))
+                ) : (
+                    <Text>No recipes available</Text>
                 )} 
             </ScrollView>
 
@@ -105,4 +102,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default HomePage;
+export default ExplorePage;
