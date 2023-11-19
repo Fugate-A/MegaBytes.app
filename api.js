@@ -5,7 +5,7 @@ require('dotenv').config();
 let transporter;
 
 const { ObjectId } = require('mongodb');
-const bp = require('./frontend/src/components/Path.js') 
+const bp = require('./web_frontend/src/components/Path.js');
 const fs = require('fs').promises;
 
 exports.setApp = function (app, client) {
