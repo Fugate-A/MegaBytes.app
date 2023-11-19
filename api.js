@@ -1,66 +1,67 @@
-const nodemailer = require('nodemailer');
+//const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 let transporter;
 
 const { ObjectId } = require('mongodb');
+const bp = require('./frontend/src/components/Path.js') 
 const fs = require('fs').promises;
 
 exports.setApp = function (app, client) {
 
-  transporter = nodemailer.createTransport({
-    host: 'smtp.forwardemail.net',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.VerificationEmail,
-      pass: process.env.VerificationEmailPassword
-    },
-    from: process.env.VerificationEmail
-  });
+	 transporter = nodemailer.createTransport({
+	   host: 'smtp.forwardemail.net',
+	   port: 587,
+	   secure: false,
+	   auth: {
+		 user: process.env.VerificationEmail,
+		 pass: process.env.VerificationEmailPassword
+	   },
+	   from: process.env.VerificationEmail
+	 });
 
-  app.post('/api/verifyEmail', (req, res) => {
-    const { to, subject, text } = req.body;
+	app.post('/api/verifyEmail', (req, res) => {
+		const { to, subject, text } = req.body;
 
-    const token = jwt.sign({ email: to }, process.env.KeyTheJWT, { expiresIn: '1h' });
+		const token = jwt.sign({ email: to }, process.env.KeyTheJWT, { expiresIn: '1h' });
 
-    const verificationLink = `https://megabytes.app/verify?token=${token}`;
+		const verificationLink = `https://megabytes.app/verify?token=${token}`;
 
-    const mailOptions = {
-      from: process.env.VerificationEmail,
-      to,
-      subject,
-      text: `${text}\n\nVerification Link: ${verificationLink}`
-    };
+		const mailOptions = {
+			from: process.env.VerificationEmail,
+			to,
+			subject,
+			text: `${text}\n\nVerification Link: ${verificationLink}`
+		};
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending email:', error);
-        res.status(500).send('Error sending email');
-      } else {
-        console.log('Email sent: ' + info.response);
-        res.status(200).send('Email sent successfully');
-      }
-    });
-  });
+		transporter.sendMail(mailOptions, (error, info) => {
+			if (error) {
+				console.error('Error sending email:', error);
+				res.status(500).send('Error sending email');
+			} else {
+				console.log('Email sent: ' + info.response);
+				res.status(200).send('Email sent successfully');
+			}
+		});
+	});
 
-  app.get('/verify', (req, res) => {
-    const token = req.query.token;
-  
-    jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
-      if (err) {
-        console.error('Error verifying token:', err);
-        res.status(400).send('Invalid token');
-      } else {
-        // Log the token to the console
-        console.log('Verified token:', decoded);
-  
-        // You can also send a response to the client if needed
-        res.status(200).send(`Verification successful. Token: ${token}`);
-      }
-    });
-  });
+	app.get('/verify', (req, res) => {
+		const token = req.query.token;
+
+		jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
+			if (err) {
+				console.error('Error verifying token:', err);
+				res.status(400).send('Invalid token');
+			} else {
+				// Log the token to the console
+				console.log('Verified token:', decoded);
+
+				// You can also send a response to the client if needed
+				res.status(200).send(`Verification successful. Token: ${token}`);
+			}
+		});
+	});
 
 	app.post('/api/register', async (req, res, next) => {
 		// incoming:  username, password, email
@@ -75,6 +76,48 @@ exports.setApp = function (app, client) {
 		catch (e) {
 			error = e.toString();
 		}
+		var ret = { error: error };
+		res.status(200).json(ret);
+	});
+
+	app.post('/api/deleteUser', async (req, res, next) => {
+		// incoming:  userId
+		// outgoing: error
+		let error = '';
+		const { userId } = req.body;
+		const filter = { _id: new ObjectId(userId) };
+
+		const db = client.db('MegaBitesLibrary');
+		const results = await db.collection('User').findOne(filter);
+		const recipes = results.RecipeList;
+		for (let i = 0; i < recipes.length; i++) {
+			var obj = { recipeId: recipes[i]._id };
+			var js = JSON.stringify(obj);
+			try {
+				await fetch(bp.buildPath('api/deleteRecipe'),
+					{
+						method: 'POST', body: js, headers: {
+							'Content-Type':
+								'application/json'
+						}
+					});
+			}
+			catch (e) {
+				error = e.toString();
+				var ret = { error: error };
+				res.status(500).json(ret);
+			}
+		}
+
+		db.collection('User').deleteOne(filter, (err, result) => {
+			if (err) {
+				console.error('Error deleting document:', err);
+			} else {
+				console.log('Deleted document successfully');
+			}
+
+		});
+
 		var ret = { error: error };
 		res.status(200).json(ret);
 	});
@@ -148,30 +191,30 @@ exports.setApp = function (app, client) {
 
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const recipe = await db.collection('Recipes').findOne( {_id: new ObjectId(recipeID)} );
+			const recipe = await db.collection('Recipes').findOne({ _id: new ObjectId(recipeID) });
 			let update = 0;
 
-			if(!recipe){
-				return res.status(404).json( {error: 'Reicpe not found'} );
+			if (!recipe) {
+				return res.status(404).json({ error: 'Reicpe not found' });
 			}
 
-			if( !(recipe.LikeList.includes(userID)) ){
+			if (!(recipe.LikeList.includes(userID))) {
 				await db.collection('Recipes').updateOne(
 					{ _id: new ObjectId(recipeID) },
-					{ $push: {LikeList: userID}}
+					{ $push: { LikeList: userID } }
 				);
 				update = 1;
-			}else{
+			} else {
 				await db.collection('Recipes').updateOne(
 					{ _id: new ObjectId(recipeID) },
-					{ $pull: { LikeList: userID }}
+					{ $pull: { LikeList: userID } }
 				);
 				update = -1;
 			}
-			res.status(200).json({ update: update, error: null});
-		} catch(error){
+			res.status(200).json({ update: update, error: null });
+		} catch (error) {
 			console.error('Error updating likes', error);
-			res.status(500).json({ error: 'Internal Server Error'} );
+			res.status(500).json({ error: 'Internal Server Error' });
 		}
 	});
 
@@ -181,15 +224,37 @@ exports.setApp = function (app, client) {
 
 		var error = '';
 		const { recipeId } = req.body;
-		const filter = { RecipeId: recipeId };
+		const filter = { _id: new ObjectId(recipeId) };
 
 		const db = client.db('MegaBitesLibrary');
+		const results = await db.collection('Recipes').findOne(filter);
+
+		const comments = results.CommentList;
+		for (let i = 0; i < comments.length; i++) {
+			let commentFilter = comments[i];
+			db.collection('Comments').deleteOne(commentFilter, (err, result) => {
+				if (err) {
+					console.error('Error deleting document:', err);
+				} else {
+					console.log('Deleted document successfully');
+				}
+
+			});
+		}
+		const user = await db.collection('User').findOne({ _id: results.UserId });
+
+		await db.collection('User').updateOne(
+			{ _id: user._id },
+			{ $pull: { RecipeList: { _id: new ObjectId(recipeId) } } }
+		);
+
 		db.collection('Recipes').deleteOne(filter, (err, result) => {
 			if (err) {
 				console.error('Error deleting document:', err);
 			} else {
 				console.log('Deleted document successfully');
 			}
+
 		});
 
 		var ret = { error: error };
@@ -366,42 +431,50 @@ exports.setApp = function (app, client) {
 
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const comment = await db.collection('Comments').findOne( {_id: new ObjectId(commentID)} );
+			const comment = await db.collection('Comments').findOne({ _id: new ObjectId(commentID) });
 			let updateStatus = 0;
 
-			if(!comment){
-				return res.status(404).json( {error: 'Comment not found'} );
+			if (!comment) {
+				return res.status(404).json({ error: 'Comment not found' });
 			}
 
-			if( !(comment.LikeList.includes(userID)) ){
+			if (!(comment.LikeList.includes(userID))) {
 				await db.collection('Comments').updateOne(
 					{ _id: new ObjectId(commentID) },
-					{ $push: {LikeList: userID}}
+					{ $push: { LikeList: userID } }
 				);
 				updateStatus = 1;
-			}else{
+			} else {
 				await db.collection('Comments').updateOne(
 					{ _id: new ObjectId(commentID) },
-					{ $pull: { LikeList: userID }}
+					{ $pull: { LikeList: userID } }
 				);
 				updateStatus = -1;
 			}
-			res.json({ update: updateStatus, error: ''});
-		} catch(error){
+			res.json({ update: updateStatus, error: '' });
+		} catch (error) {
 			console.error('Error updating likes', error);
-			res.status(500).json({ error: 'Internal Server Error'} );
+			res.status(500).json({ error: 'Internal Server Error' });
 		}
 	});
 
 	app.post('/api/deleteComment', async (req, res, next) => {
-		// incoming: recipeId
+		// incoming: commentId
 		// outgoing: error
 
 		var error = '';
 		const { commentId } = req.body;
-		const filter = { CommentId: commentId };
+		const filter = { _id: new ObjectId(commentId) };
 
 		const db = client.db('MegaBitesLibrary');
+		const results = await db.collection('Comments').findOne(filter);
+		const recipe = await db.collection('Recipes').findOne({ _id: results.RecipeId });
+
+		await db.collection('Recipes').updateOne(
+			{ _id: recipe._id },
+			{ $pull: { CommentList: { _id: new ObjectId(commentId) } } }
+		);
+
 		db.collection('Comments').deleteOne(filter, (err, result) => {
 			if (err) {
 				console.error('Error deleting document:', err);
@@ -410,7 +483,7 @@ exports.setApp = function (app, client) {
 			}
 		});
 
-		var ret = { error: error };
+		var ret = { recipe: recipe, error: error };
 		res.status(200).json(ret);
 	});
 
@@ -462,13 +535,13 @@ exports.setApp = function (app, client) {
 		try {
 			const data = await fs.readFile('./tags.json', 'utf8');
 			return JSON.parse(data);
-		} catch(error) {
+		} catch (error) {
 			console.error('Error reading tags from file', error);
 			return [];
 		}
 	};
 
-	app.get('/api/tags', async(req, res) => {
+	app.get('/api/tags', async (req, res) => {
 		const tags = await getTags();
 		res.json(tags);
 	});
