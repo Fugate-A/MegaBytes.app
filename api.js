@@ -1,4 +1,4 @@
-//const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
