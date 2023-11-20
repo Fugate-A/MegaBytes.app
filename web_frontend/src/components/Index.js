@@ -8,7 +8,7 @@ function IndexInfo() {
 					<a href='https://www.megabytes.app/'>
 						<h2 className="mt-10 text-center text-8xl font-bold leading-9 tracking-wide text-gray-50 content-center 
 									   transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-125 duration-300">
-							READY TO COOK!
+							READY TO COOK?
 						</h2>
 					</a>
 				</div>
