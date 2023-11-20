@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const bcrypt = require('bcrypt');
+
 let transporter;
 
 const { ObjectId } = require('mongodb');
@@ -21,47 +23,80 @@ exports.setApp = function (app, client) {
 	   from: process.env.VerificationEmail
 	 });
 
-	app.post('/api/verifyEmail', (req, res) => {
-		const { to, subject, text } = req.body;
+	 app.post('/api/verifyEmail', async (req, res) => {
+		const { username, password, email } = req.body;
 
-		const token = jwt.sign({ email: to }, process.env.KeyTheJWT, { expiresIn: '1h' });
-
-		const verificationLink = `https://megabytes.app/verify?token=${token}`;
-
-		const mailOptions = {
-			from: process.env.VerificationEmail,
-			to,
-			subject,
-			text: `${text}\n\nVerification Link: ${verificationLink}`
+		const hashedPassword = await bcrypt.hash(password, 10);
+	
+		// Include user information in the token payload
+		const tokenPayload = {
+		  username,
+		  password: hashedPassword,
+		  email,
 		};
-
+	
+		const token = jwt.sign(tokenPayload, process.env.KeyTheJWT, {
+		  expiresIn: '1h',
+		});
+	
+		//const verificationLink = `https://megabytes.app/verify?token=${token}`;
+		const verificationLink = `http://localhost:5000/verify?token=${token}`;
+	
+		const mailOptions = {
+		  from: process.env.VerificationEmail,
+		  to: email,
+		  subject: 'Email Verification',
+		  text: `Verification Link: ${verificationLink}`,
+		};
+	
 		transporter.sendMail(mailOptions, (error, info) => {
-			if (error) {
-				console.error('Error sending email:', error);
-				res.status(500).send('Error sending email');
-			} else {
-				console.log('Email sent: ' + info.response);
-				res.status(200).send('Email sent successfully');
-			}
+		  if (error) {
+			console.error('Error sending email:', error);
+			res.status(500).send('Error sending email');
+		  } else {
+			console.log('Email sent: ' + info.response);
+			res.status(200).send('Email sent successfully');
+		  }
 		});
-	});
-
-	app.get('/verify', (req, res) => {
+	  });
+	
+	  app.get('/verify', (req, res) => {
+		console.log('Received a request to /verify');
 		const token = req.query.token;
-
-		jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
-			if (err) {
-				console.error('Error verifying token:', err);
-				res.status(400).send('Invalid token');
-			} else {
-				// Log the token to the console
-				console.log('Verified token:', decoded);
-
-				// You can also send a response to the client if needed
-				res.status(200).send(`Verification successful. Token: ${token}`);
+	  
+		jwt.verify(token, process.env.KeyTheJWT, async (err, decoded) => {
+		  if (err) {
+			console.error('Error verifying token:', err);
+			res.status(400).json({ error: 'Invalid token' }); // Return a JSON response for error
+		  } else {
+			// Extract user information from the decoded token
+			const { username, password, email } = decoded;
+	  
+			// Log the decoded token and extracted user information
+			console.log('Decoded Token:', decoded);
+			console.log('Extracted User Info - Username:', username);
+			console.log('Extracted User Info - Password:', password);
+			console.log('Extracted User Info - Email:', email);
+	  
+			
+			// Proceed with registration using the extracted information
+			const newUser = { Username: username, Password: password, Email: email };
+			var error = '';
+			try {
+			  const db = client.db('MegaBitesLibrary');
+			  db.collection('User').insertOne(newUser);
+			} catch (e) {
+			  error = e.toString();
 			}
+			if (error) {
+			  res.status(500).json({ error }); // Return a JSON response for error
+			} else {
+			  res.status(200).json({ success: true }); // Return a JSON response for success
+			}
+		  }
 		});
-	});
+	  });
+	  
 
 	app.post('/api/register', async (req, res, next) => {
 		// incoming:  username, password, email
@@ -134,9 +169,12 @@ exports.setApp = function (app, client) {
 		const isEmail = username.includes("@");
 		try {
 			const db = client.db('MegaBitesLibrary');
+
+			const hashedPassword = await bcrypt(password);
+
 			const results = await (isEmail
-				? db.collection('User').find({ Email: username, Password: password }).toArray()
-				: db.collection('User').find({ Username: username, Password: password }).toArray());
+				? db.collection('User').find({ Email: username, Password: hashedPassword }).toArray()
+				: db.collection('User').find({ Username: username, Password: hashedPassword }).toArray());
 
 			var id = -1;
 			if (results.length > 0) {
@@ -144,7 +182,7 @@ exports.setApp = function (app, client) {
 			}
 		}
 		catch (e) {
-			error = e.message()
+			error = e.message
 		}
 		let ret = { id: id, error: error };
 		res.status(200).json(ret);

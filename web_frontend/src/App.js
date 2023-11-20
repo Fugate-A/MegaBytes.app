@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import LoginPage from './pages/LoginPage';
 import RecipePage from './pages/RecipePage';
@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage';
 import IndexPage from './pages/IndexPage';
 import CreatePage from './pages/CreatePage';
 import CommunityPage from './pages/CommunityPage';
+import VerifyEmail from './components/VerifyEmail'; // Import the VerifyEmail component
 
 function App() {
   return (
@@ -18,8 +19,11 @@ function App() {
         <Route path="/i" element={<IndexPage />} />
         <Route path="/cre" element={<CreatePage />} />
         <Route path="/com" element={<CommunityPage />} />
+        {/* Add a route for the VerifyEmail component with a query parameter */}
+        <Route path="/verify" element={<VerifyEmail />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
 export default App;
