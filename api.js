@@ -67,7 +67,7 @@ exports.setApp = function (app, client) {
 		// incoming:  username, password, email
 		// outgoing: error
 		const { username, password, email } = req.body;
-		const newUser = { Username: username, Password: password, Email: email };
+		const newUser = { Username: username, Password: password, Email: email, RecipeList: [] };
 		var error = '';
 		try {
 			const db = client.db('MegaBitesLibrary');
@@ -90,23 +90,27 @@ exports.setApp = function (app, client) {
 		const db = client.db('MegaBitesLibrary');
 		const results = await db.collection('User').findOne(filter);
 		const recipes = results.RecipeList;
-		for (let i = 0; i < recipes.length; i++) {
-			var obj = { recipeId: recipes[i]._id };
-			var js = JSON.stringify(obj);
-			try {
-				await fetch(bp.buildPath('api/deleteRecipe'),
-					{
-						method: 'POST', body: js, headers: {
-							'Content-Type':
-								'application/json'
-						}
-					});
+
+		if(recipes){
+			for (let i = 0; i < recipes.length; i++) {
+				var obj = { recipeId: recipes[i]._id };
+				var js = JSON.stringify(obj);
+				try {
+					await fetch(bp.buildPath('api/deleteRecipe'),
+						{
+							method: 'POST', body: js, headers: {
+								'Content-Type':
+									'application/json'
+							}
+						});
+				}
+				catch (e) {
+					error = e.toString();
+					var ret = { error: error };
+					res.status(500).json(ret);
+				}
 			}
-			catch (e) {
-				error = e.toString();
-				var ret = { error: error };
-				res.status(500).json(ret);
-			}
+	
 		}
 
 		db.collection('User').deleteOne(filter, (err, result) => {
