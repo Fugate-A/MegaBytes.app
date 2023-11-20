@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const bcrypt = require('bcrypt');
+
 let transporter;
 
 const { ObjectId } = require('mongodb');
@@ -21,13 +23,15 @@ exports.setApp = function (app, client) {
 	   from: process.env.VerificationEmail
 	 });
 
-	 app.post('/api/verifyEmail', (req, res) => {
+	 app.post('/api/verifyEmail', async (req, res) => {
 		const { username, password, email } = req.body;
+
+		const hashedPassword = await bcrypt.hash(password, 10);
 	
 		// Include user information in the token payload
 		const tokenPayload = {
 		  username,
-		  password,
+		  password: hashedPassword,
 		  email,
 		};
 	
@@ -60,7 +64,7 @@ exports.setApp = function (app, client) {
 		console.log('Received a request to /verify');
 		const token = req.query.token;
 	  
-		jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
+		jwt.verify(token, process.env.KeyTheJWT, async (err, decoded) => {
 		  if (err) {
 			console.error('Error verifying token:', err);
 			res.status(400).json({ error: 'Invalid token' }); // Return a JSON response for error
@@ -74,8 +78,11 @@ exports.setApp = function (app, client) {
 			console.log('Extracted User Info - Password:', password);
 			console.log('Extracted User Info - Email:', email);
 	  
+			const unhashedPassword = await bcrypt.hash(password, 10);
+			console.log('Unhashed Password:', unhashedPassword);
 			// Proceed with registration using the extracted information
-			const newUser = { Username: username, Password: password, Email: email };
+
+			const newUser = { Username: username, Password: unhashedPassword, Email: email };
 			var error = '';
 			try {
 			  const db = client.db('MegaBitesLibrary');
