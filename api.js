@@ -39,8 +39,8 @@ exports.setApp = function (app, client) {
 		  expiresIn: '1h',
 		});
 	
-		//const verificationLink = `https://megabytes.app/verify?token=${token}`;
-		const verificationLink = `http://localhost:5000/verify?token=${token}`;
+		const verificationLink = `https://megabytes.app/verify?token=${token}`;
+		//const verificationLink = `http://localhost:5000/verify?token=${token}`;
 	
 		const mailOptions = {
 		  from: process.env.VerificationEmail,
