@@ -78,11 +78,9 @@ exports.setApp = function (app, client) {
 			console.log('Extracted User Info - Password:', password);
 			console.log('Extracted User Info - Email:', email);
 	  
-			const unhashedPassword = await bcrypt.hash(password, 10);
-			console.log('Unhashed Password:', unhashedPassword);
+			
 			// Proceed with registration using the extracted information
-
-			const newUser = { Username: username, Password: unhashedPassword, Email: email };
+			const newUser = { Username: username, Password: password, Email: email };
 			var error = '';
 			try {
 			  const db = client.db('MegaBitesLibrary');
@@ -171,9 +169,12 @@ exports.setApp = function (app, client) {
 		const isEmail = username.includes("@");
 		try {
 			const db = client.db('MegaBitesLibrary');
+
+			const hashedPassword = await bcrypt(password);
+
 			const results = await (isEmail
-				? db.collection('User').find({ Email: username, Password: password }).toArray()
-				: db.collection('User').find({ Username: username, Password: password }).toArray());
+				? db.collection('User').find({ Email: username, Password: hashedPassword }).toArray()
+				: db.collection('User').find({ Username: username, Password: hashedPassword }).toArray());
 
 			var id = -1;
 			if (results.length > 0) {
