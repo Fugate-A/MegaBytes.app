@@ -1,31 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 function Register() {
-  const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const sendVerificationEmail = async (username, password, email) => {
     const obj = { username, password, email };
     const js = JSON.stringify(obj);
 
     try {
-      const response = await fetch('http://localhost:5000/api/verifyEmail', { // Ensure this URL matches your server URL
+      await fetch('http://localhost:5000/api/verifyEmail', {
         method: 'POST',
         body: js,
         headers: {
           'Content-Type': 'application/json'
         }
       });
-
-      const res = await response.json();
-
-      if (res.error && res.error.length > 0) {
-        setMessage(res.error);
-      } else {
-        setMessage('Verification email sent successfully.');
-      }
+      // No need to handle the response
     } catch (e) {
       console.error('Error sending verification email:', e);
-      setMessage('Error sending verification email. Please try again.');
+      // No message setting here
     }
   };
 
@@ -36,6 +30,7 @@ function Register() {
     const regEmail = event.target.email.value;
 
     sendVerificationEmail(regUsername, regPassword, regEmail);
+    navigate('/'); // Redirect to the main page immediately
   };
 
   return (
@@ -55,7 +50,6 @@ function Register() {
         </div>
         <button type="submit">Register</button>
       </form>
-      <span id="regResult">{message}</span>
     </div>
   );
 }

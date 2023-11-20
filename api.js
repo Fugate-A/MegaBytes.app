@@ -77,9 +77,13 @@ exports.setApp = function (app, client) {
 			console.log('Extracted User Info - Username:', username);
 			console.log('Extracted User Info - Password:', password);
 			console.log('Extracted User Info - Email:', email);
+<<<<<<< Updated upstream
 	  
 			
 			// Proceed with registration using the extracted information
+=======
+
+>>>>>>> Stashed changes
 			const newUser = { Username: username, Password: password, Email: email };
 			var error = '';
 			try {
