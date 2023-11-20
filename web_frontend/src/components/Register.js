@@ -9,7 +9,8 @@ function Register() {
     const js = JSON.stringify(obj);
 
     try {
-      await fetch('http://localhost:5000/api/verifyEmail', {
+      //await fetch('http://localhost:5000/api/verifyEmail', {
+        await fetch('http://megabytes.app/api/verifyEmail', {
         method: 'POST',
         body: js,
         headers: {
