@@ -57,8 +57,9 @@ exports.setApp = function (app, client) {
 	  });
 	
 	  app.get('/verify', (req, res) => {
+		console.log('Received a request to /verify');
 		const token = req.query.token;
-	
+	  
 		jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
 		  if (err) {
 			console.error('Error verifying token:', err);
@@ -66,7 +67,13 @@ exports.setApp = function (app, client) {
 		  } else {
 			// Extract user information from the decoded token
 			const { username, password, email } = decoded;
-	
+	  
+			// Log the decoded token and extracted user information
+			console.log('Decoded Token:', decoded);
+			console.log('Extracted User Info - Username:', username);
+			console.log('Extracted User Info - Password:', password);
+			console.log('Extracted User Info - Email:', email);
+	  
 			// Proceed with registration using the extracted information
 			const newUser = { Username: username, Password: password, Email: email };
 			var error = '';
