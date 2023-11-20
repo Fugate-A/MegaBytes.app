@@ -1,26 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 function VerifyEmail() {
-  const { token } = useParams(); // Extract the token from the URL
+  const query = useQuery();
+  const token = query.get('token');
   const [verificationStatus, setVerificationStatus] = useState('');
 
   useEffect(() => {
-    // Make an API request to verify the email using the token
-    // Replace this example API request with your actual endpoint and logic
-    fetch(`http://localhost:3000/api/verifyEmail?token=${token}`)
-      .then((response) => response.json())
-      .then((data) => {
+    // Assuming that the token contains username, password, and email
+    // You need to parse this from the token on the server-side
+    const verifyEmail = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/verifyEmail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Email verification failed');
+        }
+
         if (data.success) {
           setVerificationStatus('Email verified successfully.');
         } else {
           setVerificationStatus('Email verification failed. Please try again.');
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error verifying email:', error);
         setVerificationStatus('Email verification failed. Please try again.');
-      });
+      }
+    };
+
+    if (token) {
+      verifyEmail();
+    }
   }, [token]);
 
   return (

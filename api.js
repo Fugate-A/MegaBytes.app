@@ -36,7 +36,7 @@ exports.setApp = function (app, client) {
 		});
 	
 		//const verificationLink = `https://megabytes.app/verify?token=${token}`;
-		const verificationLink = `http://localhost:3000/verify?token=${token}`;
+		const verificationLink = `http://localhost:5000/verify?token=${token}`;
 	
 		const mailOptions = {
 		  from: process.env.VerificationEmail,
@@ -63,7 +63,7 @@ exports.setApp = function (app, client) {
 		jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
 		  if (err) {
 			console.error('Error verifying token:', err);
-			res.status(400).send('Invalid token');
+			res.status(400).json({ error: 'Invalid token' }); // Return a JSON response for error
 		  } else {
 			// Extract user information from the decoded token
 			const { username, password, email } = decoded;
@@ -83,11 +83,15 @@ exports.setApp = function (app, client) {
 			} catch (e) {
 			  error = e.toString();
 			}
-			var ret = { error: error };
-			res.status(200).json(ret);
+			if (error) {
+			  res.status(500).json({ error }); // Return a JSON response for error
+			} else {
+			  res.status(200).json({ success: true }); // Return a JSON response for success
+			}
 		  }
 		});
 	  });
+	  
 
 	app.post('/api/register', async (req, res, next) => {
 		// incoming:  username, password, email
