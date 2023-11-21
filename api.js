@@ -80,7 +80,7 @@ exports.setApp = function (app, client) {
 			
 				
 				// Proceed with registration using the extracted information
-				const newUser = { Username: username, Password: password, Email: email };
+				const newUser = { Username: username, Password: password, Email: email.toLowerCase(), RecipeList: [] };
 				var error = '';
 				try {
 					const db = client.db('MegaBitesLibrary');
@@ -195,14 +195,14 @@ exports.setApp = function (app, client) {
 		try {
 			const db = client.db('MegaBitesLibrary');
 			const user = await (isEmail
-				? db.collection('User').find({ Email: username }).toArray()
-				: db.collection('User').find({ Username: username }).toArray());
+				? db.collection('User').find({ Email: username.toLowerCase() }).toArray()
+				: db.collection('User').find({ Username: username.toLowerCase() }).toArray());
 
 			if(!user){
 				return res.status(401).json({ error: 'Invalid credentials '});
 			}
-
-			const passwordMatch = await bcrypt.compare(password, user.Password);
+			
+			const passwordMatch = await bcrypt.compare(password, user[0].Password);
 
 			if(passwordMatch){
 				res.status(200).json({ id: user._id, error: '' });
