@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, TextInput, ActivityIndicator, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 
-function AIRequestModal ({ visible, onClose, setFinalRecipeName, setFinalRecipeContent }){
+function AIRequestModal ({ visible, onClose, handleAIInput }){
 
     const [foodInput, setFoodInput] = useState('');
-    const [recipeName, setRecipeName] = useState('');
-    const [recipeContent, setRecipeContent] = useState('');
 
     const [inputFrozen, setInputFrozen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -29,15 +27,12 @@ function AIRequestModal ({ visible, onClose, setFinalRecipeName, setFinalRecipeC
             const data = await response.json();
 
             if(response.ok){
-                setRecipeName(data.RecipeName);
 
                 const formattedIngredients = data.Ingredients.map((ingredient) => `- ${ingredient}`).join('\n');
-                const formattedDirections = data.Ingredients.map((direction) => `- ${direction}`).join('\n');
+                const formattedDirections = data.Directions.map((direction) => `- ${direction}`).join('\n');
                 const combinedContent = `Ingredients\n${formattedIngredients}\n\nDirections\n${formattedDirections}`;
-                setRecipeContent(combinedContent);
-
-                setFinalRecipeName(recipeName);
-                setFinalRecipeContent(recipeContent);
+                
+                handleAIInput(data.RecipeName, combinedContent);
 
             } else{
                 console.error('Error getting recipe information');
@@ -45,11 +40,14 @@ function AIRequestModal ({ visible, onClose, setFinalRecipeName, setFinalRecipeC
         } catch(error){
             console.error('Error connecting to database', error);
         } finally {
+
             setLoading(false);
             setInputFrozen(false); 
+
             onClose(); 
         }
     }
+
 
 
     return (
@@ -58,23 +56,35 @@ function AIRequestModal ({ visible, onClose, setFinalRecipeName, setFinalRecipeC
             animationType='slide'
             visible={visible}
         >
-            <TouchableWithoutFeedback onPress={onClose}>
+            <TouchableWithoutFeedback onPress={() => !inputFrozen && onClose()}>
                 <View style={[styles.container, inputFrozen ? styles.frozenContainer : null]}>
-                    <TextInput 
-                        style={[styles.textInput, inputFrozen ? styles.frozenInput : null]}
-                        placeholder='What are you hungry for?'
-                        value={foodInput}
-                        onChangeText={(text) => setFoodInput(text)}
-                        editable={!inputFrozen}
-                    />
 
-                    <TouchableOpacity onPress={handleGetRecipeFromAI} disabled={inputFrozen}>
-                        {loading ? (
-                            <ActivityIndicator size="small" color="#0000ff" />
-                        ) : (
-                            <Text style={styles.submitButton}>Submit</Text>
-                        )}
-                    </TouchableOpacity>
+                    <View style={styles.inputContainer}>
+                        <TextInput 
+                            style={[styles.textInput, inputFrozen ? styles.frozenInput : null]}
+                            placeholder='What are you hungry for?'
+                            placeholderTextColor={'gray'}
+                            value={foodInput}
+                            onChangeText={(text) => setFoodInput(text)}
+                            editable={!inputFrozen}
+                            accessibilityLabel="Enter food name"
+                        />
+
+                        <TouchableOpacity 
+                            onPress={handleGetRecipeFromAI} disabled={inputFrozen}
+                            accessible={true}
+                            accessibilityRole="button"
+                            accessibilityLabel="Submit"
+                            style={styles.submitButton}
+                        >
+                            {loading ? (
+                                <ActivityIndicator size="small" color="#0000ff" />
+                            ) : (
+                                <Text style={styles.submitButtonText}>Submit</Text>
+                            )}
+
+                        </TouchableOpacity>
+                    </View>
 
 
                 </View>    
@@ -91,25 +101,44 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    textInputContainer: {
-
-    },
     frozenContainer: {
-        backgroundColor: 'gray', 
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    inputContainer: {
+        borderWidth: 1,
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 15,
     },
     frozenInput: {
-        backgroundColor: 'lightgray', 
+        backgroundColor: 'lightgray',
     },
     textInput: {
-        fontSize: 14,
+        backgroundColor: 'white',
+        fontSize: 16,
         fontFamily: 'Tilt-Neon',
-    },  
-    submitButton: {
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        padding: 10,
+        borderWidth: 1,
+        borderRadius: 15,
+        color: 'black',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        marginBottom: 15,
     },
-});
+    submitButton: {
+        backgroundColor: '#E79B11',
+        padding: 10,
+        borderRadius: 15,
+    },
+    submitButtonText: {
+        fontSize: 16,
+        fontFamily: 'Tilt-Neon',
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
+    },
+  });
 
 export default AIRequestModal;
