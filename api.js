@@ -205,7 +205,7 @@ exports.setApp = function (app, client) {
 			const passwordMatch = await bcrypt.compare(password, user[0].Password);
 
 			if(passwordMatch){
-				res.status(200).json({ id: user._id, error: '' });
+				res.status(200).json({ id: user[0]._id, error: '' });
 			} else{
 				res.status(401).json({ error: 'Invalid credentials' });
 			}
