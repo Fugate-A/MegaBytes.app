@@ -25,11 +25,11 @@ export default function App() {
     prepare();
   }, []);
 
-  if (!fontsLoaded) {
-    return undefined;
-  }else{
-    SplashScreen.hideAsync();
-  }
+	if (!fontsLoaded) {
+		return undefined;
+	}else{
+		SplashScreen.hideAsync();
+	}
 
   return (
 	<NavigationContainer>

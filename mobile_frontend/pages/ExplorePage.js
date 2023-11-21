@@ -60,7 +60,7 @@ function ExplorePage({ route }){
 
     return (
         <View style={styles.container}>
-            <Text>ExplorePage</Text>
+            <Text style={styles.explorePageText}>Explore Public Recipes</Text>
 
             <ScrollView style={styles.scrollViewContainer}>
 
@@ -89,10 +89,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFF0DC',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         width: '100%',
         justifyContent: 'space-between',
         borderWidth: 3,
+    },
+    explorePageText: {
+        fontSize: 24,
+        fontFamily: 'Tilt-Neon',
+        marginBottom: 10,
+        marginLeft: 10,
     },
     scrollViewContainer: {
         flex: 1,

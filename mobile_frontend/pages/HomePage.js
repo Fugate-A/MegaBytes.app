@@ -64,7 +64,7 @@ function HomePage({ route }){
 
     return (
         <View style={styles.container}>
-            <Text>HomePage</Text>
+            <Text style={styles.homePageText}>Your Recipes</Text>
 
             <ScrollView style={styles.scrollViewContainer}>
                 {(recipes.length != 0) ? (
@@ -92,10 +92,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFF0DC',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         width: '100%',
         justifyContent: 'space-between',
         borderWidth: 3,
+    },
+    homePageText: {
+        fontSize: 24,
+        fontFamily: 'Tilt-Neon',
+        marginBottom: 10,
+        marginLeft: 10,
     },
     scrollViewContainer: {
         flex: 1,

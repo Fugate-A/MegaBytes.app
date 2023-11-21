@@ -74,6 +74,7 @@ function AddComment({ recipe, onCommentSubmit }) {
                         message={errorMessage}
                         onClose={closeErrorModal}
                     />
+                    
 
                     <View style={styles.inputContainer}>
                         <TextInput
