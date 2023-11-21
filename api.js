@@ -80,7 +80,7 @@ exports.setApp = function (app, client) {
 			
 				
 				// Proceed with registration using the extracted information
-				const newUser = { Username: username, Password: password, Email: email };
+				const newUser = { Username: username, Password: password, Email: email, RecipeList: [] };
 				var error = '';
 				try {
 					const db = client.db('MegaBitesLibrary');
