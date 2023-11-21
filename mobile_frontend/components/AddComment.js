@@ -3,12 +3,23 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, Text,TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import ErrorMessageModal from './ErrorMessageModal';
+
 function AddComment({ recipe, onCommentSubmit }) {
     const navigation = useNavigation();
 
     const [content, setContent] = useState('');
 
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
     const handleAddComment = async () => {
+
+        if(content == ''){
+            setErrorMessage('Comment cannot be empty');
+			setShowErrorModal(true);
+            return;
+        }
 
         try{
 
@@ -42,44 +53,58 @@ function AddComment({ recipe, onCommentSubmit }) {
 
     };
 
+    const closeErrorModal = () => {
+		setShowErrorModal(false);
+	};
+
     const dismissKeyboard = () => {
         Keyboard.dismiss();
     };
 
     return (
-        <TouchableWithoutFeedback onPress={dismissKeyboard}>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : null}
-                style={styles.container}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
-		    >
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        value = {content}
-                        placeholder='Comment something...'
-                        onChangeText={(text) => setContent(text)}
-                        style={styles.contentInput}
-                        multiline
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+            style={styles.container}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
+        >
+            <TouchableWithoutFeedback onPress={dismissKeyboard}>
+                <View>
+                    <ErrorMessageModal
+                        visible={showErrorModal}
+                        message={errorMessage}
+                        onClose={closeErrorModal}
                     />
+
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            value = {content}
+                            placeholder='Comment something...'
+                            onChangeText={(text) => setContent(text)}
+                            style={styles.contentInput}
+                            multiline
+                        />
+                    </View>
+
+                    <TouchableOpacity 
+                        onPress={handleAddComment}
+                        style={styles.submittButton}
+                        activeOpacity={0.7}
+                    >
+                        <Text>Submit</Text>
+                    </TouchableOpacity>
                 </View>
+            
 
-                <TouchableOpacity 
-                    onPress={handleAddComment}
-                    style={styles.submittButton}
-                >
-                    <Text>Submit</Text>
-                </TouchableOpacity>
-               
+            </TouchableWithoutFeedback>
 
-
-                
-            </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+            
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         backgroundColor: '#FFF0DC',
         padding: 10,
         marginTop: -5,

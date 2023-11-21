@@ -129,85 +129,84 @@ function AddRecipePage(){
             onScrollEndDrag={handleScrollEnd}
         >
             <TouchableWithoutFeedback onPress={dismissKeyboard}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : null}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
-                >
+                
+                <View>
+                <View style={styles.topButtons}>
+                    <TouchableOpacity onPress={openAIModal} style={styles.aigenButton}>
+                        <Text style={styles.aigenButtonText}>Generate with AI 🤖</Text>
+                    </TouchableOpacity>
 
-                    <View style={styles.topButtons}>
-                        <TouchableOpacity onPress={openAIModal} style={styles.aigenButton}>
-                            <Text style={styles.aigenButtonText}>Generate with AI 🤖</Text>
-                        </TouchableOpacity>
-
-                        {showAIModal && (
-                            <AIRequestModal
-                                visible={showAIModal} 
-                                onClose={closeAIModal}
-                                handleAIInput={handleAIInput}
-                            />
-                        )}
-                        
-                        <TouchableOpacity 
-                            onPress={handleAddRecipe}
-                            style={styles.submittButton}
-                        >
-                            <Text style={styles.submittButtonText}>Submit</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.inputContainer}>
-                        <TextInput
-                            placeholder='Title'
-                            value = {title}
-                            onChangeText={(text) => setTitle(text)}
-                            style={styles.titleInput}
-                            editable={!isScrolling}
+                    {showAIModal && (
+                        <AIRequestModal
+                            visible={showAIModal} 
+                            onClose={closeAIModal}
+                            handleAIInput={handleAIInput}
                         />
+                    )}
+                    
+                    <TouchableOpacity 
+                        onPress={handleAddRecipe}
+                        style={styles.submittButton}
+                    >
+                        <Text style={styles.submittButtonText}>Submit</Text>
+                    </TouchableOpacity>
+                </View>
 
-                        <View 
-                            style={styles.contentInputContainer}
-                        >
-                            <TextInput
-                                placeholder='Ingredients and Directions'
-                                value = {content}
-                                onChangeText={(text) => setContent(text)}
-                                style={[styles.contentInput, isTextInputFocused ? { height: 'auto' } : null]}
-                                multiline
-                                editable={!isScrolling}
-                                scrollEnabled={!isScrolling}
-                            />
-                        </View>
-
-                        <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
-                            <Text>Add Tags</Text>
-                        </TouchableOpacity>
-                        
-                        {showTagSelectionModal && (
-                            <TagSelectionModal
-                                visible={true}
-                                onUpdateRecipeTags={handleUpdateRecipeTags}
-                                onClose={() => setShowTagSelectionModal(false)}
-                                currentTags={recipeTags}
-                            />
-                        )}
-
-                        <View style={styles.visibilityContainer}>
-                            <Text style={styles.visibilityLabel}>Visibility:</Text>
-                            <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
-                                <View style={[styles.radioCircle, {backgroundColor: visibility ? 'green' : 'white'}]} />
-                            </TouchableOpacity>
-                            <Text>{visibility ? 'Public': 'Private'}</Text>
-                        </View>
-
-                    </View>
-
-                    <ErrorMessageModal
-                        visible={showErrorModal}
-                        message={errorMessage}
-                        onClose={closeErrorModal}
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        placeholder='Title'
+                        value = {title}
+                        onChangeText={(text) => setTitle(text)}
+                        style={styles.titleInput}
+                        editable={!isScrolling}
                     />
 
-                </KeyboardAvoidingView>
+                    <View 
+                        style={styles.contentInputContainer}
+                    >
+                        <TextInput
+                            placeholder='Ingredients and Directions'
+                            value = {content}
+                            onChangeText={(text) => setContent(text)}
+                            style={[styles.contentInput, isTextInputFocused ? { height: 'auto' } : null]}
+                            multiline
+                            editable={!isScrolling}
+                            scrollEnabled={!isScrolling}
+                        />
+                    </View>
+
+                    <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
+                        <Text>Add Tags</Text>
+                    </TouchableOpacity>
+                    
+                    {showTagSelectionModal && (
+                        <TagSelectionModal
+                            visible={true}
+                            onUpdateRecipeTags={handleUpdateRecipeTags}
+                            onClose={() => setShowTagSelectionModal(false)}
+                            currentTags={recipeTags}
+                        />
+                    )}
+
+                    <View style={styles.visibilityContainer}>
+                        <Text style={styles.visibilityLabel}>Visibility:</Text>
+                        <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
+                            <View style={[styles.radioCircle, {backgroundColor: visibility ? 'green' : 'white'}]} />
+                        </TouchableOpacity>
+                        <Text>{visibility ? 'Public': 'Private'}</Text>
+                    </View>
+
+                </View>
+
+                <ErrorMessageModal
+                    visible={showErrorModal}
+                    message={errorMessage}
+                    onClose={closeErrorModal}
+                />
+                </View>
+            
+
+                
             </TouchableWithoutFeedback>
         </ScrollView>
     );

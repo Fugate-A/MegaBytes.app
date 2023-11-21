@@ -11,6 +11,7 @@ function TagComponent({ name, emoji, color, isSelected }){
 
 const styles = StyleSheet.create({
     tagContainer: {
+        marginTop: 10,
         width: 140,
         borderRadius: 20,
         paddingHorizontal: 10,
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
     tagText: {
-        color: 'white',
+        color: 'black',
         fontSize: 14,
         fontFamily: 'Tilt-Neon',
     },

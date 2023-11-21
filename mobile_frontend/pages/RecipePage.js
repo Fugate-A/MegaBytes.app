@@ -1,6 +1,6 @@
 import { useRoute, useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import TagComponent from '../components/TagComponent';
@@ -225,7 +225,6 @@ function RecipePage() {
 
     return (
 
-
         <ScrollView style={styles.container}>
         
             <View style={styles.topBar}>
@@ -266,7 +265,7 @@ function RecipePage() {
                 </TouchableOpacity>
                 <Text style={styles.likeCount}>{likeNumber}</Text>
             </View>
-            
+
             <View style={styles.addCommentContainer}>
                 <AddComment recipe={recipe} onCommentSubmit={handleCommentSubmit}/>
             </View>
@@ -318,6 +317,7 @@ const styles = StyleSheet.create({
     },
     tagsContainer: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         marginTop: 5,
     },
     recipeContentContainer: {
