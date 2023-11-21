@@ -18,6 +18,7 @@ function AddRecipePage(){
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
+    const [showAIModal, setShowAIModal] = useState(false);
 
     const [userID, setUserID] = useState(null);
     useEffect( () => {
@@ -80,12 +81,24 @@ function AddRecipePage(){
 		setShowErrorModal(false);
 	};
 
+    const closeAIModal = () => {
+        setShowAIModal(false);
+    }
+
     const openTagSelectionModal = () => {
         setShowTagSelectionModal(true);
     }
 
     const toggleVisibility = () => {
         setVisibility(!visibility);
+    }
+
+    const setFinalRecipeName = (finalRecipeName) => {
+        setTitle(finalRecipeName);
+    }
+
+    const setFinalRecipeContent = (finalRecipeContent) => {
+        setContent(finalRecipeContent);
     }
 
     const dismissKeyboard = () => {
