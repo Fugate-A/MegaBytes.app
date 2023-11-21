@@ -41,14 +41,10 @@ function AuthPage( { navigation } ){
 					password: password,
 				}),
 			});
-			
-			console.log('\tLogging User in:');
-			console.log(`\tUsername: ${login}   Password: ${password}`);
 
 			const data = await response.json();
 
 			if(response.ok){
-				console.log('\tSuccess!');
 
 				await AsyncStorage.setItem('userID', data.id);
 				await AsyncStorage.setItem('username', username);
@@ -60,14 +56,12 @@ function AuthPage( { navigation } ){
 				setShowErrorModal(true);
 			}
 		} catch(error){
-			console.error("\tERROR CONNECTING TO DATABASE\n", error);
+			console.error("ERROR CONNECTING TO DATABASE\n", error);
 		}
 	};
 
 	const handleSignUp = async () => {
 		// Check if register information is correct, if so, proceed to LoginPage
-
-		//TODO Send email verification before adding credentials into database
 
 		if(email.size == 0 || password.size == 0 || username.size == 0){
 			setErrorMessage('Please fill in the required fields');
@@ -75,7 +69,7 @@ function AuthPage( { navigation } ){
 			return;
 		}
 		try {
-			const response = await fetch('http://164.90.130.112:5000/api/register', {
+			const response = await fetch('http://164.90.130.112:5000/api/verifyEmail', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -86,21 +80,17 @@ function AuthPage( { navigation } ){
 					email: email,
 				}),
 			});
-			
-			console.log('\tAdding new User:');
-			console.log(`\n\tEmail: ${email}\tUsername: ${username}\tPassword: ${password}`);
-			const data = await response.json();
+
 			if(response.ok){
-				console.log('\tSuccess');
-				
-				await AsyncStorage.setItem('userID', data.id);
+				setErrorMessage('An verification link has been sent to your email.');
+				setShowErrorModal(true);
 
 				setIsSignIn(true);
 			}else{
-				console.error("\tError\n");
+				console.error("Error");
 			}
 		} catch(error){
-			console.error("\tERROR CONNECTING TO DATABASE\n");
+			console.error("ERROR CONNECTING TO DATABASE\n");
 		}
 	};
 

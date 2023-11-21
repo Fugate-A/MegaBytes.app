@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard, ScrollView, Touchable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
+import AIRequestModal from '../components/AIRequestModal';
 
 
 function AddRecipePage(){
@@ -85,6 +86,10 @@ function AddRecipePage(){
         setShowAIModal(false);
     }
 
+    const openAIModal = () => {
+        setShowAIModal(true);
+    }
+
     const openTagSelectionModal = () => {
         setShowTagSelectionModal(true);
     }
@@ -112,6 +117,20 @@ function AddRecipePage(){
                     behavior={Platform.OS === 'ios' ? 'padding' : null}
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
                 >
+
+                    <TouchableOpacity onPress={openAIModal} style={aigenButton}>
+                        <Text>Generate with AI</Text>
+                    </TouchableOpacity>
+
+                    {showAIModal && (
+                        <AIRequestModal
+                            visible={showAIModal} 
+                            onClose={closeAIModal}
+                            setFinalRecipeName={setFinalRecipeName}
+                            setFinalRecipeContent={setFinalRecipeContent}
+                        />
+                    )}
+                    
                     <TouchableOpacity 
                         onPress={handleAddRecipe}
                         style={styles.submittButton}
@@ -202,6 +221,13 @@ const styles = StyleSheet.create({
         borderLeftWidth: 1,
         borderRightWidth: 1,
         borderRadius: 15,
+    },
+    aigenButton: {
+        alignSelf: 'flex-end',
+        marginRight: 15,
+        borderWidth: 1,
+        borderRadius: 15,
+        padding: 10,
     },
     submittButton: {
         alignSelf: 'flex-end',

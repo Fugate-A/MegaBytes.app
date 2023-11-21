@@ -6,6 +6,7 @@ function AIRequestModal ({ visible, onClose, setFinalRecipeName, setFinalRecipeC
     const [foodInput, setFoodInput] = useState('');
     const [recipeName, setRecipeName] = useState('');
     const [recipeContent, setRecipeContent] = useState('');
+
     const [inputFrozen, setInputFrozen] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -31,16 +32,12 @@ function AIRequestModal ({ visible, onClose, setFinalRecipeName, setFinalRecipeC
                 setRecipeName(data.RecipeName);
 
                 const formattedIngredients = data.Ingredients.map((ingredient) => `- ${ingredient}`).join('\n');
-
                 const formattedDirections = data.Ingredients.map((direction) => `- ${direction}`).join('\n');
-
                 const combinedContent = `Ingredients\n${formattedIngredients}\n\nDirections\n${formattedDirections}`;
                 setRecipeContent(combinedContent);
 
                 setFinalRecipeName(recipeName);
                 setFinalRecipeContent(recipeContent);
-
-                onClose();
 
             } else{
                 console.error('Error getting recipe information');
@@ -75,7 +72,7 @@ function AIRequestModal ({ visible, onClose, setFinalRecipeName, setFinalRecipeC
                         {loading ? (
                             <ActivityIndicator size="small" color="#0000ff" />
                         ) : (
-                            <Text style={styles.closeButton}>Close</Text>
+                            <Text style={styles.submitButton}>Submit</Text>
                         )}
                     </TouchableOpacity>
 
@@ -101,7 +98,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'gray', 
     },
     frozenInput: {
-        backgroundColor: 'lightgray', // Light gray background when input is frozen
+        backgroundColor: 'lightgray', 
     },
     textInput: {
         fontSize: 14,
