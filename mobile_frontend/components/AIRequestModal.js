@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         borderWidth: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#E3E3E3',
         padding: 20,
         borderRadius: 15,
     },
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Tilt-Neon',
         fontWeight: 'bold',
-        color: 'white',
+        color: 'black',
         textAlign: 'center',
     },
   });
