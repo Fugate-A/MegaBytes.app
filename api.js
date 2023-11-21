@@ -303,24 +303,29 @@ exports.setApp = function (app, client) {
 		const results = await db.collection('Recipes').findOne(filter);
 
 		const comments = results.CommentList;
-		for (let i = 0; i < comments.length; i++) {
-			let commentFilter = comments[i];
-			db.collection('Comments').deleteOne(commentFilter, (err, result) => {
-				if (err) {
-					console.error('Error deleting document:', err);
-				} else {
-					console.log('Deleted document successfully');
-				}
 
-			});
+		if(comments){
+			for (let i = 0; i < comments.length; i++) {
+				let commentFilter = comments[i];
+				db.collection('Comments').deleteOne(commentFilter, (err, result) => {
+					if (err) {
+						console.error('Error deleting document:', err);
+					} else {
+						console.log('Deleted document successfully');
+					}
+	
+				});
+			}
 		}
+
 		const user = await db.collection('User').findOne({ _id: results.UserId });
-
-		await db.collection('User').updateOne(
-			{ _id: user._id },
-			{ $pull: { RecipeList: { _id: new ObjectId(recipeId) } } }
-		);
-
+		
+		if(user){
+			await db.collection('User').updateOne(
+				{ _id: user._id },
+				{ $pull: { RecipeList: { _id: new ObjectId(recipeId) } } }
+			);
+		}
 		db.collection('Recipes').deleteOne(filter, (err, result) => {
 			if (err) {
 				console.error('Error deleting document:', err);
