@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const bcrypt = require('bcrypt');
+
 let transporter;
 
 const { ObjectId } = require('mongodb');
@@ -21,20 +23,32 @@ exports.setApp = function (app, client) {
 	   from: process.env.VerificationEmail
 	 });
 
-	app.post('/api/verifyEmail', (req, res) => {
-		const { to, subject, text } = req.body;
+	 app.post('/api/verifyEmail', async (req, res) => {
+		const { username, password, email } = req.body;
 
-		const token = jwt.sign({ email: to }, process.env.KeyTheJWT, { expiresIn: '1h' });
-
+		const hashedPassword = await bcrypt.hash(password, 10);
+	
+		// Include user information in the token payload
+		const tokenPayload = {
+			username,
+			password: hashedPassword,
+			email,
+		};
+	
+		const token = jwt.sign(tokenPayload, process.env.KeyTheJWT, {
+			expiresIn: '1h',
+		});
+	
 		const verificationLink = `https://megabytes.app/verify?token=${token}`;
-
+		//const verificationLink = `http://localhost:5000/verify?token=${token}`;
+	
 		const mailOptions = {
 			from: process.env.VerificationEmail,
-			to,
-			subject,
-			text: `${text}\n\nVerification Link: ${verificationLink}`
+			to: email,
+			subject: 'Email Verification',
+			text: `Verification Link: ${verificationLink}`,
 		};
-
+	
 		transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
 				console.error('Error sending email:', error);
@@ -44,24 +58,44 @@ exports.setApp = function (app, client) {
 				res.status(200).send('Email sent successfully');
 			}
 		});
-	});
-
-	app.get('/verify', (req, res) => {
+	  });
+	
+	  app.get('/verify', (req, res) => {
+		console.log('Received a request to /verify');
 		const token = req.query.token;
-
-		jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
+	  
+		jwt.verify(token, process.env.KeyTheJWT, async (err, decoded) => {
 			if (err) {
 				console.error('Error verifying token:', err);
-				res.status(400).send('Invalid token');
+				res.status(400).json({ error: 'Invalid token' }); // Return a JSON response for error
 			} else {
-				// Log the token to the console
-				console.log('Verified token:', decoded);
-
-				// You can also send a response to the client if needed
-				res.status(200).send(`Verification successful. Token: ${token}`);
+				// Extract user information from the decoded token
+				const { username, password, email } = decoded;
+			
+				// Log the decoded token and extracted user information
+				console.log('Decoded Token:', decoded);
+				console.log('Extracted User Info - Username:', username);
+				console.log('Extracted User Info - Password:', password);
+				console.log('Extracted User Info - Email:', email);
+			
+				
+				// Proceed with registration using the extracted information
+				const newUser = { Username: username, Password: password, Email: email };
+				var error = '';
+				try {
+					const db = client.db('MegaBitesLibrary');
+					db.collection('User').insertOne(newUser);
+				} catch (e) {
+					error = e.toString();
+				}
+				if (error) {
+					res.status(500).json({ error }); // Return a JSON response for error
+				} else {
+					res.status(200).json({ success: true }); // Return a JSON response for success
+				}
 			}
 		});
-	});
+	  });
 
 	app.post('/api/register', async (req, res, next) => {
 		// incoming:  username, password, email
@@ -156,30 +190,38 @@ exports.setApp = function (app, client) {
 		// outgoing: id, error
 		let error = '';
 		const { username, password } = req.body;
-		const isEmail = username.includes("@");
+		const isEmail = username.includes('@');
+
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const results = await (isEmail
-				? db.collection('User').find({ Email: username, Password: password }).toArray()
-				: db.collection('User').find({ Username: username, Password: password }).toArray());
+			const user = await (isEmail
+				? db.collection('User').find({ Email: username }).toArray()
+				: db.collection('User').find({ Username: username }).toArray());
 
-			var id = -1;
-			if (results.length > 0) {
-				id = results[0]._id;
+			if(!user){
+				return res.status(401).json({ error: 'Invalid credentials '});
 			}
+
+			const passwordMatch = await bcrypt.compare(password, user.Password);
+
+			if(passwordMatch){
+				res.status(200).json({ id: user._id, error: '' });
+			} else{
+				res.status(401).json({ error: 'Invalid credentials' });
+			}
+
 		}
-		catch (e) {
-			error = e.message()
+		catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal Server Error' });
 		}
-		let ret = { id: id, error: error };
-		res.status(200).json(ret);
 	});
 
 	app.post('/api/addRecipe', async (req, res) => {
 		// incoming: userId, recipeName, recipeContents, tagList, likeList
 		// outgoing: error
 
-		const { userId, recipeName, recipeContents, tagList, likeList, isPublic } = req.body;
+		const { userId, recipeName, recipeContents, tagList, likeList, isPublic, ai_generated } = req.body;
 		const newRecipe = {
 			UserId: new ObjectId(userId),
 			RecipeName: recipeName,
@@ -188,6 +230,7 @@ exports.setApp = function (app, client) {
 			LikeList: likeList,
 			IsPublic: isPublic,
 			CommentList: [],
+			AI_Generated: ai_generated,
 		};
 
 		try {
