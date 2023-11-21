@@ -80,6 +80,31 @@ exports.setApp = function (app, client) {
 		res.status(200).json(ret);
 	});
 
+	app.post('/api/updateLogin', async (req, res, next) => {
+		// incoming:  loginInfo(username/email) password
+		// outgoing: error
+		const { loginInfo, password, } = req.body;
+		var error = '';
+		try {
+			const db = client.db('MegaBitesLibrary');
+			await db.collection('User').updateOne(
+				{ $or: [
+					{ Username: loginInfo },
+					{ Email: loginInfo }
+				  ]
+				},
+				{ $set: { Password: password } }
+			  );
+		}
+		catch (e) {
+			error = e.toString();
+			var ret = { error: error };
+			res.status(500).json(ret);
+		}
+		var ret = { error: error };
+		res.status(200).json(ret);
+	});
+
 	app.post('/api/deleteUser', async (req, res, next) => {
 		// incoming:  userId
 		// outgoing: error
