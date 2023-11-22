@@ -97,11 +97,13 @@ exports.setApp = function (app, client) {
 		});
 	  });
 
-	app.post('/api/register', async (req, res, next) => {
+	  app.post('/api/register', async (req, res, next) => {
 		// incoming:  username, password, email
 		// outgoing: error
 		const { username, password, email } = req.body;
-		const newUser = { Username: username, Password: password, Email: email, RecipeList: [] };
+		var salt = bcrypt.genSaltSync(10);
+        var hash = bcrypt.hashSync(password, salt);
+		const newUser = { Username: username, Password: hash, Email: email, RecipeList: [] };
 		var error = '';
 		try {
 			const db = client.db('MegaBitesLibrary');
@@ -118,6 +120,8 @@ exports.setApp = function (app, client) {
 		// incoming:  loginInfo(username/email) password
 		// outgoing: error
 		const { loginInfo, password, } = req.body;
+		var salt = bcrypt.genSaltSync(10);
+        var hash = bcrypt.hashSync(password, salt);
 		var error = '';
 		try {
 			const db = client.db('MegaBitesLibrary');
@@ -127,7 +131,7 @@ exports.setApp = function (app, client) {
 					{ Email: loginInfo }
 				  ]
 				},
-				{ $set: { Password: password } }
+				{ $set: { Password: hash } }
 			  );
 		}
 		catch (e) {
