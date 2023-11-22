@@ -24,7 +24,6 @@ function AddComment({ recipe, onCommentSubmit }) {
         try{
 
             const userID = await AsyncStorage.getItem('userID');
-            console.log(userID);
 
             const response = await fetch('http://164.90.130.112:5000/api/addComment', {
                 method: 'POST',
@@ -40,7 +39,6 @@ function AddComment({ recipe, onCommentSubmit }) {
             });
 
             if(response.ok){
-                console.log('Comment added successfully');
                 onCommentSubmit();
                 navigation.navigate('RecipePage', {recipe});
             }else{
@@ -121,6 +119,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Tilt-Neon',
         borderWidth: 1,
         borderRadius: 15,
+        backgroundColor: '#FFE6C5',
+        
     },
     submittButton: {
         alignSelf: 'flex-end',

@@ -261,9 +261,9 @@ function RecipePage() {
 
             <View style={styles.extrasBar}>
                 <TouchableOpacity onPress={toggleLike}>
-                    <Text style={[styles.likeButton, liked && styles.likedButton]}>Like</Text>
+                    <Text style={[styles.likeButton, liked && styles.likedButton]}>⇧</Text>
                 </TouchableOpacity>
-                <Text style={styles.likeCount}>{likeNumber}</Text>
+                <Text style={[styles.likeCount, liked && styles.likedCount]}>{likeNumber}</Text>
             </View>
 
             <View style={styles.addCommentContainer}>
@@ -273,6 +273,15 @@ function RecipePage() {
             <View style={styles.commentSection}>
                 <Text style={styles.commentSectionText}>Comments</Text>
                 {renderComments()}
+            </View>
+
+            <View style={styles.emojiContainer}>
+                {recipe.AI_Generated && (
+                    <Text style={styles.emojiText}>🤖</Text>
+                )}
+                {recipe.IsPublic && (
+                    <Text style={styles.emojiText}>🌍</Text>
+                )}
             </View>
             
 
@@ -307,8 +316,11 @@ const styles = StyleSheet.create({
     recipeTitleContainer: {
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
+        borderWidth: 1,
+        borderColor: 'gray',
         padding: 10,
         marginBottom: 10,
+        backgroundColor: '#FFE6C5',
     },
     recipeTitleText: {
         fontSize: 24,
@@ -319,6 +331,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 5,
+        borderTopWidth: 1,
+        borderTopColor: 'gray',
     },
     recipeContentContainer: {
         borderBottomWidth: 1,
@@ -327,14 +341,17 @@ const styles = StyleSheet.create({
         borderRightColor: 'gray',
         borderLeftWidth: 1,
         borderLeftColor: 'gray',
+        borderWidth: 1,
+        borderColor: 'gray',
         padding: 10,
+        backgroundColor: '#FFE6C5',
     },
     recipeContentText: {
         fontSize: 14,
         fontFamily: 'Tilt-Neon',
     },
     extrasBar: {
-        flexDirection: 'col',
+        flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
         borderRightWidth: 1,
@@ -342,11 +359,17 @@ const styles = StyleSheet.create({
         borderLeftWidth: 1,
         borderLeftColor: 'gray',
         padding: 10,
+
+        paddingHorizontal: 20,
+        backgroundColor: '#FFE6C5',
+        
     },
     likeButton: {
-        fontSize: 16,
+        fontSize: 24,
         fontFamily: 'Tilt-Neon',
         color: 'gray',
+        marginRight: 10,
+        marginTop: -5,
     },
     likedButton: {
         color: 'green',
@@ -365,9 +388,12 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     likeCount: {
-        fontSize: 16,
+        fontSize: 24,
         fontFamily: 'Tilt-Neon',
         color: 'gray',
+    },
+    likedCount: {
+        color: 'green',
     },
     addCommentContainer: {
         paddingHorizontal: 10,
@@ -381,6 +407,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'Tilt-Neon',
         marginBottom: 5,
+    },
+    emojiContainer: {
+        position: 'absolute',
+        flexDirection: 'row',
+        top: 60,
+        right: 5,
+
+    },
+    emojiText: {
+        fontSize: 15,
     },
 });
 

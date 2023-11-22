@@ -1,44 +1,61 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+import NavigationBar from "../components/NavigationBar";
 
 function ProfilePage() {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
 
-    useEffect(() => {
-        
-        const fetchUserData = async () => {
-            try {
-                const storedUsername = await AsyncStorage.getItem('username');
-                const storedEmail = await AsyncStorage.getItem('email');
+    const fetchUser = async () => {
+        try {
+            const response = await fetch('http://164.90.130.112:5000/api/getUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
-                setUsername(storedUsername);
-                setEmail(storedEmail);
-            } catch(error){
-                console.error('Error fetching user data from cache', error);
+                body: JSON.stringify({
+                    userId: await AsyncStorage.getItem('userID')
+                }),
+            });
+            const data = await response.json();
+
+
+            if(response.ok) {
+                setUsername(data.results.Username);
+                setEmail(data.results.Email);
+            } else{
+                console.error('Error retrieving user');
             }
-        };
+        } catch(error){
+            console.error('Error connecting to database', error);
+        }
+    };
 
-        fetchUserData();
+    useEffect(() => {
+        fetchUser();
     }, []);
 
     return (
         <View style={styles.container}>
-            <View style={styles.card}>
-                <MaterialCommunityIcons name="account-circle" size={120} color="#2196F3" style={styles.avatar} />
 
-                <Text style={styles.username}>{username}</Text>
+            <View style={styles.card}>
+
+                <MaterialCommunityIcons name='account' size={64} style={styles.avatar}/>
+
+                <Text style={styles.username}>Username: {username}</Text>
 
                 <Text>Email: {email}</Text>
-
-                <View style={styles.editButton}>
-                    <MaterialCommunityIcons name="pencil" size={24} color="#2196F3" onPress={() => console.log('Edit pressed')} />
-                </View>
                 
+            </View>
+
+            <NavigationBar />
+
         </View>
-    </View>
     );
 }
 
@@ -47,13 +64,15 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
+        backgroundColor: '#FFF0DC',
     },
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: '#FFE6C5',
+        marginTop: -250,
+        height: '30%',
+        borderWidth: 1,
         padding: 20,
         borderRadius: 10,
-        elevation: 3,
         alignItems: 'center',
     },
     avatar: {
@@ -66,6 +85,10 @@ const styles = StyleSheet.create({
     },
     editButton: {
         marginTop: 16,
+    },
+    image: {
+        width: 250,
+        height: 250,
     },
   });
 

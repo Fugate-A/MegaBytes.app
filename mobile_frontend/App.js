@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import AddRecipePage from './pages/AddRecipePage';
 import RecipePage from './pages/RecipePage';
+import ProfilePage from './pages/ProfilePage';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,8 +40,9 @@ export default function App() {
 			<Stack.Screen name="Explore" component={ExplorePage} />
 			<Stack.Screen name="AddRecipe" component={AddRecipePage} />
 			<Stack.Screen name="RecipePage" component={RecipePage} />
+			<Stack.Screen name="Profile" component={ProfilePage} />
 		</Stack.Navigator>
-</NavigationContainer>
+	</NavigationContainer>
   );
 }
 

@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 15,
         marginBottom: 10,
+        backgroundColor: '#FFE6C5',
     },
     commentAuthorContainer: {
         borderBottomWidth: 1,
