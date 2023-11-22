@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
 import AIRequestModal from '../components/AIRequestModal';
+import TagComponent from '../components/TagComponent';
 
 
 function AddRecipePage(){
@@ -23,6 +24,7 @@ function AddRecipePage(){
     const [showAIModal, setShowAIModal] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
     const [isTextInputFocused, setIsTextInputFocused] = useState(false);
+
 
     const [userID, setUserID] = useState(null);
     useEffect( () => {
@@ -72,7 +74,7 @@ function AddRecipePage(){
 				setShowErrorModal(true);
             }
         } catch(error) {
-            console.error("\tERROR CONNECTING TO DATABASE\n", error);
+            console.error("ERROR CONNECTING TO DATABASE\n", error);
         }
         
 
@@ -125,8 +127,6 @@ function AddRecipePage(){
     return (
         <ScrollView 
             style={styles.container}
-            onScrollBeginDrag={handleScrollBegin}
-            onScrollEndDrag={handleScrollEnd}
         >
             <TouchableWithoutFeedback onPress={dismissKeyboard}>
                 
@@ -176,7 +176,7 @@ function AddRecipePage(){
                     </View>
 
                     <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
-                        <Text>Add Tags</Text>
+                        <Text style={styles.addTagsText}>Add Tags</Text>
                     </TouchableOpacity>
                     
                     {showTagSelectionModal && (
@@ -189,7 +189,7 @@ function AddRecipePage(){
                     )}
 
                     <View style={styles.visibilityContainer}>
-                        <Text style={styles.visibilityLabel}>Visibility:</Text>
+                        <Text style={styles.visibilityLabel}>Privacy:</Text>
                         <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
                             <View style={[styles.radioCircle, {backgroundColor: visibility ? 'green' : 'white'}]} />
                         </TouchableOpacity>
@@ -204,8 +204,6 @@ function AddRecipePage(){
                     onClose={closeErrorModal}
                 />
                 </View>
-            
-
                 
             </TouchableWithoutFeedback>
         </ScrollView>
@@ -248,10 +246,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#51E564',
     },
     inputContainer: {
-        marginTop: -25,
+        marginTop: -15,
         padding: 10,
     },
     titleInput: {
+        backgroundColor: '#FFE6C5',
+        borderRadius: 15,
         width: '100%',
         height: 80,
         marginVertical: 10,
@@ -263,6 +263,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
     },
     contentInputContainer: {
+        backgroundColor: '#FFE6C5',
         height: '65%',
         borderRadius: 15,
         borderLeftColor: 'grey',
@@ -277,16 +278,27 @@ const styles = StyleSheet.create({
         fontFamily: 'Tilt-Neon',
         padding: 10,
     },
+    addTagsText: {
+        fontFamily: 'Tilt-Neon',
+    },
     addTagsButton: {
-        borderWidth: 1,
+        backgroundColor: '#FFE6C5',
+        borderWidth: 0.5,
         borderRadius: 15,
         padding: 10,
         marginTop: 10,
+        width: 90,
     },
     visibilityContainer: {
+        backgroundColor: '#FFE6C5',
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 10,
+
+        width: 200,
+        padding: 10,
+        borderRadius: 15,
+        borderWidth: 0.5,
     },
     visibilityLabel: {
         marginRight: 10,

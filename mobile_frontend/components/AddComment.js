@@ -40,6 +40,7 @@ function AddComment({ recipe, onCommentSubmit }) {
 
             if(response.ok){
                 onCommentSubmit();
+                setContent('');
                 navigation.navigate('RecipePage', {recipe});
             }else{
                 console.error('Error adding comment');
