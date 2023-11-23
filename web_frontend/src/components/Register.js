@@ -10,7 +10,7 @@ function Register() {
 
     try {
       //await fetch('http://localhost:5000/api/verifyEmail', {
-        await fetch('http://megabytes.app/api/verifyEmail', {
+        await fetch('https://megabytes.app/api/verifyEmail', {
         method: 'POST',
         body: js,
         headers: {
