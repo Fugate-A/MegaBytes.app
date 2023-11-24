@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     },
     dimmedTagContainer: {
         opacity: 0.5,
+        backgroundColor: 'gray',
     },
     tagText: {
         color: 'black',

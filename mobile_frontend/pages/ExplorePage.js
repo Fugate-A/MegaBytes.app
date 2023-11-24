@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'space-between',
         borderWidth: 3,
+        paddingTop: 40,
     },
     explorePageText: {
         fontSize: 24,

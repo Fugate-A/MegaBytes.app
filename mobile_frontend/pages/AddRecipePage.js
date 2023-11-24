@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         backgroundColor: '#FFF0DC',
         padding: 10,
+        paddingTop: 40,
     },
     topButtons: {
         flexDirection: 'row',

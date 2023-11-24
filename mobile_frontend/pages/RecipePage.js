@@ -271,7 +271,9 @@ function RecipePage() {
             </View>
 
             <View style={styles.commentSection}>
-                <Text style={styles.commentSectionText}>Comments</Text>
+                <View style={styles.commentSectionHeader}>
+                    <Text style={styles.commentSectionText}>Comments</Text>
+                </View>
                 {renderComments()}
             </View>
 
@@ -295,6 +297,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFF0DC',
         padding: 10,
+        paddingTop: 40,
     },
     recipeAuthorContainer: {
         padding: 10,
@@ -401,7 +404,13 @@ const styles = StyleSheet.create({
     },
     commentSection: {
         flex: 1,
-        marginBottom: 40,
+        marginBottom: 60,
+    },
+    commentSectionHeader: {
+        borderBottomWidth: 0.5,
+        width: '50%',
+        borderColor: 'gray',
+        marginBottom: 5,
     },
     commentSectionText: {
         fontSize: 18,

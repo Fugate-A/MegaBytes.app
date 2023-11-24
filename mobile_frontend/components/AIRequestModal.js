@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#E3E3E3',
         padding: 20,
         borderRadius: 15,
+        width: '80%',
     },
     frozenInput: {
         backgroundColor: 'lightgray',
