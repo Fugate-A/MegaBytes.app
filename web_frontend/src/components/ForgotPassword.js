@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for React Router v6
 
 function ForgotPassword() {
   var emailInput;
   var bp = require('./Path.js');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // For React Router v6
 
   const sendResetEmail = async event => {
     event.preventDefault();
@@ -11,21 +13,27 @@ function ForgotPassword() {
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(bp.buildPath('api/forgotPassword'), {
-        method: 'POST', 
-        body: js, 
+        method: 'POST',
+        body: js,
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      var res = JSON.parse(await response.text());
-      if (res.error) {
-        setMessage(res.error);
+
+      if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
+        var res = await response.json();
+        if (res.error) {
+          setMessage(res.error);
+        } else {
+          setMessage(res.message); // Display success message
+          setTimeout(() => {
+            navigate('/'); // Replace '/login' with your login route
+          }, 3000); // Redirect after 3 seconds
+        }
+      } else {
+        throw new Error('Non-JSON response received or response not OK');
       }
-      else {
-        setMessage('A reset link has been sent to your email.');
-      }
-    }
-    catch (e) {
+    } catch (e) {
       alert(e.toString());
       return;
     }

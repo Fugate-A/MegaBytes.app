@@ -29,18 +29,15 @@ exports.setApp = function (app, client) {
 		try {
 		  const db = client.db('MegaBitesLibrary');
 		  const user = await db.collection('User').findOne({ Email: email.toLowerCase() });
-	  
+		  
 		  if (!user) {
-			res.status(404).send('User with that email does not exist.');
-			return;
+			return res.status(404).json({ error: 'User with that email does not exist.' });
 		  }
-	  
+		  
 		  const token = jwt.sign({ userId: user._id }, process.env.KeyTheJWT, {
 			expiresIn: '1h', // The token will expire in 1 hour
 		  });
-	  
-		  // Save the token and expiry date to the user's document in the database
-		  // You might want to add fields to your User collection schema to store this
+		  
 		  await db.collection('User').updateOne(
 			{ _id: user._id },
 			{
@@ -50,31 +47,34 @@ exports.setApp = function (app, client) {
 			  },
 			}
 		  );
-	  
-		  const resetLink = `https://megabytes.app/resetPassword?token=${token}`;
-		  //const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
-	  
+		  
+		  const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
+		  
 		  const mailOptions = {
 			from: process.env.VerificationEmail,
 			to: email,
 			subject: 'Password Reset',
 			text: `Please use the following link to reset your password: ${resetLink}`,
 		  };
-	  
-		  transporter.sendMail(mailOptions, (error, info) => {
-			if (error) {
-			  console.error('Error sending email:', error);
-			  res.status(500).send('Error sending email');
-			} else {
-			  console.log('Password reset email sent: ' + info.response);
-			  res.status(200).send('Password reset email sent successfully');
-			}
+		  
+		  await new Promise((resolve, reject) => {
+			transporter.sendMail(mailOptions, (error, info) => {
+			  if (error) {
+				reject(error);
+			  } else {
+				resolve(info);
+			  }
+			});
 		  });
+		  
+		  console.log('Password reset email sent successfully');
+		  res.status(200).json({ message: 'Password reset email sent successfully' });
 		} catch (error) {
 		  console.error('Forgot Password error:', error);
-		  res.status(500).send('Error processing forgot password.');
+		  res.status(500).json({ error: 'Error processing forgot password.' });
 		}
 	  });
+	  
 	  
 
 	 app.post('/api/verifyEmail', async (req, res) => {
@@ -104,14 +104,15 @@ exports.setApp = function (app, client) {
 		};
 	
 		transporter.sendMail(mailOptions, (error, info) => {
-		  if (error) {
-			console.error('Error sending email:', error);
-			res.status(500).send('Error sending email');
-		  } else {
-			console.log('Email sent: ' + info.response);
-			res.status(200).send('Email sent successfully');
-		  }
-		});
+			if (error) {
+			  console.error('Error sending email:', error);
+			  res.status(500).json({ error: 'Error sending email' }); // Send JSON response here
+			} else {
+			  console.log('Email sent: ' + info.response);
+			  res.status(200).json({ message: 'Email sent successfully' }); // Send JSON response here
+			}
+		  });
+		  
 	  });
 	
 	  app.get('/verify', (req, res) => {
