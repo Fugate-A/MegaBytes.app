@@ -23,6 +23,60 @@ exports.setApp = function (app, client) {
 	   from: process.env.VerificationEmail
 	 });
 
+	 app.post('/api/forgotPassword', async (req, res) => {
+		const { email } = req.body;
+		
+		try {
+		  const db = client.db('MegaBitesLibrary');
+		  const user = await db.collection('User').findOne({ Email: email.toLowerCase() });
+	  
+		  if (!user) {
+			res.status(404).send('User with that email does not exist.');
+			return;
+		  }
+	  
+		  const token = jwt.sign({ userId: user._id }, process.env.KeyTheJWT, {
+			expiresIn: '1h', // The token will expire in 1 hour
+		  });
+	  
+		  // Save the token and expiry date to the user's document in the database
+		  // You might want to add fields to your User collection schema to store this
+		  await db.collection('User').updateOne(
+			{ _id: user._id },
+			{
+			  $set: {
+				resetPasswordToken: token,
+				resetPasswordExpires: new Date(Date.now() + 3600000), // 1 hour from now
+			  },
+			}
+		  );
+	  
+		  const resetLink = `https://megabytes.app/resetPassword?token=${token}`;
+		  //const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
+	  
+		  const mailOptions = {
+			from: process.env.VerificationEmail,
+			to: email,
+			subject: 'Password Reset',
+			text: `Please use the following link to reset your password: ${resetLink}`,
+		  };
+	  
+		  transporter.sendMail(mailOptions, (error, info) => {
+			if (error) {
+			  console.error('Error sending email:', error);
+			  res.status(500).send('Error sending email');
+			} else {
+			  console.log('Password reset email sent: ' + info.response);
+			  res.status(200).send('Password reset email sent successfully');
+			}
+		  });
+		} catch (error) {
+		  console.error('Forgot Password error:', error);
+		  res.status(500).send('Error processing forgot password.');
+		}
+	  });
+	  
+
 	 app.post('/api/verifyEmail', async (req, res) => {
 		const { username, password, email } = req.body;
 
