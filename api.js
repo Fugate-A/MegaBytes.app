@@ -422,22 +422,41 @@ exports.setApp = function (app, client) {
 	});
 
 	app.post('/api/getRecipes', async (req, res, next) => {
-		// incoming: search
+		// incoming: userId, search, isPublic
 		// outgoing: results[], error
 
 		var error = '';
-		const { search } = req.body;
+		var results;
+		const { userId, search, isPublic } = req.body;
 		var _search = search.trim();
 		const db = client.db('MegaBitesLibrary');
-		const results = await
-			db.collection('Recipes').find({
-				"RecipeName": {
-					$regex: _search + '.*',
-					$options: 'i'
-				}
-			}).toArray();
 
-		var ret = { results: results, error: error };
+		try {
+			if (isPublic) {
+				results = await
+					db.collection('Recipes').find({
+						"IsPublic": true,
+						"RecipeName": {
+							$regex: _search + '.*',
+							$options: 'i'
+						}
+					}).toArray();
+			} else {
+				results = await
+					db.collection('Recipes').find({
+						"UserId": new ObjectId(userId),
+						"RecipeName": {
+							$regex: search + '.*',
+							$options: 'i'
+						}
+					}).toArray();
+			}
+		} catch (e) {
+			console.error(e);
+			res.status(500).json({ e: 'Internal error' });
+		}
+
+		var ret = { results: results, error: error,  };
 		res.status(200).json(ret);
 	});
 
