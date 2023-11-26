@@ -22,7 +22,8 @@ function PasswordReset() {
     const token = params.get('token'); // Assuming the URL contains "?token=xxxx"
 
     try {
-      const response = await fetch('/api/updatePassword', {
+      //const response = await fetch('/api/updatePassword', {
+        const response = await fetch('http://localhost:5000/api/updatePassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
@@ -30,7 +31,7 @@ function PasswordReset() {
 
       if (response.ok) {
         // Handle success, perhaps show a success message or redirect to the login page
-        navigate('/login', { replace: true });
+        navigate('/', { replace: true });
       } else {
         const res = await response.json();
         setError(res.error || 'Password reset failed.');

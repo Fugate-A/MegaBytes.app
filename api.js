@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
+const cors = require('cors');
 const bcrypt = require('bcrypt');
 
 let transporter;
@@ -120,8 +120,6 @@ exports.setApp = function (app, client) {
 		}
 	  });
 	  
-	  
-
 	 app.post('/api/verifyEmail', async (req, res) => {
 		const { username, password, email } = req.body;
 
