@@ -25,33 +25,31 @@ exports.setApp = function (app, client) {
 
 	 app.post('/api/updatePassword', async (req, res) => {
 		const { token, password } = req.body;
-	
+	  
 		if (!token || !password) {
 		  return res.status(400).json({ error: 'Request missing token or password.' });
 		}
-	
+	  
 		try {
 		  // Verify the token is valid and not expired
 		  const decoded = jwt.verify(token, process.env.KeyTheJWT);
 		  const userId = decoded.userId;
-	
+	  
 		  // Check if the user exists
 		  const db = client.db('MegaBitesLibrary');
 		  const user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
-	
+	  
 		  if (!user) {
 			return res.status(404).json({ error: 'User not found.' });
 		  }
-	
-		  // Hash the new password
-		  const hashedPassword = await bcrypt.hash(password, 10);
-	
+	  
 		  // Update the user's password in the database
+		  // Instead of hashing the new password, we directly set the Password field
 		  await db.collection('User').updateOne(
 			{ _id: user._id },
-			{ $set: { Password: hashedPassword } }
+			{ $set: { Password: password } } // Overwrite the old password with the new one
 		  );
-	
+	  
 		  console.log('Password updated successfully for user:', user.Username);
 		  res.status(200).json({ message: 'Password updated successfully.' });
 		} catch (error) {
