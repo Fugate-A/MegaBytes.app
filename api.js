@@ -23,6 +23,49 @@ exports.setApp = function (app, client) {
 	   from: process.env.VerificationEmail
 	 });
 
+	 app.post('/api/updatePassword', async (req, res) => {
+		const { token, password } = req.body;
+	
+		if (!token || !password) {
+		  return res.status(400).json({ error: 'Request missing token or password.' });
+		}
+	
+		try {
+		  // Verify the token is valid and not expired
+		  const decoded = jwt.verify(token, process.env.KeyTheJWT);
+		  const userId = decoded.userId;
+	
+		  // Check if the user exists
+		  const db = client.db('MegaBitesLibrary');
+		  const user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
+	
+		  if (!user) {
+			return res.status(404).json({ error: 'User not found.' });
+		  }
+	
+		  // Hash the new password
+		  const hashedPassword = await bcrypt.hash(password, 10);
+	
+		  // Update the user's password in the database
+		  await db.collection('User').updateOne(
+			{ _id: user._id },
+			{ $set: { Password: hashedPassword } }
+		  );
+	
+		  console.log('Password updated successfully for user:', user.Username);
+		  res.status(200).json({ message: 'Password updated successfully.' });
+		} catch (error) {
+		  if (error.name === 'JsonWebTokenError') {
+			res.status(400).json({ error: 'Invalid token.' });
+		  } else if (error.name === 'TokenExpiredError') {
+			res.status(400).json({ error: 'Token expired.' });
+		  } else {
+			console.error('Update Password error:', error);
+			res.status(500).json({ error: 'Error updating password.' });
+		  }
+		}
+	  });
+
 	 app.post('/api/forgotPassword', async (req, res) => {
 		const { email } = req.body;
 		
@@ -48,7 +91,9 @@ exports.setApp = function (app, client) {
 			}
 		  );
 		  
-		  const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
+		  //const resetLink = `http://megabytes.app/resetPassword?token=${token}`;
+		  //const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
+		  const resetLink = `http://localhost:3000/resetPassword?token=${token}`;
 		  
 		  const mailOptions = {
 			from: process.env.VerificationEmail,
