@@ -190,33 +190,33 @@ function AddRecipePage(){
                             />
                         )}
 
-                <View style={styles.visibilityContainer}>
-                    <Text style={styles.visibilityLabel}>Privacy:</Text>
+                        <View style={styles.visibilityContainer}>
+                            <Text style={styles.visibilityLabel}>Privacy:</Text>
 
-                    <View style={styles.visibilityTextContainer}>
-                        <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
-                            <View style={[styles.radioCircle, { backgroundColor: visibility ? 'green' : 'white' }]} />
-                        </TouchableOpacity>
-                        <Text style={styles.visibilityLabel}>{visibility ? 'Public' : 'Private'}</Text>
+                            <View style={styles.visibilityTextContainer}>
+                                <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
+                                    <View style={[styles.radioCircle, { backgroundColor: visibility ? 'green' : 'white' }]} />
+                                </TouchableOpacity>
+                                <Text style={styles.visibilityLabel}>{visibility ? 'Public' : 'Private'}</Text>
+                            </View>
+
+                            <View style={styles.visibilityIconContainer}>
+                                {visibility ? (
+                                    <MaterialCommunityIcons name='lock-open-outline' size={35} color='black' />
+                                ) : (
+                                    <MaterialCommunityIcons name='lock-outline' size={35} color='black' />
+                                )}
+                            </View>
+
+                        </View>
+
                     </View>
 
-                    <View style={styles.visibilityIconContainer}>
-                        {visibility ? (
-                            <MaterialCommunityIcons name='lock-open-outline' size={35} color='black' />
-                        ) : (
-                            <MaterialCommunityIcons name='lock-outline' size={35} color='black' />
-                        )}
-                    </View>
-
-                </View>
-
-                </View>
-
-                <ErrorMessageModal
-                    visible={showErrorModal}
-                    message={errorMessage}
-                    onClose={closeErrorModal}
-                />
+                    <ErrorMessageModal
+                        visible={showErrorModal}
+                        message={errorMessage}
+                        onClose={closeErrorModal}
+                    />
                 </View>
                 
             </TouchableWithoutFeedback>
