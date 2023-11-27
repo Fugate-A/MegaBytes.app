@@ -7,7 +7,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
 import AIRequestModal from '../components/AIRequestModal';
-import TagComponent from '../components/TagComponent';
 
 
 function AddRecipePage(){

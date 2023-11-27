@@ -10,7 +10,8 @@ import CommentContainer from '../components/CommentContainer';
 
 function RecipePage() {
     const navigation = useNavigation();
-    const userID = AsyncStorage.getItem('userID')._j;
+
+    const [userID, setUserID] = useState(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -64,7 +65,7 @@ function RecipePage() {
             }
         } catch(error){
             console.error('Error connecting to database', error);
-        }
+        } 
     };
 
     const fetchComments = async () => {
@@ -159,11 +160,21 @@ function RecipePage() {
         );
     };
 
+    const fetchUserID = async () => {
+        try {
+            const storedUserID = await AsyncStorage.getItem('userID');
+            setUserID(storedUserID);
+        } catch (error) {
+            console.error('Error retrieving userID from cache', error);
+        }
+    };
+
     useEffect(() => {
 
         fetchComments();
         fetchTags();
         fetchUser();
+        fetchUserID();
 
         setLoading(false);
     }, []);
@@ -243,7 +254,7 @@ function RecipePage() {
                     <Text style={styles.recipeAuthorText}>u/{author}</Text>
                 </View>
 
-                {(userID == recipe.UserID) && (
+                {(userID == recipe.UserId) && (
                     <TouchableOpacity style={styles.deleteButton} onPress={deleteRecipe}>
                         <Text style={styles.deleteButtonText}>Delete Recipe</Text>
                     </TouchableOpacity>
