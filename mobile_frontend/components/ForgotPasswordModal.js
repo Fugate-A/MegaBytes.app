@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, StyleSheet, Text, TouchableWithoutFeedback, TouchableOpacity, TextInput, Keyboard } from 'react-native';
+import { Modal, View, StyleSheet, Text, TouchableWithoutFeedback, TouchableOpacity, TextInput, Keyboard, KeyboardAvoidingView } from 'react-native';
 
 import ErrorMessageModal from '../components/ErrorMessageModal';
 
@@ -34,7 +34,6 @@ function ForgotPasswordModal({ visible, onClose }) {
             if(response.ok){
                 setErrorMessage('An verification link has been sent to your email.');
 				setShowErrorModal(true);
-                onClose();
 
             }else{
                 console.error('Error sending email');
@@ -55,10 +54,6 @@ function ForgotPasswordModal({ visible, onClose }) {
         Keyboard.dismiss();
     };
 
-    const handlePressOutside = () => {
-        dismissKeyboard();
-        onClose();
-    };
 
     return (
         <Modal
@@ -66,14 +61,18 @@ function ForgotPasswordModal({ visible, onClose }) {
             animationType='fade'
             transparent={true}
         >
-            <TouchableWithoutFeedback onPress={handlePressOutside}>
+            <TouchableWithoutFeedback onPress={dismissKeyboard}>
                 <View style={styles.container}>
                     <View style={styles.modalContent}>
-                    <ErrorMessageModal
-                        visible={showErrorModal}
-                        message={errorMessage}
-                        onClose={closeErrorModal}
-                    />
+                        <ErrorMessageModal
+                            visible={showErrorModal}
+                            message={errorMessage}
+                            onClose={closeErrorModal}
+                        />
+
+                        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                            <Text>X</Text>
+                        </TouchableOpacity>
                         
                         <Text style={styles.modalLabel}>Enter your email address</Text>
                         <View style={styles.inputContainer}>
@@ -94,7 +93,7 @@ function ForgotPasswordModal({ visible, onClose }) {
                             <Text style={styles.submitButtonText}>Submit</Text>
                         </TouchableOpacity>
 
-                        </View>
+                    </View>
                     
                 </View>
             
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Tilt-Neon',
     },
     submitButton: {
-        backgroundColor: '#FFE6C5',
+        backgroundColor: '#E79B11', 
         alignSelf: 'flex-end',
         marginTop: 10,
         padding: 10,
@@ -149,6 +148,12 @@ const styles = StyleSheet.create({
     submitButtonText: {
         fontSize: 16,
         fontFamily: 'Tilt-Neon',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 10,
     },
   });
 
