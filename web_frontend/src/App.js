@@ -7,7 +7,9 @@ import RegisterPage from './pages/RegisterPage';
 import IndexPage from './pages/IndexPage';
 import CreatePage from './pages/CreatePage';
 import CommunityPage from './pages/CommunityPage';
-import VerifyEmail from './components/VerifyEmail'; // Import the VerifyEmail component
+import VerifyEmail from './components/VerifyEmail';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage'; // Import the ResetPasswordPage
 
 function App() {
   return (
@@ -19,8 +21,9 @@ function App() {
         <Route path="/i" element={<IndexPage />} />
         <Route path="/cre" element={<CreatePage />} />
         <Route path="/com" element={<CommunityPage />} />
-        {/* Add a route for the VerifyEmail component with a query parameter */}
         <Route path="/verify" element={<VerifyEmail />} />
+        <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
+        <Route path="/resetPassword" element={<ResetPasswordPage />} />
       </Routes>
     </BrowserRouter>
   );
