@@ -43,11 +43,13 @@ exports.setApp = function (app, client) {
 			return res.status(404).json({ error: 'User not found.' });
 		  }
 	  
+		  const updatePassHash = await bcrypt.hash(password, 10);
+
 		  // Update the user's password in the database
 		  // Instead of hashing the new password, we directly set the Password field
 		  await db.collection('User').updateOne(
 			{ _id: user._id },
-			{ $set: { Password: password } } // Overwrite the old password with the new one
+			{ $set: { Password: updatePassHash } } // Overwrite the old password with the new one
 		  );
 	  
 		  console.log('Password updated successfully for user:', user.Username);
@@ -141,7 +143,7 @@ exports.setApp = function (app, client) {
 			from: process.env.VerificationEmail,
 			to: email,
 			subject: 'Email Verification',
-			text: `Verification Link: ${verificationLink}`,
+			text: `Please use the following link to verify your email and create your account: ${verificationLink}`,
 		};
 	
 		transporter.sendMail(mailOptions, (error, info) => {
