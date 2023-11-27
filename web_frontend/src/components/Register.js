@@ -1,26 +1,39 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const sendVerificationEmail = async (username, password, email) => {
     const obj = { username, password, email };
     const js = JSON.stringify(obj);
 
     try {
-      //await fetch('http://localhost:5000/api/verifyEmail', {
-        await fetch('http://megabytes.app/api/verifyEmail', {
+      const response = await fetch('https://megabytes.app/api/verifyEmail', {
         method: 'POST',
         body: js,
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      // No need to handle the response
+
+      if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
+        var res = await response.json();
+        if (res.error) {
+          setMessage(res.error);
+        } else {
+          setMessage(res.message);
+          setTimeout(() => {
+            navigate('/'); // Adjust this route as needed
+          }, 3000);
+        }
+      } else {
+        throw new Error('Non-JSON response received or response not OK');
+      }
     } catch (e) {
-      console.error('Error sending verification email:', e);
-      // No message setting here
+      alert(e.toString());
+      return;
     }
   };
 
@@ -31,25 +44,77 @@ function Register() {
     const regEmail = event.target.email.value;
 
     sendVerificationEmail(regUsername, regPassword, regEmail);
-    navigate('/'); // Redirect to the main page immediately
   };
 
   return (
     <div id="registerDiv">
       <form onSubmit={registerUser}>
-        <div>
-          <label>Username:</label>
-          <input type="text" name="username" required />
+        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+          <div className="sm:mx-auto sm:w-full sm:max-w-md">
+            <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
+              Register
+            </h2>
+          </div>
+
+          <div className="mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-md bg-orange-100 border-4 border-neutral-950 rounded-lg">
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+                  Username
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                    placeholder="Username"
+                    className="appearance-none block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                  Password
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    placeholder="Password"
+                    className="appearance-none block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                  Email
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="Email"
+                    className="appearance-none block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="flex w-full justify-center rounded-md bg-orange-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:ring-indigo active:bg-indigo-700"
+                >
+                  Register
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" name="password" required />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input type="email" name="email" required />
-        </div>
-        <button type="submit">Register</button>
+        <span id="registerResult">{message}</span>
       </form>
     </div>
   );

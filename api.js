@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
+const cors = require('cors');
 const bcrypt = require('bcrypt');
 
 let transporter;
@@ -23,6 +23,103 @@ exports.setApp = function (app, client) {
 	   from: process.env.VerificationEmail
 	 });
 
+	 app.post('/api/updatePassword', async (req, res) => {
+		const { token, password } = req.body;
+	  
+		if (!token || !password) {
+		  return res.status(400).json({ error: 'Request missing token or password.' });
+		}
+	  
+		try {
+		  // Verify the token is valid and not expired
+		  const decoded = jwt.verify(token, process.env.KeyTheJWT);
+		  const userId = decoded.userId;
+	  
+		  // Check if the user exists
+		  const db = client.db('MegaBitesLibrary');
+		  const user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
+	  
+		  if (!user) {
+			return res.status(404).json({ error: 'User not found.' });
+		  }
+	  
+		  const updatePassHash = await bcrypt.hash(password, 10);
+
+		  // Update the user's password in the database
+		  // Instead of hashing the new password, we directly set the Password field
+		  await db.collection('User').updateOne(
+			{ _id: user._id },
+			{ $set: { Password: updatePassHash } } // Overwrite the old password with the new one
+		  );
+	  
+		  console.log('Password updated successfully for user:', user.Username);
+		  res.status(200).json({ message: 'Password updated successfully.' });
+		} catch (error) {
+		  if (error.name === 'JsonWebTokenError') {
+			res.status(400).json({ error: 'Invalid token.' });
+		  } else if (error.name === 'TokenExpiredError') {
+			res.status(400).json({ error: 'Token expired.' });
+		  } else {
+			console.error('Update Password error:', error);
+			res.status(500).json({ error: 'Error updating password.' });
+		  }
+		}
+	  });
+
+	 app.post('/api/forgotPassword', async (req, res) => {
+		const { email } = req.body;
+		
+		try {
+		  const db = client.db('MegaBitesLibrary');
+		  const user = await db.collection('User').findOne({ Email: email.toLowerCase() });
+		  
+		  if (!user) {
+			return res.status(404).json({ error: 'User with that email does not exist.' });
+		  }
+		  
+		  const token = jwt.sign({ userId: user._id }, process.env.KeyTheJWT, {
+			expiresIn: '1h', // The token will expire in 1 hour
+		  });
+		  
+		  await db.collection('User').updateOne(
+			{ _id: user._id },
+			{
+			  $set: {
+				resetPasswordToken: token,
+				resetPasswordExpires: new Date(Date.now() + 3600000), // 1 hour from now
+			  },
+			}
+		  );
+		  
+		  const resetLink = `http://megabytes.app/resetPassword?token=${token}`;
+		  //const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
+		  //const resetLink = `http://localhost:3000/resetPassword?token=${token}`;
+		  
+		  const mailOptions = {
+			from: process.env.VerificationEmail,
+			to: email,
+			subject: 'Password Reset',
+			text: `Please use the following link to reset your password: ${resetLink}`,
+		  };
+		  
+		  await new Promise((resolve, reject) => {
+			transporter.sendMail(mailOptions, (error, info) => {
+			  if (error) {
+				reject(error);
+			  } else {
+				resolve(info);
+			  }
+			});
+		  });
+		  
+		  console.log('Password reset email sent successfully');
+		  res.status(200).json({ message: 'Password reset email sent successfully' });
+		} catch (error) {
+		  console.error('Forgot Password error:', error);
+		  res.status(500).json({ error: 'Error processing forgot password.' });
+		}
+	  });
+	  
 	 app.post('/api/verifyEmail', async (req, res) => {
 		const { username, password, email } = req.body;
 
@@ -46,18 +143,19 @@ exports.setApp = function (app, client) {
 			from: process.env.VerificationEmail,
 			to: email,
 			subject: 'Email Verification',
-			text: `Verification Link: ${verificationLink}`,
+			text: `Please use the following link to verify your email and create your account: ${verificationLink}`,
 		};
 	
 		transporter.sendMail(mailOptions, (error, info) => {
-		  if (error) {
-			console.error('Error sending email:', error);
-			res.status(500).send('Error sending email');
-		  } else {
-			console.log('Email sent: ' + info.response);
-			res.status(200).send('Email sent successfully');
-		  }
-		});
+			if (error) {
+			  console.error('Error sending email:', error);
+			  res.status(500).json({ error: 'Error sending email' }); // Send JSON response here
+			} else {
+			  console.log('Email sent: ' + info.response);
+			  res.status(200).json({ message: 'Email sent successfully' }); // Send JSON response here
+			}
+		  });
+		  
 	  });
 	
 	  app.get('/verify', (req, res) => {
@@ -80,7 +178,7 @@ exports.setApp = function (app, client) {
 			
 				
 				// Proceed with registration using the extracted information
-				const newUser = { Username: username, Password: password, Email: email };
+				const newUser = { Username: username, Password: password, Email: email.toLowerCase(), RecipeList: [] };
 				var error = '';
 				try {
 					const db = client.db('MegaBitesLibrary');
@@ -170,17 +268,17 @@ exports.setApp = function (app, client) {
 		try {
 			const db = client.db('MegaBitesLibrary');
 			const user = await (isEmail
-				? db.collection('User').find({ Email: username }).toArray()
-				: db.collection('User').find({ Username: username }).toArray());
+				? db.collection('User').find({ Email: username.toLowerCase() }).toArray()
+				: db.collection('User').find({ Username: username.toLowerCase() }).toArray());
 
 			if(!user){
 				return res.status(401).json({ error: 'Invalid credentials '});
 			}
-
-			const passwordMatch = await bcrypt.compare(password, user.Password);
+			
+			const passwordMatch = await bcrypt.compare(password, user[0].Password);
 
 			if(passwordMatch){
-				res.status(200).json({ id: user._id, error: '' });
+				res.status(200).json({ id: user[0]._id, error: '' });
 			} else{
 				res.status(401).json({ error: 'Invalid credentials' });
 			}
@@ -278,24 +376,29 @@ exports.setApp = function (app, client) {
 		const results = await db.collection('Recipes').findOne(filter);
 
 		const comments = results.CommentList;
-		for (let i = 0; i < comments.length; i++) {
-			let commentFilter = comments[i];
-			db.collection('Comments').deleteOne(commentFilter, (err, result) => {
-				if (err) {
-					console.error('Error deleting document:', err);
-				} else {
-					console.log('Deleted document successfully');
-				}
 
-			});
+		if(comments){
+			for (let i = 0; i < comments.length; i++) {
+				let commentFilter = comments[i];
+				db.collection('Comments').deleteOne(commentFilter, (err, result) => {
+					if (err) {
+						console.error('Error deleting document:', err);
+					} else {
+						console.log('Deleted document successfully');
+					}
+	
+				});
+			}
 		}
+
 		const user = await db.collection('User').findOne({ _id: results.UserId });
-
-		await db.collection('User').updateOne(
-			{ _id: user._id },
-			{ $pull: { RecipeList: { _id: new ObjectId(recipeId) } } }
-		);
-
+		
+		if(user){
+			await db.collection('User').updateOne(
+				{ _id: user._id },
+				{ $pull: { RecipeList: { _id: new ObjectId(recipeId) } } }
+			);
+		}
 		db.collection('Recipes').deleteOne(filter, (err, result) => {
 			if (err) {
 				console.error('Error deleting document:', err);
@@ -417,22 +520,41 @@ exports.setApp = function (app, client) {
 	});
 
 	app.post('/api/getRecipes', async (req, res, next) => {
-		// incoming: search
+		// incoming: userId, search, isPublic
 		// outgoing: results[], error
 
 		var error = '';
-		const { search } = req.body;
+		var results;
+		const { userId, search, isPublic } = req.body;
 		var _search = search.trim();
 		const db = client.db('MegaBitesLibrary');
-		const results = await
-			db.collection('Recipes').find({
-				"RecipeName": {
-					$regex: _search + '.*',
-					$options: 'i'
-				}
-			}).toArray();
 
-		var ret = { results: results, error: error };
+		try {
+			if (isPublic) {
+				results = await
+					db.collection('Recipes').find({
+						"IsPublic": true,
+						"RecipeName": {
+							$regex: _search + '.*',
+							$options: 'i'
+						}
+					}).toArray();
+			} else {
+				results = await
+					db.collection('Recipes').find({
+						"UserId": new ObjectId(userId),
+						"RecipeName": {
+							$regex: search + '.*',
+							$options: 'i'
+						}
+					}).toArray();
+			}
+		} catch (e) {
+			console.error(e);
+			res.status(500).json({ e: 'Internal error' });
+		}
+
+		var ret = { results: results, error: error,  };
 		res.status(200).json(ret);
 	});
 
