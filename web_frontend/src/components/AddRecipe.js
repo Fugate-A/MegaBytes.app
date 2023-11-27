@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native'; // Remove React Native-specific components
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
-
-function AddRecipePage() {
+function AddRecipe() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [recipeTags, setRecipeTags] = useState([]);
@@ -20,7 +11,7 @@ function AddRecipePage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
 
-  // AsyncStorage is not available in web, you may need to use alternatives like localStorage
+
   const [userID, setUserID] = useState(null);
   useEffect(() => {
     const fetchUserID = async () => {
@@ -35,7 +26,7 @@ function AddRecipePage() {
     fetchUserID();
   }, []);
 
-  const handleAddRecipe = async () => {
+  const handleAddRecipe = async event => {
     try {
       const response = await fetch('http://164.90.130.112:5000/api/addRecipe', {
         method: 'POST',
@@ -57,8 +48,7 @@ function AddRecipePage() {
 
       if (response.ok) {
         console.log('Success');
-        // For web, you may use react-router or any other routing library
-        // to navigate to the Home page.
+        window.location.href = '/rec';
       } else {
         console.error('Error adding Recipe');
 
@@ -70,49 +60,51 @@ function AddRecipePage() {
     }
   };
 
-  const handleUpdateRecipeTags = (updatedTages) => {
-    setRecipeTags(updatedTages);
-  };
+  const handleUpdateRecipeTags = (updatedTags) => {
+    setRecipeTags(updatedTags);
+  }
 
   const closeErrorModal = () => {
     setShowErrorModal(false);
-  };
+  }
 
   const openTagSelectionModal = () => {
     setShowTagSelectionModal(true);
-  };
+  }
 
   const toggleVisibility = () => {
     setVisibility(!visibility);
-  };
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={handleAddRecipe} style={styles.submittButton}>
-        <Text>Submit</Text>
-      </TouchableOpacity>
+    <div className="container mx-auto p-4">
+      <button onClick={handleAddRecipe} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Submit
+      </button>
 
-      <View style={styles.inputContainer}>
-        <TextInput
+      <div className="mt-4 p-4 bg-white shadow-md rounded-md">
+        <input
+          type="text"
           placeholder="Title"
           value={title}
-          onChangeText={(text) => setTitle(text)}
-          style={styles.titleInput}
-        />
-        <TextInput
-          placeholder="Ingredients and Directions"
-          value={content}
-          onChangeText={(text) => setContent(text)}
-          style={styles.contentInput}
-          multiline
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full h-12 p-2 mb-4 border-b-2 border-black"
         />
 
-        <TouchableOpacity
-          onPress={openTagSelectionModal}
-          style={styles.addTagsButton}
+        <textarea
+          placeholder="Ingredients and Directions"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="w-full h-32 p-2 mb-4 border-2 border-gray-400 rounded"
+          rows="4"
+        />
+
+        <button
+          onClick={openTagSelectionModal}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
         >
-          <Text>Add Tags</Text>
-        </TouchableOpacity>
+          Add Tags
+        </button>
 
         {showTagSelectionModal && (
           <TagSelectionModal
@@ -123,88 +115,17 @@ function AddRecipePage() {
           />
         )}
 
-        <View style={styles.visibilityContainer}>
-          <Text style={styles.visibilityLabel}>Visibility:</Text>
-          <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
-            <View style={[styles.radioCircle, { backgroundColor: visibility ? 'green' : 'white' }]} />
-          </TouchableOpacity>
-          <Text>{visibility ? 'Public' : 'Private'}</Text>
-        </View>
-      </View>
+        <div className="flex items-center mt-4">
+          <span className="mr-2 font-bold">Visibility:</span>
+          <button onClick={toggleVisibility} className="flex items-center">
+            <div className={`w-4 h-4 rounded-full border border-black mr-2 ${visibility ? 'bg-green-500' : 'bg-white'}`} />
+            <span>{visibility ? 'Public' : 'Private'}</span>
+          </button>
+        </div>
+      </div>
 
-      <ErrorMessageModal
-        visible={showErrorModal}
-        message={errorMessage}
-        onClose={closeErrorModal}
-      />
-    </ScrollView>
+      <ErrorMessageModal visible={showErrorModal} message={errorMessage} onClose={closeErrorModal} />
+    </div>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignContent: 'center',
-    backgroundColor: '#FFF0DC',
-    padding: 10,
-  },
-  inputContainer: {
-    padding: 10,
-  },
-  titleInput: {
-    width: '100%',
-    height: 80,
-    marginVertical: 10,
-    padding: 8,
-    fontSize: 30,
-    fontWeight: 'bold',
-    borderBottomColor: 'black',
-    borderBottomWidth: 2,
-  },
-  contentInput: {
-    width: '100%',
-    height: '65%',
-    marginVertical: 10,
-    padding: 8,
-    borderLeftColor: 'grey',
-    borderRightColor: 'grey',
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderRadius: 15,
-  },
-  submittButton: {
-    alignSelf: 'flex-end',
-    marginRight: 15,
-    borderWidth: 1,
-    borderRadius: 15,
-    padding: 10,
-  },
-  addTagsButton: {
-    borderWidth: 1,
-    borderRadius: 15,
-    padding: 10,
-    marginTop: 10,
-  },
-  visibilityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  visibilityLabel: {
-    marginRight: 10,
-  },
-  visibilityButton: {
-    padding: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  radioCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 1,
-    marginRight: 5,
-  },
-});
-
-export default AddRecipePage;
+};
+export default AddRecipe;
