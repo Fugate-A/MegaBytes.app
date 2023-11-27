@@ -91,9 +91,9 @@ exports.setApp = function (app, client) {
 			}
 		  );
 		  
-		  //const resetLink = `http://megabytes.app/resetPassword?token=${token}`;
+		  const resetLink = `http://megabytes.app/resetPassword?token=${token}`;
 		  //const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
-		  const resetLink = `http://localhost:3000/resetPassword?token=${token}`;
+		  //const resetLink = `http://localhost:3000/resetPassword?token=${token}`;
 		  
 		  const mailOptions = {
 			from: process.env.VerificationEmail,

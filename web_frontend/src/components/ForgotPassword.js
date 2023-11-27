@@ -27,7 +27,7 @@ function ForgotPassword() {
         } else {
           setMessage(res.message); // Display success message
           setTimeout(() => {
-            navigate('/'); // Replace '/login' with your login route
+            navigate('/');
           }, 3000); // Redirect after 3 seconds
         }
       } else {

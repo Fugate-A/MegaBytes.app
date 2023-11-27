@@ -1,13 +1,12 @@
-// pages/ResetPasswordPage.js
 import React from 'react';
 import ResetPassword from '../components/ResetPassword'; // Import the ResetPassword component
 
-function ResetPasswordPage() {
+const ResetPasswordPage = () => {
   return (
-    <div>
+    <div className="bg-page-background h-screen">
       <ResetPassword />
     </div>
   );
-}
+};
 
 export default ResetPasswordPage;
