@@ -4,8 +4,18 @@ function Login() {
 	var loginPassword;
 	var bp = require('./Path.js');
 	const [message, setMessage] = useState('');
+	const [iserror, setIsError] = useState(false);
 	const doLogin = async event => {
 		event.preventDefault();
+
+		if (loginInfo.value == '' || loginPassword.value == '') {
+			setIsError(true)
+			setMessage('Please Fill In All Boxes')
+			return;
+		} else {
+			setIsError(false)
+		}
+
 		var obj = { username: loginInfo.value, password: loginPassword.value };
 		var js = JSON.stringify(obj);
 		try {
@@ -17,31 +27,29 @@ function Login() {
 					}
 				});
 			var res = JSON.parse(await response.text());
-			if (res.id <= 0) {
+			if (!response.ok) {
+				setIsError(true)
 				setMessage('Username/Password combination incorrect');
 			}
 			else {
 				var user =
-					{ firstName: res.firstName, lastName: res.lastName, id: res.id }
+					{ username: res.username, id: res.id }
 				localStorage.setItem('user_data', JSON.stringify(user));
 				setMessage('');
 				window.location.href = '/rec';
 			}
 		}
 		catch (e) {
-			alert(e.toString());
+			setIsError(true)
+			setMessage(e.toString())
 			return;
 		}
-	};
-
-	const goToRegister = event => {
-		window.location.href = '/reg';
 	};
 
 	return (
 		<div id="loginDiv">
 			<form onSubmit={doLogin}>
-				<div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+				<div className="flex min-h-full flex-1 flex-col justify-center px-6 pt-10 pb-6 lg:px-8">
 					<div className="sm:mx-auto sm:w-full sm:max-w-sm">
 						<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
 							Get to Cookin
@@ -49,7 +57,7 @@ function Login() {
 					</div>
 
 					<div className="mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-sm bg-orange-100 border-4 border-neutral-950 rounded-lg">
-						<form className="space-y-6" action="#" method="POST">
+						<div className="space-y-6" method="POST">
 							<div>
 								<label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
 									Email address
@@ -60,7 +68,7 @@ function Login() {
 										id="loginInfo"
 										placeholder=" Username/Email"
 										ref={(c) => loginInfo = c}
-										required
+										
 										className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
 									/>
 								</div>
@@ -83,7 +91,7 @@ function Login() {
 										id="loginPassword"
 										placeholder=" Password"
 										ref={(c) => loginPassword = c}
-										required
+										
 										className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
 									/>
 								</div>
@@ -94,13 +102,12 @@ function Login() {
 									type="submit"
 									id="loginButton"
 									class="buttons" value="Sign in"
-									onClick={doLogin}
 									className="flex w-full justify-center rounded-md bg-orange-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
 								>
 									Sign In
 								</button>
 							</div>
-						</form>
+						</div>
 
 						<p className="mt-7 text-center text-sm text-neutral-950">
 							Not a member?{' '}
@@ -110,8 +117,15 @@ function Login() {
 						</p>
 					</div>
 				</div>
+				{iserror && (
+					<div className=' p-1 sm:mx-auto sm:w-full text-center sm:max-w-sm bg-orange-100 border-4 border-neutral-950 rounded-lg'>
+						<span id="regResult" className=' text-xl font-bold leading-9 tracking-tight text-red-500'>
+							{message}
+						</span>
+					</div>
+				)}
 			</form>
-			<span id="loginResult">{message}</span>
+
 		</div>
 	);
 };
