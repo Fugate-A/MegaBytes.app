@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage';
 import IndexPage from './pages/IndexPage';
 import CreatePage from './pages/CreatePage';
 import CommunityPage from './pages/CommunityPage';
+import DisplayRecipe from './pages/DisplayRecipe';
 import VerifyEmail from './components/VerifyEmail'; // Import the VerifyEmail component
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/i" element={<IndexPage />} />
         <Route path="/cre" element={<CreatePage />} />
         <Route path="/com" element={<CommunityPage />} />
+        <Route path="/dis/:recipeInfo" element={<DisplayRecipe />} />
         {/* Add a route for the VerifyEmail component with a query parameter */}
         <Route path="/verify" element={<VerifyEmail />} />
       </Routes>
