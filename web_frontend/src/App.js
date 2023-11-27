@@ -9,6 +9,7 @@ import CreatePage from './pages/CreatePage';
 import CommunityPage from './pages/CommunityPage';
 import DisplayRecipe from './pages/DisplayRecipe';
 import VerifyEmail from './components/VerifyEmail'; // Import the VerifyEmail component
+import AddRecipePage from './components/AddRecipe';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/dis/:recipeInfo" element={<DisplayRecipe />} />
         {/* Add a route for the VerifyEmail component with a query parameter */}
         <Route path="/verify" element={<VerifyEmail />} />
+        <Route path="/addCustomRecipe" element={<AddRecipePage />} />
       </Routes>
     </BrowserRouter>
   );
