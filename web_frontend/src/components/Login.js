@@ -111,7 +111,7 @@ function Login() {
 
 						<p className="mt-7 text-center text-sm text-neutral-950">
 							Not a member?{' '}
-							<a href="http://localhost:3000/reg" className="font-semibold leading-6 text-orange-500 hover:text-indigo-500">
+							<a href="https://www.megabytes.app/reg" className="font-semibold leading-6 text-orange-500 hover:text-indigo-500">
 								Register
 							</a>
 						</p>
