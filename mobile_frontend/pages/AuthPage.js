@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableWithoutFeedback ,TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Header from '../components/Header';
 import ErrorMessageModal from '../components/ErrorMessageModal';
+import ForgotPasswordModal from '../components/ForgotPasswordModal';
 
 function AuthPage( { navigation } ){
     const [isSignIn, setIsSignIn] = useState(true);
@@ -17,6 +18,9 @@ function AuthPage( { navigation } ){
     
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+
+	const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+
 
 	const handleSignIn = async () => {
 		// Check if login information is correct, if so, proceed to HomePage
@@ -97,6 +101,14 @@ function AuthPage( { navigation } ){
 	const toggleShowPassword = () => { 
 		setShowPassword(!showPassword); 
 	}; 
+	  
+	const openForgotPasswordModal = () => {
+		setShowForgotPasswordModal(true);
+	}
+
+	const closeForgotPasswordModal = () => {
+		setShowForgotPasswordModal(false);
+	}
 
 	const closeErrorModal = () => {
 		setShowErrorModal(false);
@@ -143,6 +155,11 @@ function AuthPage( { navigation } ){
 				onClose={closeErrorModal}
 			/>
 
+			<ForgotPasswordModal 
+				visible={showForgotPasswordModal}
+				onClose={closeForgotPasswordModal}
+			/>
+
 			<View style={styles.authContainer}>
 				<Text style={styles.inputLabel}>E-mail Address</Text>
 				<TextInput
@@ -178,6 +195,14 @@ function AuthPage( { navigation } ){
 						onPress={toggleShowPassword} 
 					/> 
 				</View>
+
+				{isSignIn && (
+					<TouchableWithoutFeedback onPress={openForgotPasswordModal}>
+						<Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+					</TouchableWithoutFeedback>
+				)}
+
+				
 			
 				<TouchableHighlight
 					style={styles.submitButton}
@@ -269,6 +294,14 @@ function AuthPage( { navigation } ){
 			right: 10,
 			top: 10,
 			padding: 8,
+		},
+		forgotPasswordText: {
+			color: '#DD9510',
+			fontSize: 16,
+			fontFamily: 'Tilt-Neon',
+			marginTop: 2,
+			marginBottom: 15,
+			alignSelf: 'flex-end',
 		},
 		submitButton: {
 			backgroundColor: '#E79B11', 
