@@ -1,10 +1,11 @@
-import { useRoute, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import TagComponent from '../components/TagComponent';
-import AddComment from '../components/AddComment';
+import AddCommentModal from '../components/AddCommentModal';
 import CommentContainer from '../components/CommentContainer';
 
 function RecipePage() {
@@ -23,6 +24,9 @@ function RecipePage() {
 
     const [liked, setLiked] = useState(recipe.LikeList.includes(userID));
     const [likeNumber, setLikeNumber] = useState(recipe.LikeList.length || 0);
+
+    const [showAddCommentModal, setShowAddCommentModal] = useState(false);
+
 
     const fetchTags = async () => {
         try {
@@ -219,6 +223,13 @@ function RecipePage() {
         }
     };
 
+    const openAddCommentModal = () => {
+        setShowAddCommentModal(true);
+    }
+
+    const closeAddCommentModal = () => {
+        setShowAddCommentModal(false);
+    }
     if(loading){
         return null;
     }
@@ -266,9 +277,25 @@ function RecipePage() {
                 <Text style={[styles.likeCount, liked && styles.likedCount]}>{likeNumber}</Text>
             </View>
 
-            <View style={styles.addCommentContainer}>
-                <AddComment recipe={recipe} onCommentSubmit={handleCommentSubmit}/>
-            </View>
+            <TouchableOpacity 
+                onPress={openAddCommentModal}
+                style={styles.addCommentContainer}
+            >   
+                <MaterialCommunityIcons name='comment-outline' size={35} color='black' />
+                <Text style={styles.addCommentText}>Add Comment...</Text>
+            </TouchableOpacity>
+
+            {showAddCommentModal && (
+                <AddCommentModal
+                visible={showAddCommentModal}
+                recipe={recipe}
+                onCommentSubmit={() => {
+                    closeAddCommentModal();
+                    handleCommentSubmit();
+                }}
+                onClose={closeAddCommentModal}
+            />
+            )}
 
             <View style={styles.commentSection}>
                 <View style={styles.commentSectionHeader}>
@@ -398,9 +425,22 @@ const styles = StyleSheet.create({
     likedCount: {
         color: 'green',
     },
+    addCommentText: {
+        marginLeft: 10,
+        fontSize: 24,
+        fontFamily: 'Tilt-Neon',
+        color: 'gray',
+    },
     addCommentContainer: {
+        flexDirection: 'row',
+        borderWidth: 1,
+        borderRadius: 15,
+        backgroundColor: '#FFE6C5',
+        marginTop: 20,
+        marginBottom: 20,
         paddingHorizontal: 10,
         paddingVertical: 5,
+        width: '75%',
     },
     commentSection: {
         flex: 1,

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard, ScrollView, Touchable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
@@ -131,70 +132,83 @@ function AddRecipePage(){
             <TouchableWithoutFeedback onPress={dismissKeyboard}>
                 
                 <View>
-                <View style={styles.topButtons}>
-                    <TouchableOpacity onPress={openAIModal} style={styles.aigenButton}>
-                        <Text style={styles.aigenButtonText}>Generate with AI 🤖</Text>
-                    </TouchableOpacity>
-
-                    {showAIModal && (
-                        <AIRequestModal
-                            visible={showAIModal} 
-                            onClose={closeAIModal}
-                            handleAIInput={handleAIInput}
-                        />
-                    )}
-                    
-                    <TouchableOpacity 
-                        onPress={handleAddRecipe}
-                        style={styles.submittButton}
-                    >
-                        <Text style={styles.submittButtonText}>Submit</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        placeholder='Title'
-                        value = {title}
-                        onChangeText={(text) => setTitle(text)}
-                        style={styles.titleInput}
-                        editable={!isScrolling}
-                    />
-
-                    <View 
-                        style={styles.contentInputContainer}
-                    >
-                        <TextInput
-                            placeholder='Ingredients and Directions'
-                            value = {content}
-                            onChangeText={(text) => setContent(text)}
-                            style={[styles.contentInput, isTextInputFocused ? { height: 'auto' } : null]}
-                            multiline
-                            editable={!isScrolling}
-                            scrollEnabled={!isScrolling}
-                        />
-                    </View>
-
-                    <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
-                        <Text style={styles.addTagsText}>Add Tags</Text>
-                    </TouchableOpacity>
-                    
-                    {showTagSelectionModal && (
-                        <TagSelectionModal
-                            visible={true}
-                            onUpdateRecipeTags={handleUpdateRecipeTags}
-                            onClose={() => setShowTagSelectionModal(false)}
-                            currentTags={recipeTags}
-                        />
-                    )}
-
-                    <View style={styles.visibilityContainer}>
-                        <Text style={styles.visibilityLabel}>Privacy:</Text>
-                        <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
-                            <View style={[styles.radioCircle, {backgroundColor: visibility ? 'green' : 'white'}]} />
+                    <View style={styles.topButtons}>
+                        <TouchableOpacity onPress={openAIModal} style={styles.aigenButton}>
+                            <Text style={styles.aigenButtonText}>Generate with AI 🤖</Text>
                         </TouchableOpacity>
-                        <Text>{visibility ? 'Public': 'Private'}</Text>
+
+                        {showAIModal && (
+                            <AIRequestModal
+                                visible={showAIModal} 
+                                onClose={closeAIModal}
+                                handleAIInput={handleAIInput}
+                            />
+                        )}
+                        
+                        <TouchableOpacity 
+                            onPress={handleAddRecipe}
+                            style={styles.submittButton}
+                        >
+                            <Text style={styles.submittButtonText}>Submit</Text>
+                        </TouchableOpacity>
                     </View>
+
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            placeholder='Title'
+                            value = {title}
+                            onChangeText={(text) => setTitle(text)}
+                            style={styles.titleInput}
+                            editable={!isScrolling}
+                        />
+
+                        <View 
+                            style={styles.contentInputContainer}
+                        >
+                            <TextInput
+                                placeholder='Ingredients and Directions'
+                                value = {content}
+                                onChangeText={(text) => setContent(text)}
+                                style={[styles.contentInput, isTextInputFocused ? { height: 'auto' } : null]}
+                                multiline
+                                editable={!isScrolling}
+                                scrollEnabled={!isScrolling}
+                            />
+                        </View>
+
+                        <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
+                            <MaterialCommunityIcons name='tag-plus-outline' size={30} color='black' />
+                            <Text style={styles.addTagsText}>Add Tags</Text>
+                        </TouchableOpacity>
+                        
+                        {showTagSelectionModal && (
+                            <TagSelectionModal
+                                visible={true}
+                                onUpdateRecipeTags={handleUpdateRecipeTags}
+                                onClose={() => setShowTagSelectionModal(false)}
+                                currentTags={recipeTags}
+                            />
+                        )}
+
+                <View style={styles.visibilityContainer}>
+                    <Text style={styles.visibilityLabel}>Privacy:</Text>
+
+                    <View style={styles.visibilityTextContainer}>
+                        <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
+                            <View style={[styles.radioCircle, { backgroundColor: visibility ? 'green' : 'white' }]} />
+                        </TouchableOpacity>
+                        <Text style={styles.visibilityLabel}>{visibility ? 'Public' : 'Private'}</Text>
+                    </View>
+
+                    <View style={styles.visibilityIconContainer}>
+                        {visibility ? (
+                            <MaterialCommunityIcons name='lock-open-outline' size={35} color='black' />
+                        ) : (
+                            <MaterialCommunityIcons name='lock-outline' size={35} color='black' />
+                        )}
+                    </View>
+
+                </View>
 
                 </View>
 
@@ -280,15 +294,19 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     addTagsText: {
+        fontSize: 20,
         fontFamily: 'Tilt-Neon',
+        marginLeft: 10,
+        color: 'gray',
     },
     addTagsButton: {
+        flexDirection: 'row',
         backgroundColor: '#FFE6C5',
         borderWidth: 0.5,
         borderRadius: 15,
         padding: 10,
         marginTop: 10,
-        width: 90,
+        width: '60%',
     },
     visibilityContainer: {
         backgroundColor: '#FFE6C5',
@@ -296,12 +314,25 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 10,
 
-        width: 200,
+        width: 250,
         padding: 10,
         borderRadius: 15,
         borderWidth: 0.5,
     },
+    visibilityTextContainer: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        width: 150 
+    },
+    visibilityIconContainer: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        width: 35,
+        marginLeft: -30,
+    },
     visibilityLabel: {
+        fontSize: 16,
+
         marginRight: 10,
         fontFamily: 'Tilt-Neon',
     },

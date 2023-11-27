@@ -53,13 +53,15 @@ function AIRequestModal ({ visible, onClose, handleAIInput }){
     return (
         <Modal 
             transparent={true}
-            animationType='slide'
+            animationType='fade'
             visible={visible}
         >
             <TouchableWithoutFeedback onPress={() => !inputFrozen && onClose()}>
                 <View style={[styles.container, inputFrozen ? styles.frozenContainer : null]}>
 
+                    
                     <View style={styles.inputContainer}>
+                        <Text style={styles.modalLabel}>Input a food item</Text>
                         <TextInput 
                             style={[styles.textInput, inputFrozen ? styles.frozenInput : null]}
                             placeholder='What are you hungry for?'
@@ -100,6 +102,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalLabel: {
+        fontSize: 16,
+        fontFamily: 'Tilt-Neon',
+        marginBottom: 5,
     },
     frozenContainer: {
         flex: 1,
@@ -108,17 +116,18 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     inputContainer: {
-        borderWidth: 1,
-        backgroundColor: '#E3E3E3',
+        borderWidth: 2,
+        backgroundColor: '#FFF0DC',
         padding: 20,
         borderRadius: 15,
         width: '80%',
+        height: 200,
     },
     frozenInput: {
         backgroundColor: 'lightgray',
     },
     textInput: {
-        backgroundColor: 'white',
+        backgroundColor: '#FFE6C5',
         fontSize: 16,
         fontFamily: 'Tilt-Neon',
         borderWidth: 1,
@@ -129,9 +138,12 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     submitButton: {
-        backgroundColor: '#E79B11',
+        backgroundColor: '#FFE6C5',
+        alignSelf: 'flex-end',
+        marginTop: 10,
         padding: 10,
         borderRadius: 15,
+        borderWidth: 0.5,
     },
     submitButtonText: {
         fontSize: 16,
