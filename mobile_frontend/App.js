@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -19,6 +20,8 @@ export default function App() {
 		'Tilt-Neon': require('./assets/fonts/TiltNeon-Regular-VariableFont.ttf')
 	});
 
+	StatusBar.setBarStyle('dark-content');
+
 	useEffect(() => {
 		async function prepare() {
 			await SplashScreen.preventAutoHideAsync();
@@ -34,6 +37,9 @@ export default function App() {
 
 	return (
 		<NavigationContainer>
+
+		
+
 			<Stack.Navigator initialRouteName="Auth">
 				<Stack.Screen name="Auth" component={AuthPage} options={{ headerShown: false }} />
 				<Stack.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
