@@ -43,10 +43,6 @@ function AddRecipe() {
 				}),
 			});
 
-			if (title == null || content == null) {
-				throw new Error("Recipe Fields Are Empty");
-			}
-
 			console.log('Adding Recipe');
 			const data = await response.json();
 
