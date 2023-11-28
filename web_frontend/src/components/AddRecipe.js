@@ -120,6 +120,10 @@ function AddRecipe() {
 			<div className="mt-2 mb-3 flex justify-center">
 				{<div className="container mx-auto p-4">
 					<div className="mt-4 p-4 bg-white shadow-md rounded-md">
+
+						<button onClick={handleAIRecipe} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+							Generate with AI
+						</button>
 						<input
 							type="text"
 							placeholder="Title"
@@ -161,9 +165,6 @@ function AddRecipe() {
 						</div>
 						<button onClick={handleAddRecipe} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
 							Submit
-						</button>
-						<button onClick={handleAIRecipe} classname="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-							Generate w/ AI
 						</button>
 					</div>
 
