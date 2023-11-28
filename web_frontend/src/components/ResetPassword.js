@@ -22,7 +22,7 @@ function PasswordReset() {
 
     try {
       //const response = await fetch('http://localhost:5000/api/updatePassword', {
-        const response = await fetch('http://megabytes.app/api/updatePassword', {
+        const response = await fetch('https://megabytes.app/api/updatePassword', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
