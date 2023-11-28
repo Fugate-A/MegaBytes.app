@@ -189,7 +189,7 @@ exports.setApp = function (app, client) {
 				if (error) {
 					res.status(500).json({ error }); // Return a JSON response for error
 				} else {
-					res.status(200).json('Email verified succesfully and account created! Pleae return to the login page'); // Return a JSON response for success
+					res.status(200).json('Email verified succesfully and account created! Pleae return to the login page 👍'); // Return a JSON response for success
 				}
 			}
 		});
