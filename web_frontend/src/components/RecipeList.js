@@ -6,7 +6,9 @@ function RecipeList() {
     var _ud = localStorage.getItem('user_data');
     var ud = JSON.parse(_ud);
     var userId = ud.id;
+    var username = ud.username;
     let [recipes, setRecipes] = useState([]);
+    let [tags, setTags] = useState([]);
     let [inputValue, setInputValue] = useState('');
 
     const FindRecipe = async event => {
@@ -29,16 +31,28 @@ function RecipeList() {
         }
     }
 
+    const Tags = async event => {
+        try {
+            const response = await fetch(bp.buildPath('api/tags'),
+                {});
+            setTags(JSON.parse(await response.text()))
+        }
+        catch (e) {
+            alert(e.toString());
+        }
+    }
+
     const handleChange = (event) => {
         setInputValue(event.target.value); // Update the state with the input value
     };
 
     useEffect(() => {
+        Tags()
         FindRecipe();
     }, []);
 
     return (
-        <div id="RecipeListDiv" className='bg-page-background h-95'>
+        <div id="RecipeListDiv" className=' bg-page-background pt-20 min-h-screen'>
 
             <h1 className=" text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
                 Your Recipes!
@@ -63,24 +77,21 @@ function RecipeList() {
                     Search
                 </button>
             </div>
-            <div className=" overflow-y-auto transition-all delay-400 max-h-70vh mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-max border-neutral-950 rounded-lg">
+            <div className="  mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-6xl border-neutral-950 rounded-lg">
                 {recipes.length === 0 ? (
-                    <div>Loading...</div> // Display a loading message when recipes are empty         
+                    <div>No Recipes</div> // Display a loading message when recipes are empty         
                 ) : (
                     <div role="grid" className="grid grid-cols-4 gap-3">
-                        {recipes.map((recipe) => (  
+                        {recipes.map((recipe) => (
                             <Link to={`/dis/${recipe._id}`}>
-                                <div key={recipe._id} className=" rounded shadow-lg bg-orange-100">
-                                    <div className="px-6 pt-2">
+                                <div key={recipe._id} className=" rounded shadow-lg 
+                                transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 bg-orange-100">
+                                    <div className="px-5 border-b-2 border-black">
+                                        <div className="text-sm">u/{username}</div>
                                         <div className="font-bold text-xl">{recipe.RecipeName}</div>
                                     </div>
                                     <div className="px-6 py-2 mb-2 h-11 overflow-y-clip">
                                         <div className="font-bold text-sm">{recipe.RecipeContents}</div>
-                                    </div>
-                                    <div className="px-6 pb-2">
-                                        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">asd</span>
-                                        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">asd</span>
-                                        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">asd</span>
                                     </div>
                                 </div>
                             </Link>
@@ -88,7 +99,7 @@ function RecipeList() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 
