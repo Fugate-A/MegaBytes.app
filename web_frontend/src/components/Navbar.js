@@ -29,14 +29,17 @@ function classNames(...classes) {
 }
 
 export default function NavBar() {
-	var _ud = localStorage.getItem('user_data');
-	var ud = JSON.parse(_ud);
-	if (ud === null) {
-		window.location.href = '/';
-	} else {
-		var username = ud.username;
-
+	var userData = localStorage.getItem('user_data');
+	var user = JSON.parse(userData);
+	
+	if (user === null) {
+	  window.location.href = '/';
+	  return null; // Stop rendering if there's no user data
 	}
+	
+	// Access the username property of the user object
+	var username = user.username;
+  
 
 	return (
 		<Disclosure as="nav" className="bg-amber-800">
@@ -70,7 +73,7 @@ export default function NavBar() {
 							</div>
 							<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
 								{/* Profile dropdown */}
-								{username}
+								{'rtfghfghbj'}
 								<Menu as="div" className="relative ml-3">
 									<div>
 										<Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
