@@ -44,7 +44,7 @@ app.use((req, res, next) => {
 // Serve static files from your React app's "build" directory
 app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
 
-
+/*
 // Create an HTTPS server with SSL configuration
 const httpsOptions = {
 key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
@@ -56,19 +56,19 @@ fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
 };
 
 const httpsServer = https.createServer(httpsOptions, app);
-
+*/
 
 // Serve the React application for both root URL and "/megabytes.app"
 app.get('*', (req, res) => {
 	res.sendFile(path.join(__dirname, 'web_frontend', 'build', 'index.html'));
 });
 
-
+/*
 // Start the HTTPS server on port 443
 httpsServer.listen(httpsPort, () => {
 console.log(`HTTPS Server is running on port ${httpsPort}`);
 });
-
+*/
 
 // Start the HTTP server on port 5000
 app.listen(httpPort, () => {

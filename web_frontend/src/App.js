@@ -8,10 +8,11 @@ import IndexPage from './pages/IndexPage';
 import CreatePage from './pages/CreatePage';
 import CommunityPage from './pages/CommunityPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage'; // Import the ResetPasswordPage
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import DisplayRecipe from './pages/DisplayRecipe';
-import VerifyEmail from './components/VerifyEmail'; // Import the VerifyEmail component
+import VerifyEmail from './components/VerifyEmail';
 import AddRecipePage from './components/AddRecipe';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
 	return (
@@ -27,8 +28,8 @@ function App() {
 				<Route path="/forgotPassword" element={<ForgotPasswordPage />} />
 				<Route path="/resetPassword" element={<ResetPasswordPage />} />
 				<Route path="/dis/:recipeInfo" element={<DisplayRecipe />} />
-				{/* Add a route for the VerifyEmail component with a query parameter */}
 				<Route path="/addCustomRecipe" element={<AddRecipePage />} />
+				<Route path="/profile" element={<ProfilePage />} />
 			</Routes>
 		</BrowserRouter>
 	);
