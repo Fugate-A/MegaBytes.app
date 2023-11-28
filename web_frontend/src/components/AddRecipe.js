@@ -65,7 +65,7 @@ function AddRecipe() {
 
 	const handleAddRecipe = async event => {
 		try {
-			const response = await fetch('http://megabytes.app/api/addRecipe', {
+			const response = await fetch('http://164.90.130.112:5000/api/addRecipe', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
