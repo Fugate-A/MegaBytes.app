@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
 import NavBar from '../components/Navbar';
+const cors = require('cors');
+
 function AddRecipe() {
 	const [title, setTitle] = useState('');
 	const [content, setContent] = useState('');
@@ -29,7 +31,7 @@ function AddRecipe() {
 
 	const handleAIRecipe = async event => {
 		try {
-			const response = await fetch('http://164.90.130.112:5000/api/gpt_recipe', {
+			const response = await fetch('http://megabytes.app/api/gpt_recipe', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -63,7 +65,7 @@ function AddRecipe() {
 
 	const handleAddRecipe = async event => {
 		try {
-			const response = await fetch('http://164.90.130.112:5000/api/addRecipe', {
+			const response = await fetch('http://megabytes.app/api/addRecipe', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
