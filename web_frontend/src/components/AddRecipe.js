@@ -10,6 +10,8 @@ function AddRecipe() {
 	const [content, setContent] = useState('');
 	const [recipeTags, setRecipeTags] = useState([]);
 	const [visibility, setVisibility] = useState(false);
+	const [AIgenerated, setAIgenerated] = useState(false);
+	
 
 	const [showErrorModal, setShowErrorModal] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
@@ -37,46 +39,6 @@ function AddRecipe() {
 
 		fetchUserID();
 	}, []);
-
-	const handleAIRecipe = async event => {
-
-		if(!title || !content){
-			console.error('Inpuut fields required')
-			return;
-		}
-
-		try {
-			const response = await fetch('https://megabytes.app/api/gpt_recipe', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					userId: userID,
-					recipeName: title,
-					recipeContents: content,
-					tagList: recipeTags || [],
-					likeList: [],
-					isPublic: visibility,
-				}),
-			});
-
-			console.log('Adding Recipe');
-			const data = await response.json();
-
-			if (response.ok) {
-				console.log('Success');
-				window.location.href = '/rec';
-			} else {
-				console.error('Error adding Recipe');
-
-				setErrorMessage('Error adding Recipe');
-				setShowErrorModal(true);
-			}
-		} catch (error) {
-			console.error('ERROR CONNECTING TO DATABASE\n', error);
-		}
-	}
 
 	const handleAddRecipe = async event => {
 		try {
@@ -140,6 +102,13 @@ function AddRecipe() {
         setShowAIModal(true);
     }
 
+	const handleAIInput = (updatedTitle, updatedContent) => {
+        setTitle(updatedTitle);
+        setContent(updatedContent);
+        setAIgenerated(true);
+    }
+
+
 
 	return (
 		<div id="AddCustomDiv" className='h-screen bg-orange-300'>
@@ -152,7 +121,7 @@ function AddRecipe() {
 					<div className="mt-4 p-4 bg-white shadow-md rounded-md">
 
 						{showAIModal && (
-							<AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={poop}/>
+							<AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={handleAIInput}/>
 						)}
 
 						<button onClick={openAIModal} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
