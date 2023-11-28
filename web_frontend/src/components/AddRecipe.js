@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
 import NavBar from '../components/Navbar';
+import AIRequestModal from '../components/AIRequestModal';
 const cors = require('cors');
 
 function AddRecipe() {
@@ -9,11 +10,11 @@ function AddRecipe() {
 	const [content, setContent] = useState('');
 	const [recipeTags, setRecipeTags] = useState([]);
 	const [visibility, setVisibility] = useState(false);
-
+	const [AIgenerated, setAIgenerated] = useState(false);
 	const [showErrorModal, setShowErrorModal] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 	const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
-
+	const [showAIModal, setShowAIModal] = useState(false)
 
 	const [userID, setUserID] = useState(null);
 	useEffect(() => {
@@ -101,6 +102,12 @@ function AddRecipe() {
 		setRecipeTags(updatedTags);
 	}
 
+	const handleAIInput = (updatedTitle, updatedContent) => {
+		setTitle(updatedTitle);
+		setContent(updatedContent);
+		setAIgenerated(true);
+	}
+
 	const closeErrorModal = () => {
 		setShowErrorModal(false);
 	}
@@ -113,6 +120,14 @@ function AddRecipe() {
 		setVisibility(!visibility);
 	}
 
+	const openAIModal = () => {
+		setShowAIModal(true);
+	}
+
+	const closeAIModal = () => {
+		setShowAIModal(false);
+	}
+
 	return (
 		<div id="AddCustomDiv" className='h-screen bg-orange-300'>
 			<NavBar />
@@ -123,9 +138,18 @@ function AddRecipe() {
 				{<div className="container mx-auto p-4">
 					<div className="mt-4 p-4 bg-white shadow-md rounded-md">
 
-						<button onClick={handleAIRecipe} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+						<button onClick={openAIModal} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
 							Generate with AI
 						</button>
+
+						{showAIModal && (
+							<AIRequestModal
+								visible={showAIModal}
+								onClose={closeAIModal}
+								handleAIInput={handleAIInput}
+							/>
+						)}
+
 						<input
 							type="text"
 							placeholder="Title"
