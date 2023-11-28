@@ -5,7 +5,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 //name for location, href: location address, current: if active on that page
 let currentUrl = window.location.href;
 let recipeLink = "https://www.megabytes.app/rec";
-let createLink = "https://www.megabytes.app/cre";
+let createLink = "http://localhost:3000/cre";
 let communityLink = "https://www.megabytes.app/com";
 const navigation = [
 	{ name: 'Recipes', href: recipeLink, current: (currentUrl == recipeLink)},

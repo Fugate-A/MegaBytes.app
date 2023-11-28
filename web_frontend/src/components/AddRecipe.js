@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
 import NavBar from '../components/Navbar';
+import AIRequestModal from './AIRequestModal';
 const cors = require('cors');
 
 function AddRecipe() {
@@ -14,13 +15,21 @@ function AddRecipe() {
 	const [errorMessage, setErrorMessage] = useState('');
 	const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
 
+	const [showAIModal, setShowAIModal] = useState(false);
+
 
 	const [userID, setUserID] = useState(null);
 	useEffect(() => {
 		const fetchUserID = async () => {
 			try {
-				const storedUserID = localStorage.getItem('userID');
-				setUserID(storedUserID);
+				const storedUser = localStorage.getItem('user_data');
+				
+				if(storedUser){
+					const userObject = JSON.parse(storedUser);
+					const userId = userObject.id;
+					setUserID(userId);
+				}
+
 			} catch (error) {
 				console.error('Error retrieving userID from cache', error);
 			}
@@ -30,6 +39,12 @@ function AddRecipe() {
 	}, []);
 
 	const handleAIRecipe = async event => {
+
+		if(!title || !content){
+			console.error('Inpuut fields required')
+			return;
+		}
+
 		try {
 			const response = await fetch('https://megabytes.app/api/gpt_recipe', {
 				method: 'POST',
@@ -59,7 +74,7 @@ function AddRecipe() {
 				setShowErrorModal(true);
 			}
 		} catch (error) {
-			console.error('\tERROR CONNECTING TO DATABASE\n', error);
+			console.error('ERROR CONNECTING TO DATABASE\n', error);
 		}
 	}
 
@@ -93,7 +108,7 @@ function AddRecipe() {
 				setShowErrorModal(true);
 			}
 		} catch (error) {
-			console.error('\tERROR CONNECTING TO DATABASE\n', error);
+			console.error('ERROR CONNECTING TO DATABASE\n', error);
 		}
 	};
 
@@ -109,9 +124,22 @@ function AddRecipe() {
 		setShowTagSelectionModal(true);
 	}
 
+	const poop = () => {
+		console.log('pooooooop');
+	}
+
 	const toggleVisibility = () => {
 		setVisibility(!visibility);
 	}
+
+	const closeAIModal = () => {
+        setShowAIModal(false);
+    }
+
+    const openAIModal = () => {
+        setShowAIModal(true);
+    }
+
 
 	return (
 		<div id="AddCustomDiv" className='h-screen bg-orange-300'>
@@ -123,7 +151,11 @@ function AddRecipe() {
 				{<div className="container mx-auto p-4">
 					<div className="mt-4 p-4 bg-white shadow-md rounded-md">
 
-						<button onClick={handleAIRecipe} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+						{showAIModal && (
+							<AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={poop}/>
+						)}
+
+						<button onClick={openAIModal} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
 							Generate with AI
 						</button>
 						<input
