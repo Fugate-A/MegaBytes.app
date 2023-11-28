@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for React Router v6
+import { useNavigate } from 'react-router-dom';
 
 function ForgotPassword() {
   var emailInput;
   var bp = require('./Path.js');
+  const navigate = useNavigate();
   const [message, setMessage] = useState('');
-  const navigate = useNavigate(); // For React Router v6
 
   const sendResetEmail = async event => {
     event.preventDefault();
@@ -23,9 +23,11 @@ function ForgotPassword() {
       if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
         var res = await response.json();
         if (res.error) {
+          // Display error message as text on the screen
           setMessage(res.error);
         } else {
-          setMessage(res.message); // Display success message
+          // Display success message as a browser alert
+          alert(res.message); // Using alert() here
           setTimeout(() => {
             navigate('/');
           }, 3000); // Redirect after 3 seconds
@@ -37,7 +39,7 @@ function ForgotPassword() {
       alert(e.toString());
       return;
     }
-  };
+};
 
   return (
     <div id="forgotPasswordDiv">

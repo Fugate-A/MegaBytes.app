@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
 import NavBar from '../components/Navbar';
-const cors = require('cors');
+
 
 function AddRecipe() {
 	const [title, setTitle] = useState('');

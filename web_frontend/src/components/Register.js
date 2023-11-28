@@ -8,7 +8,7 @@ function Register() {
   const sendVerificationEmail = async (username, password, email) => {
     const obj = { username, password, email };
     const js = JSON.stringify(obj);
-
+  
     try {
       const response = await fetch('https://megabytes.app/api/verifyEmail', {
         method: 'POST',
@@ -17,13 +17,13 @@ function Register() {
           'Content-Type': 'application/json'
         }
       });
-
+  
       if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
         var res = await response.json();
         if (res.error) {
-          setMessage(res.error);
+          alert(res.error); // Show error message as an alert
         } else {
-          setMessage(res.message);
+          alert(res.message); // Show success message as an alert
           setTimeout(() => {
             navigate('/'); // Adjust this route as needed
           }, 3000);
@@ -32,10 +32,11 @@ function Register() {
         throw new Error('Non-JSON response received or response not OK');
       }
     } catch (e) {
-      alert(e.toString());
+      alert(e.toString()); // Show exception message as an alert
       return;
     }
   };
+  
 
   const registerUser = (event) => {
     event.preventDefault();
