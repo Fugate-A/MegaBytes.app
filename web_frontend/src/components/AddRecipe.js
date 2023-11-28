@@ -31,7 +31,7 @@ function AddRecipe() {
 
 	const handleAIRecipe = async event => {
 		try {
-			const response = await fetch('http://megabytes.app/api/gpt_recipe', {
+			const response = await fetch('https://megabytes.app/api/gpt_recipe', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ function AddRecipe() {
 
 	const handleAddRecipe = async event => {
 		try {
-			const response = await fetch('http://164.90.130.112:5000/api/addRecipe', {
+			const response = await fetch('https://megabytes.app/api/addRecipe', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
