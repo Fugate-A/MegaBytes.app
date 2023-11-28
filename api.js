@@ -152,7 +152,7 @@ exports.setApp = function (app, client) {
 			  res.status(500).json({ error: 'Error sending email' }); // Send JSON response here
 			} else {
 			  console.log('Email sent: ' + info.response);
-			  res.status(200).json({ message: 'Email sent successfully, please verify your account and then return to the login page' }); // Send JSON response here
+			  res.status(200).json({ message: 'Email sent successfully, please verify your account and then return to the login page.' }); // Send JSON response here
 			}
 		  });
 		  
