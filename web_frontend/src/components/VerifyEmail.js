@@ -15,7 +15,8 @@ function VerifyEmail() {
     // You need to parse this from the token on the server-side
     const verifyEmail = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/verifyEmail', {
+        //const response = await fetch('http://localhost:5000/api/verifyEmail', {
+          const response = await fetch('http://megabytes.app/api/verifyEmail', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
