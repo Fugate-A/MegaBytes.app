@@ -27,6 +27,40 @@ function AddRecipe() {
 		fetchUserID();
 	}, []);
 
+	const handleAIRecipe = async event => {
+		try {
+			const response = await fetch('http://164.90.130.112:5000/api/gpt_recipe', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					userId: userID,
+					recipeName: title,
+					recipeContents: content,
+					tagList: recipeTags || [],
+					likeList: [],
+					isPublic: visibility,
+				}),
+			});
+
+			console.log('Adding Recipe');
+			const data = await response.json();
+
+			if (response.ok) {
+				console.log('Success');
+				window.location.href = '/rec';
+			} else {
+				console.error('Error adding Recipe');
+
+				setErrorMessage('Error adding Recipe');
+				setShowErrorModal(true);
+			}
+		} catch (error) {
+			console.error('\tERROR CONNECTING TO DATABASE\n', error);
+		}
+	}
+
 	const handleAddRecipe = async event => {
 		try {
 			const response = await fetch('http://164.90.130.112:5000/api/addRecipe', {
@@ -127,6 +161,9 @@ function AddRecipe() {
 						</div>
 						<button onClick={handleAddRecipe} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
 							Submit
+						</button>
+						<button onClick={handleAIRecipe} classname="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+							Generate w/ AI
 						</button>
 					</div>
 

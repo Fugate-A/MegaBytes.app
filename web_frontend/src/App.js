@@ -21,7 +21,7 @@ function App() {
 				<Route path="/rec" element={<RecipePage />} />
 				<Route path="/reg" element={<RegisterPage />} />
 				<Route path="/i" element={<IndexPage />} />
-				<Route path="/cre" element={<CreatePage />} />
+				<Route path="/cre" element={<AddRecipePage />} />
 				<Route path="/com" element={<CommunityPage />} />
 				<Route path="/verify" element={<VerifyEmail />} />
 				<Route path="/forgotPassword" element={<ForgotPasswordPage />} />
