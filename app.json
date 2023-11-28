@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "f4c0916f-8b34-4eb1-8498-144925ed9c66"
+      }
+      
+    },
+    "ios": {
+      "bundleIdentifier": "com.nickawrist.megabytes",
+      "buildNumber": "2"
+    }
+  }
+}
