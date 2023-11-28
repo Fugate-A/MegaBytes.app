@@ -21,9 +21,9 @@ function Register() {
       if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
         var res = await response.json();
         if (res.error) {
-          setMessage(res.error); // Display error message as text on the screen
+          alert(res.error); // Show error message as an alert
         } else {
-          alert(res.message); // Display success message as a browser alert
+          alert(res.message); // Show success message as an alert
           setTimeout(() => {
             navigate('/'); // Adjust this route as needed
           }, 3000);
@@ -32,10 +32,11 @@ function Register() {
         throw new Error('Non-JSON response received or response not OK');
       }
     } catch (e) {
-      alert(e.toString()); // Display error as a browser alert
+      alert(e.toString()); // Show exception message as an alert
       return;
     }
   };
+  
 
   const registerUser = (event) => {
     event.preventDefault();
