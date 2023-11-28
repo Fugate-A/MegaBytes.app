@@ -5,6 +5,7 @@ import NavBar from '../components/Navbar';
 import AIRequestModal from '../components/AIRequestModal';
 const cors = require('cors');
 
+
 function AddRecipe() {
 	const [title, setTitle] = useState('');
 	const [content, setContent] = useState('');

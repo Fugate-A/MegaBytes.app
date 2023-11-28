@@ -113,7 +113,7 @@ exports.setApp = function (app, client) {
 		  });
 		  
 		  console.log('Password reset email sent successfully');
-		  res.status(200).json({ message: 'Password reset email sent successfully' });
+		  res.status(200).json({ message: 'Password reset email sent successfully, please wait here to be redirected.' });
 		} catch (error) {
 		  console.error('Forgot Password error:', error);
 		  res.status(500).json({ error: 'Error processing forgot password.' });
@@ -152,7 +152,7 @@ exports.setApp = function (app, client) {
 			  res.status(500).json({ error: 'Error sending email' }); // Send JSON response here
 			} else {
 			  console.log('Email sent: ' + info.response);
-			  res.status(200).json({ message: 'Email sent successfully' }); // Send JSON response here
+			  res.status(200).json({ message: 'Email sent successfully, please verify your account and then return to the login page.' }); // Send JSON response here
 			}
 		  });
 		  
@@ -189,7 +189,7 @@ exports.setApp = function (app, client) {
 				if (error) {
 					res.status(500).json({ error }); // Return a JSON response for error
 				} else {
-					res.status(200).json('Email verified succesfully and account created! Pleae return to the login page'); // Return a JSON response for success
+					res.status(200).json('Email verified succesfully and account created! Pleae return to the login page 👍'); // Return a JSON response for success
 				}
 			}
 		});
