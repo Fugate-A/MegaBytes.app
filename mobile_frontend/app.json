@@ -16,7 +16,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icon.png",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
