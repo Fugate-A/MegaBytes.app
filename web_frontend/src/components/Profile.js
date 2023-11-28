@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-function ProfileInfo() {
-    var _ud = localStorage.getItem('user_data');
-    var ud = JSON.parse(_ud);
-    var userId = ud.id;
-    var firstName = ud.firstName;
-    var lastName = ud.lastName;
+// Profile.js in components folder
+import React from 'react';
 
-    return (
-        <div id="loggedInDiv">
-            <span id="userName">Logged In As {firstName} {lastName}</span><br />
-            <button type="button" id="logoutButton" class="buttons"
-                onClick={doLogout}> Log Out </button>
-        </div>
-    );
+const Profile = () => {
+  var _ud = localStorage.getItem('user_data');
+  var ud = JSON.parse(_ud);
+
+  // Check if user data is available
+  if (!ud) {
+    return <div>User not found. Please log in.</div>;
+  }
+
+  return (
+    <div className="profile-container">
+      <h1>Profile</h1>
+      <p><strong>Username:</strong> {ud.username}</p>
+      {/* Add more user details as needed */}
+    </div>
+  );
 };
 
-export default ProfileInfo;
+export default Profile;
