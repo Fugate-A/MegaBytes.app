@@ -11,17 +11,20 @@ function TagComponent({ name, emoji, color, isSelected }){
 
 const styles = StyleSheet.create({
     tagContainer: {
+        marginTop: 10,
         width: 140,
         borderRadius: 20,
         paddingHorizontal: 10,
         paddingVertical: 5,
         marginRight: 10,
+        borderWidth: 0.5,
     },
     dimmedTagContainer: {
         opacity: 0.5,
+        backgroundColor: 'gray',
     },
     tagText: {
-        color: 'white',
+        color: 'black',
         fontSize: 14,
         fontFamily: 'Tilt-Neon',
     },
