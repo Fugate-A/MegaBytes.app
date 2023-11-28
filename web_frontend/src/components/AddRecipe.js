@@ -54,6 +54,7 @@ function AddRecipe() {
 					tagList: recipeTags || [],
 					likeList: [],
 					isPublic: visibility,
+					ai_generated: AIgenerated,
 				}),
 			});
 
@@ -70,7 +71,7 @@ function AddRecipe() {
 				setShowErrorModal(true);
 			}
 		} catch (error) {
-			console.error('ERROR CONNECTING TO DATABASE\n', error);
+			console.error('ERROR CONNECTING TO DATABASE', error);
 		}
 	};
 
