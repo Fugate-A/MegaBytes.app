@@ -12,10 +12,16 @@ const navigation = [
 	{ name: 'Create', href: createLink, current: (currentUrl == createLink) },
 	{ name: 'Community', href: communityLink, current: (currentUrl == communityLink) },
 ]
+
 const doLogout = event => {
 	event.preventDefault();
 	localStorage.removeItem("user_data")
 	window.location.href = '/';
+};
+
+const goToProfile = event => {
+	event.preventDefault();
+	window.location.href = 'profile';
 };
 
 function classNames(...classes) {
@@ -24,8 +30,13 @@ function classNames(...classes) {
 
 export default function NavBar() {
 	var _ud = localStorage.getItem('user_data');
-    var ud = JSON.parse(_ud);
-    var username = ud.username;
+	var ud = JSON.parse(_ud);
+	if (ud === null) {
+		window.location.href = '/';
+	} else {
+		var username = ud.username;
+
+	}
 
 	return (
 		<Disclosure as="nav" className="bg-amber-800">
@@ -36,11 +47,7 @@ export default function NavBar() {
 							<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 								<div className="flex flex-shrink-0 items-center">
 									<a href='https://www.megabytes.app/i'>
-										<img
-											className="h-8 w-auto"
-											//src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-											alt="Your Company"
-										/>
+										
 									</a>
 								</div>
 								<div className="hidden sm:ml-6 sm:block">
@@ -62,7 +69,7 @@ export default function NavBar() {
 								</div>
 							</div>
 							<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-								{/* Profile dropdown */}								
+								{/* Profile dropdown */}
 								{username}
 								<Menu as="div" className="relative ml-3">
 									<div>
@@ -87,19 +94,17 @@ export default function NavBar() {
 										<Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
 											<Menu.Item>
 												{({ active }) => (
-													<a
-														href="#"
-														className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-													>
-														Your Profile
-													</a>
+													<button type="button" id="profile" class="buttons"
+													className={classNames(active ? 'bg-gray-100 pl-3' : '', 'pl-3 block px-4 py-2 text-sm text-gray-700')} 
+													onClick={goToProfile}> MyProfile </button>
 												)}
 											</Menu.Item>
 
 											<Menu.Item>
 												{({ active }) => (
 													<button type="button" id="logoutButton" class="buttons"
-														onClick={doLogout}> Log Out </button>
+													className={classNames(active ? 'bg-gray-100 pl-3' : '', 'pl-3 block px-4 py-2 text-sm text-gray-700')} 
+													onClick={doLogout}> Log Out </button>
 												)}
 											</Menu.Item>
 										</Menu.Items>
