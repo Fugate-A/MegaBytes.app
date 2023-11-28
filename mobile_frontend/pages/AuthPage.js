@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, TouchableWithoutFeedback ,TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Header from '../components/Header';
 import ErrorMessageModal from '../components/ErrorMessageModal';
+import ForgotPasswordModal from '../components/ForgotPasswordModal';
 
 function AuthPage( { navigation } ){
     const [isSignIn, setIsSignIn] = useState(true);
@@ -18,64 +19,66 @@ function AuthPage( { navigation } ){
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+	const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+
+
 	const handleSignIn = async () => {
-		// Check if login information is correct, if so, proceed to HomePage
-
 		const login = email;
-
-		if(login.size == 0 || password.size == 0){
+	
+		if (login.length === 0 || password.length === 0) {
 			setErrorMessage('Please fill in the required fields');
 			setShowErrorModal(true);
 			return;
 		}
-
+	
 		try {
 			const response = await fetch('http://164.90.130.112:5000/api/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-
 				body: JSON.stringify({
 					username: login,
 					password: password,
 				}),
 			});
-			
-			console.log('\tLogging User in:');
-			console.log(`\tUsername: ${login}   Password: ${password}`);
 
 			const data = await response.json();
 
-			if(response.ok){
-				console.log('\tSuccess!');
-
+			if (response.ok) {
 				await AsyncStorage.setItem('userID', data.id);
 				await AsyncStorage.setItem('username', username);
 				await AsyncStorage.setItem('email', email);
 
 				navigation.navigate('Home');
-			}else{
+			} else {
 				setErrorMessage('Invalid Username or Password');
 				setShowErrorModal(true);
 			}
-		} catch(error){
-			console.error("\tERROR CONNECTING TO DATABASE\n", error);
+		} catch (error) {
+			console.error('ERROR CONNECTING TO DATABASE\n', error);
 		}
 	};
-
+	
 	const handleSignUp = async () => {
-		// Check if register information is correct, if so, proceed to LoginPage
 
-		//TODO Send email verification before adding credentials into database
-
-		if(email.size == 0 || password.size == 0 || username.size == 0){
+		if (email.length === 0 || password.length === 0 || username.length === 0) {
 			setErrorMessage('Please fill in the required fields');
 			setShowErrorModal(true);
 			return;
 		}
+	
+		const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+		if (!passwordRegex.test(password)) {
+			setErrorMessage(
+				'Password must be at least 8 characters and include at least one uppercase letter, one lowercase letter, and one digit.'
+			);
+			setShowErrorModal(true);
+			return;
+		}
+	
 		try {
-			const response = await fetch('http://164.90.130.112:5000/api/register', {
+			const response = await fetch('http://164.90.130.112:5000/api/verifyEmail', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -86,119 +89,141 @@ function AuthPage( { navigation } ){
 					email: email,
 				}),
 			});
-			
-			console.log('\tAdding new User:');
-			console.log(`\n\tEmail: ${email}\tUsername: ${username}\tPassword: ${password}`);
-			const data = await response.json();
-			if(response.ok){
-				console.log('\tSuccess');
-				
-				await AsyncStorage.setItem('userID', data.id);
+	
+			if (response.ok) {
+				setErrorMessage('A verification link has been sent to your email.');
+				setShowErrorModal(true);
 
 				setIsSignIn(true);
-			}else{
-				console.error("\tError\n");
+			} else {
+				console.error('Error');
 			}
-		} catch(error){
-			console.error("\tERROR CONNECTING TO DATABASE\n");
+		} catch (error) {
+			console.error('ERROR CONNECTING TO DATABASE\n', error);
 		}
 	};
 
 	const toggleShowPassword = () => { 
 		setShowPassword(!showPassword); 
 	}; 
+	  
+	const openForgotPasswordModal = () => {
+		setShowForgotPasswordModal(true);
+	}
+
+	const closeForgotPasswordModal = () => {
+		setShowForgotPasswordModal(false);
+	}
 
 	const closeErrorModal = () => {
 		setShowErrorModal(false);
 	};
   
     return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'padding' : null}
-			style={styles.container}
-		>
+		<View style={styles.container}>
+			<KeyboardAvoidingView
+				behavior={Platform.OS === 'ios' ? 'padding' : null}
+			>
 
-			<Header title='Megabytes' />
+				<Header title='Megabytes' />
 
-			<View style={styles.topOptions}> 
-				<TouchableOpacity
-					style={[
-					styles.optionButton,
-					isSignIn ? styles.activeOptionButton : null,
-					]}
-					onPress={() => setIsSignIn(true)}
-					activeOpacity={0.5}
-				>
-					<Text style={isSignIn ? styles.activeOptionText : styles.optionText}>
-					Sign In
-					</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={[
-					styles.optionButton,
-					!isSignIn ? styles.activeOptionButton : null,
-					]}
-					onPress={() => setIsSignIn(false)}
-					activeOpacity={0.5}
-				>
-					<Text style={!isSignIn ? styles.activeOptionText : styles.optionText}>
-					Sign Up
-					</Text>
-				</TouchableOpacity>
-			</View>
-
-			<ErrorMessageModal
-				visible={showErrorModal}
-				message={errorMessage}
-				onClose={closeErrorModal}
-			/>
-
-			<View style={styles.authContainer}>
-				<Text style={styles.inputLabel}>E-mail Address</Text>
-				<TextInput
-					style={styles.input}
-					placeholder="john.doe@email.com"
-					onChangeText={(text) => setEmail(text)}
-				/>
-				{!isSignIn && (
-					<>
-						<Text style={styles.inputLabel}>Username</Text>
-						<TextInput
-							style={styles.input}
-							placeholder="Username"
-							onChangeText={(text) => setUsername(text)}
-						/>
-					</>
-				)}
-
-				<Text style={styles.inputLabel}>Password</Text>
-				<View style={styles.passwordInputContainer}>
-					<TextInput
-						style={styles.passwordInput}
-						placeholder="Password"
-						value={password}
-						onChangeText={text => setpassword(text)}
-						secureTextEntry={!showPassword}   
-					/>
-					<MaterialCommunityIcons 
-						name={showPassword ? 'eye-off' : 'eye'} 
-						size={24} 
-						color="#aaa"
-						style={styles.passwordVisibilityIcon}
-						onPress={toggleShowPassword} 
-					/> 
+				<View style={styles.topOptions}> 
+					<TouchableOpacity
+						style={[
+						styles.optionButton,
+						isSignIn ? styles.activeOptionButton : null,
+						]}
+						onPress={() => setIsSignIn(true)}
+						activeOpacity={0.5}
+					>
+						<Text style={isSignIn ? styles.activeOptionText : styles.optionText}>
+						Sign In
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={[
+						styles.optionButton,
+						!isSignIn ? styles.activeOptionButton : null,
+						]}
+						onPress={() => setIsSignIn(false)}
+						activeOpacity={0.5}
+					>
+						<Text style={!isSignIn ? styles.activeOptionText : styles.optionText}>
+						Sign Up
+						</Text>
+					</TouchableOpacity>
 				</View>
-			
-				<TouchableHighlight
-					style={styles.submitButton}
-					underlayColor="#FFC266" 
-					onPress={isSignIn ? handleSignIn : handleSignUp}
-				>
-					<Text style={styles.submitButtonText}>Submit</Text>
-				</TouchableHighlight>
 
-			</View>
-		</KeyboardAvoidingView>
+				<ErrorMessageModal
+					visible={showErrorModal}
+					message={errorMessage}
+					onClose={closeErrorModal}
+				/>
+
+
+				<View style={styles.authContainer}>
+					<Text style={styles.inputLabel}>E-mail Address</Text>
+					<TextInput
+						style={styles.input}
+						placeholder="john.doe@email.com"
+						onChangeText={(text) => setEmail(text)}
+					/>
+					{!isSignIn && (
+						<>
+							<Text style={styles.inputLabel}>Username</Text>
+							<TextInput
+								style={styles.input}
+								placeholder="Username"
+								onChangeText={(text) => setUsername(text)}
+							/>
+						</>
+					)}
+
+					<Text style={styles.inputLabel}>Password</Text>
+					<View style={styles.passwordInputContainer}>
+						<TextInput
+							style={styles.passwordInput}
+							placeholder="Password"
+							value={password}
+							onChangeText={text => setpassword(text)}
+							secureTextEntry={!showPassword}   
+						/>
+						<MaterialCommunityIcons 
+							name={showPassword ? 'eye-off' : 'eye'} 
+							size={24} 
+							color="#aaa"
+							style={styles.passwordVisibilityIcon}
+							onPress={toggleShowPassword} 
+						/> 
+					</View>
+
+					{isSignIn && (
+						<TouchableWithoutFeedback onPress={openForgotPasswordModal}>
+							<Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+						</TouchableWithoutFeedback>
+					)}
+				
+					<TouchableHighlight
+						style={styles.submitButton}
+						underlayColor="#FFC266" 
+						onPress={isSignIn ? handleSignIn : handleSignUp}
+					>
+						<Text style={styles.submitButtonText}>Submit</Text>
+					</TouchableHighlight>
+
+					<ForgotPasswordModal
+						visible={showForgotPasswordModal}
+						onClose={closeForgotPasswordModal}
+					/>
+
+				</View>
+			</KeyboardAvoidingView>
+
+			
+
+		</View>
+	
+
     );
 }
   
@@ -279,6 +304,14 @@ function AuthPage( { navigation } ){
 			right: 10,
 			top: 10,
 			padding: 8,
+		},
+		forgotPasswordText: {
+			color: '#DD9510',
+			fontSize: 16,
+			fontFamily: 'Tilt-Neon',
+			marginTop: 2,
+			marginBottom: 15,
+			alignSelf: 'flex-end',
 		},
 		submitButton: {
 			backgroundColor: '#E79B11', 

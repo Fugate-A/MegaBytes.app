@@ -71,14 +71,16 @@ function TagSelectionModal ({ visible, onClose, onUpdateRecipeTags, currentTags 
                         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                             <Text>X</Text>
                         </TouchableOpacity>
-                        <FlatList
-                            data={tags}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={renderItem}
-                            numColumns={2}
-                        />
+                        <View style={styles.tagList}>
+                            <FlatList
+                                data={tags}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={renderItem}
+                                numColumns={2}
+                            />
+                        </View>
+                        
                     </View>
-                    <Text >{JSON.stringify(recipeTags)}</Text>
                 </View>    
             </TouchableWithoutFeedback>
 
@@ -94,11 +96,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     tagContainer: {
-        backgroundColor: 'white',
+        backgroundColor: '#E3E3E3',
         padding: 20,
         borderRadius: 15,
         width: '90%',
         maxHeight: '80%',
+    },
+    tagList: {
+        marginTop: 20,
     },
     closeButton: {
         position: 'absolute',

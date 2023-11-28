@@ -1,15 +1,17 @@
-import { useRoute, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import TagComponent from '../components/TagComponent';
-import AddComment from '../components/AddComment';
+import AddCommentModal from '../components/AddCommentModal';
 import CommentContainer from '../components/CommentContainer';
 
 function RecipePage() {
     const navigation = useNavigation();
-    const userID = AsyncStorage.getItem('userID')._j;
+
+    const [userID, setUserID] = useState(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -23,6 +25,9 @@ function RecipePage() {
 
     const [liked, setLiked] = useState(recipe.LikeList.includes(userID));
     const [likeNumber, setLikeNumber] = useState(recipe.LikeList.length || 0);
+
+    const [showAddCommentModal, setShowAddCommentModal] = useState(false);
+
 
     const fetchTags = async () => {
         try {
@@ -60,7 +65,7 @@ function RecipePage() {
             }
         } catch(error){
             console.error('Error connecting to database', error);
-        }
+        } 
     };
 
     const fetchComments = async () => {
@@ -155,11 +160,21 @@ function RecipePage() {
         );
     };
 
+    const fetchUserID = async () => {
+        try {
+            const storedUserID = await AsyncStorage.getItem('userID');
+            setUserID(storedUserID);
+        } catch (error) {
+            console.error('Error retrieving userID from cache', error);
+        }
+    };
+
     useEffect(() => {
 
         fetchComments();
         fetchTags();
         fetchUser();
+        fetchUserID();
 
         setLoading(false);
     }, []);
@@ -219,12 +234,18 @@ function RecipePage() {
         }
     };
 
+    const openAddCommentModal = () => {
+        setShowAddCommentModal(true);
+    }
+
+    const closeAddCommentModal = () => {
+        setShowAddCommentModal(false);
+    }
     if(loading){
         return null;
     }
 
     return (
-
 
         <ScrollView style={styles.container}>
         
@@ -233,7 +254,7 @@ function RecipePage() {
                     <Text style={styles.recipeAuthorText}>u/{author}</Text>
                 </View>
 
-                {(userID == recipe.UserID) && (
+                {(userID == recipe.UserId) && (
                     <TouchableOpacity style={styles.deleteButton} onPress={deleteRecipe}>
                         <Text style={styles.deleteButtonText}>Delete Recipe</Text>
                     </TouchableOpacity>
@@ -262,18 +283,45 @@ function RecipePage() {
 
             <View style={styles.extrasBar}>
                 <TouchableOpacity onPress={toggleLike}>
-                    <Text style={[styles.likeButton, liked && styles.likedButton]}>Like</Text>
+                    <Text style={[styles.likeButton, liked && styles.likedButton]}>⇧</Text>
                 </TouchableOpacity>
-                <Text style={styles.likeCount}>{likeNumber}</Text>
-            </View>
-            
-            <View style={styles.addCommentContainer}>
-                <AddComment recipe={recipe} onCommentSubmit={handleCommentSubmit}/>
+                <Text style={[styles.likeCount, liked && styles.likedCount]}>{likeNumber}</Text>
             </View>
 
+            <TouchableOpacity 
+                onPress={openAddCommentModal}
+                style={styles.addCommentContainer}
+            >   
+                <MaterialCommunityIcons name='comment-outline' size={35} color='black' />
+                <Text style={styles.addCommentText}>Add Comment...</Text>
+            </TouchableOpacity>
+
+            {showAddCommentModal && (
+                <AddCommentModal
+                visible={showAddCommentModal}
+                recipe={recipe}
+                onCommentSubmit={() => {
+                    closeAddCommentModal();
+                    handleCommentSubmit();
+                }}
+                onClose={closeAddCommentModal}
+            />
+            )}
+
             <View style={styles.commentSection}>
-                <Text style={styles.commentSectionText}>Comments</Text>
+                <View style={styles.commentSectionHeader}>
+                    <Text style={styles.commentSectionText}>Comments</Text>
+                </View>
                 {renderComments()}
+            </View>
+
+            <View style={styles.emojiContainer}>
+                {recipe.AI_Generated && (
+                    <Text style={styles.emojiText}>🤖</Text>
+                )}
+                {recipe.IsPublic && (
+                    <Text style={styles.emojiText}>🌍</Text>
+                )}
             </View>
             
 
@@ -287,6 +335,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFF0DC',
         padding: 10,
+        paddingTop: 40,
     },
     recipeAuthorContainer: {
         padding: 10,
@@ -308,8 +357,11 @@ const styles = StyleSheet.create({
     recipeTitleContainer: {
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
+        borderWidth: 1,
+        borderColor: 'gray',
         padding: 10,
         marginBottom: 10,
+        backgroundColor: '#FFE6C5',
     },
     recipeTitleText: {
         fontSize: 24,
@@ -318,7 +370,10 @@ const styles = StyleSheet.create({
     },
     tagsContainer: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
         marginTop: 5,
+        borderTopWidth: 1,
+        borderTopColor: 'gray',
     },
     recipeContentContainer: {
         borderBottomWidth: 1,
@@ -327,14 +382,17 @@ const styles = StyleSheet.create({
         borderRightColor: 'gray',
         borderLeftWidth: 1,
         borderLeftColor: 'gray',
+        borderWidth: 1,
+        borderColor: 'gray',
         padding: 10,
+        backgroundColor: '#FFE6C5',
     },
     recipeContentText: {
         fontSize: 14,
         fontFamily: 'Tilt-Neon',
     },
     extrasBar: {
-        flexDirection: 'col',
+        flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
         borderRightWidth: 1,
@@ -342,11 +400,17 @@ const styles = StyleSheet.create({
         borderLeftWidth: 1,
         borderLeftColor: 'gray',
         padding: 10,
+
+        paddingHorizontal: 20,
+        backgroundColor: '#FFE6C5',
+        
     },
     likeButton: {
-        fontSize: 16,
+        fontSize: 24,
         fontFamily: 'Tilt-Neon',
         color: 'gray',
+        marginRight: 10,
+        marginTop: -5,
     },
     likedButton: {
         color: 'green',
@@ -365,22 +429,54 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     likeCount: {
-        fontSize: 16,
+        fontSize: 24,
+        fontFamily: 'Tilt-Neon',
+        color: 'gray',
+    },
+    likedCount: {
+        color: 'green',
+    },
+    addCommentText: {
+        marginLeft: 10,
+        fontSize: 24,
         fontFamily: 'Tilt-Neon',
         color: 'gray',
     },
     addCommentContainer: {
+        flexDirection: 'row',
+        borderWidth: 1,
+        borderRadius: 15,
+        backgroundColor: '#FFE6C5',
+        marginTop: 20,
+        marginBottom: 20,
         paddingHorizontal: 10,
         paddingVertical: 5,
+        width: '75%',
     },
     commentSection: {
         flex: 1,
-        marginBottom: 40,
+        marginBottom: 60,
+    },
+    commentSectionHeader: {
+        borderBottomWidth: 0.5,
+        width: '50%',
+        borderColor: 'gray',
+        marginBottom: 5,
     },
     commentSectionText: {
         fontSize: 18,
         fontFamily: 'Tilt-Neon',
         marginBottom: 5,
+    },
+    emojiContainer: {
+        position: 'absolute',
+        flexDirection: 'row',
+        top: 60,
+        right: 5,
+
+    },
+    emojiText: {
+        fontSize: 15,
     },
 });
 
