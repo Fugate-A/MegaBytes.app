@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, TextInput, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, Keyboard, ScrollView, Touchable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import ErrorMessageModal from '../components/ErrorMessageModal';
 import TagSelectionModal from '../components/TagSelectionModal';
+import AIRequestModal from '../components/AIRequestModal';
 
 
 function AddRecipePage(){
@@ -14,10 +16,15 @@ function AddRecipePage(){
     const [content, setContent] = useState('');
     const [recipeTags, setRecipeTags] = useState([]);
     const [visibility, setVisibility] = useState(false);
+    const [AIgenerated, setAIgenerated] = useState(false);
 
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
+    const [showAIModal, setShowAIModal] = useState(false);
+    const [isScrolling, setIsScrolling] = useState(false);
+    const [isTextInputFocused, setIsTextInputFocused] = useState(false);
+
 
     const [userID, setUserID] = useState(null);
     useEffect( () => {
@@ -49,6 +56,7 @@ function AddRecipePage(){
                     tagList: recipeTags || [],
                     likeList: [],
                     isPublic: visibility,
+                    ai_generated: AIgenerated,
 				}),
 		});
 
@@ -66,7 +74,7 @@ function AddRecipePage(){
 				setShowErrorModal(true);
             }
         } catch(error) {
-            console.error("\tERROR CONNECTING TO DATABASE\n", error);
+            console.error("ERROR CONNECTING TO DATABASE\n", error);
         }
         
 
@@ -76,9 +84,23 @@ function AddRecipePage(){
         setRecipeTags(updatedTages);
     }
 
+    const handleAIInput = (updatedTitle, updatedContent) => {
+        setTitle(updatedTitle);
+        setContent(updatedContent);
+        setAIgenerated(true);
+    }
+
 	const closeErrorModal = () => {
 		setShowErrorModal(false);
 	};
+
+    const closeAIModal = () => {
+        setShowAIModal(false);
+    }
+
+    const openAIModal = () => {
+        setShowAIModal(true);
+    }
 
     const openTagSelectionModal = () => {
         setShowTagSelectionModal(true);
@@ -92,19 +114,43 @@ function AddRecipePage(){
         Keyboard.dismiss();
     };
 
+    const handleScrollBegin = () => {
+        setIsScrolling(true);
+    };
+    
+    const handleScrollEnd = () => {
+        setIsScrolling(false);
+    };
+    
+    
+
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView 
+            style={styles.container}
+        >
             <TouchableWithoutFeedback onPress={dismissKeyboard}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : null}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
-                >
-                    <TouchableOpacity 
-                        onPress={handleAddRecipe}
-                        style={styles.submittButton}
-                    >
-                        <Text>Submit</Text>
-                    </TouchableOpacity>
+                
+                <View>
+                    <View style={styles.topButtons}>
+                        <TouchableOpacity onPress={openAIModal} style={styles.aigenButton}>
+                            <Text style={styles.aigenButtonText}>Generate with AI 🤖</Text>
+                        </TouchableOpacity>
+
+                        {showAIModal && (
+                            <AIRequestModal
+                                visible={showAIModal} 
+                                onClose={closeAIModal}
+                                handleAIInput={handleAIInput}
+                            />
+                        )}
+                        
+                        <TouchableOpacity 
+                            onPress={handleAddRecipe}
+                            style={styles.submittButton}
+                        >
+                            <Text style={styles.submittButtonText}>Submit</Text>
+                        </TouchableOpacity>
+                    </View>
 
                     <View style={styles.inputContainer}>
                         <TextInput
@@ -112,17 +158,26 @@ function AddRecipePage(){
                             value = {title}
                             onChangeText={(text) => setTitle(text)}
                             style={styles.titleInput}
-                        />
-                        <TextInput
-                            placeholder='Ingredients and Directions'
-                            value = {content}
-                            onChangeText={(text) => setContent(text)}
-                            style={styles.contentInput}
-                            multiline
+                            editable={!isScrolling}
                         />
 
+                        <View 
+                            style={styles.contentInputContainer}
+                        >
+                            <TextInput
+                                placeholder='Ingredients and Directions'
+                                value = {content}
+                                onChangeText={(text) => setContent(text)}
+                                style={[styles.contentInput, isTextInputFocused ? { height: 'auto' } : null]}
+                                multiline
+                                editable={!isScrolling}
+                                scrollEnabled={!isScrolling}
+                            />
+                        </View>
+
                         <TouchableOpacity onPress={openTagSelectionModal} style={styles.addTagsButton}>
-                            <Text>Add Tags</Text>
+                            <MaterialCommunityIcons name='tag-plus-outline' size={30} color='black' />
+                            <Text style={styles.addTagsText}>Add Tags</Text>
                         </TouchableOpacity>
                         
                         {showTagSelectionModal && (
@@ -135,11 +190,23 @@ function AddRecipePage(){
                         )}
 
                         <View style={styles.visibilityContainer}>
-                            <Text style={styles.visibilityLabel}>Visibility:</Text>
-                            <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
-                                <View style={[styles.radioCircle, {backgroundColor: visibility ? 'green' : 'white'}]} />
-                            </TouchableOpacity>
-                            <Text>{visibility ? 'Public': 'Private'}</Text>
+                            <Text style={styles.visibilityLabel}>Privacy:</Text>
+
+                            <View style={styles.visibilityTextContainer}>
+                                <TouchableOpacity onPress={toggleVisibility} style={styles.visibilityButton}>
+                                    <View style={[styles.radioCircle, { backgroundColor: visibility ? 'green' : 'white' }]} />
+                                </TouchableOpacity>
+                                <Text style={styles.visibilityLabel}>{visibility ? 'Public' : 'Private'}</Text>
+                            </View>
+
+                            <View style={styles.visibilityIconContainer}>
+                                {visibility ? (
+                                    <MaterialCommunityIcons name='lock-open-outline' size={35} color='black' />
+                                ) : (
+                                    <MaterialCommunityIcons name='lock-outline' size={35} color='black' />
+                                )}
+                            </View>
+
                         </View>
 
                     </View>
@@ -149,8 +216,8 @@ function AddRecipePage(){
                         message={errorMessage}
                         onClose={closeErrorModal}
                     />
-
-                </KeyboardAvoidingView>
+                </View>
+                
             </TouchableWithoutFeedback>
         </ScrollView>
     );
@@ -163,11 +230,42 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         backgroundColor: '#FFF0DC',
         padding: 10,
+        paddingTop: 40,
+    },
+    topButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 5,
+    },
+    aigenButtonText: {
+        fontSize: 14,
+        fontFamily: 'Tilt-Neon',
+    },
+    submittButtonText: {
+        fontSize: 14,
+        fontFamily: 'Tilt-Neon',
+    },
+    aigenButton: {
+        marginRight: 15,
+        borderWidth: 1,
+        borderRadius: 15,
+        padding: 10,
+        backgroundColor: '#51E4E5',
+    },
+    submittButton: {
+        marginRight: 15,
+        borderWidth: 1,
+        borderRadius: 15,
+        padding: 10,
+        backgroundColor: '#51E564',
     },
     inputContainer: {
+        marginTop: -15,
         padding: 10,
     },
     titleInput: {
+        backgroundColor: '#FFE6C5',
+        borderRadius: 15,
         width: '100%',
         height: 80,
         marginVertical: 10,
@@ -178,37 +276,62 @@ const styles = StyleSheet.create({
         borderBottomColor: 'black',
         borderBottomWidth: 2,
     },
-    contentInput: {
-        width: '100%',
+    contentInputContainer: {
+        backgroundColor: '#FFE6C5',
         height: '65%',
-        marginVertical: 10,
-        padding: 8,
-        fontFamily: 'Tilt-Neon',
+        borderRadius: 15,
         borderLeftColor: 'grey',
         borderRightColor: 'grey',
         borderLeftWidth: 1,
         borderRightWidth: 1,
-        borderRadius: 15,
     },
-    submittButton: {
-        alignSelf: 'flex-end',
-        marginRight: 15,
-        borderWidth: 1,
-        borderRadius: 15,
+    contentInput: {
+        width: '100%',
+        marginVertical: 10,
+        padding: 8,
+        fontFamily: 'Tilt-Neon',
         padding: 10,
     },
+    addTagsText: {
+        fontSize: 20,
+        fontFamily: 'Tilt-Neon',
+        marginLeft: 10,
+        color: 'gray',
+    },
     addTagsButton: {
-        borderWidth: 1,
+        flexDirection: 'row',
+        backgroundColor: '#FFE6C5',
+        borderWidth: 0.5,
         borderRadius: 15,
         padding: 10,
         marginTop: 10,
+        width: '60%',
     },
     visibilityContainer: {
+        backgroundColor: '#FFE6C5',
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 10,
+
+        width: 250,
+        padding: 10,
+        borderRadius: 15,
+        borderWidth: 0.5,
+    },
+    visibilityTextContainer: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        width: 150 
+    },
+    visibilityIconContainer: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        width: 35,
+        marginLeft: -30,
     },
     visibilityLabel: {
+        fontSize: 16,
+
         marginRight: 10,
         fontFamily: 'Tilt-Neon',
     },
