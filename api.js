@@ -201,14 +201,17 @@ exports.setApp = function (app, client) {
 		const { username, password, email } = req.body;
 		const newUser = { Username: username, Password: password, Email: email, RecipeList: [] };
 		var error = '';
+		let userID = '';
 		try {
 			const db = client.db('MegaBitesLibrary');
-			db.collection('User').insertOne(newUser);
+			const insertResult = await db.collection('User').insertOne(newUser);
+
+			userID = insertResult.insertedId;
 		}
 		catch (e) {
 			error = e.toString();
 		}
-		var ret = { error: error };
+		var ret = { error: error, userID: userID };
 		res.status(200).json(ret);
 	});
 
@@ -320,9 +323,9 @@ exports.setApp = function (app, client) {
 				{ $push: { RecipeList: { _id: recipeId } } }
 			);
 
-			console.log(updateResult);
+			
 
-			res.status(200).json({ error: null });
+			res.status(200).json({ error: null, recipeID: recipeId });
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({ error: 'Internal Server Error' });
