@@ -177,14 +177,8 @@ exports.setApp = function (app, client) {
 				console.log('Extracted User Info - Email:', email);
 
 				// Proceed with registration using the extracted information
-
-				const checkUsername = await db.collection('User').findOne({ Username: username });
-				const checkEmail = await db.collection('User').findOne({ Email: email });
-
-				if(checkEmail || checkUsername){
-					return;
-				}
 				const newUser = { Username: username, Password: password, Email: email.toLowerCase(), RecipeList: [] };
+				console.log('Adding new User ', newUser);
 				var error = '';
 				try {
 					const db = client.db('MegaBitesLibrary');
