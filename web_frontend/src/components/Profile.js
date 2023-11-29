@@ -4,8 +4,6 @@ import './styles.css';
 const Profile = () => {
 const user = JSON.parse(userData);
 	const navigate = useNavigate();
-=======
-  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState('')
   const [ifedit, setIfEdit] = useState(false)
   var _ud = localStorage.getItem('user_data');
