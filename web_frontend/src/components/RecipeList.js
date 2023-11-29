@@ -57,7 +57,7 @@ function RecipeList() {
     }, []);
 
     return (
-        <div id="RecipeListDiv" className=' bg-page-background pt-20 min-h-screen'>
+        <div id="RecipeListDiv" className=' bg-#ffe4bf pt-20 min-h-screen'>
 
             <h1 className=" text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
                 Your Recipes!
@@ -91,10 +91,16 @@ function RecipeList() {
                             <Link to={`/dis/${recipe._id}`}>
                                 <div key={recipe._id} className=" rounded shadow-lg px-1 border-3 border-black
                                 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 bg-orange-100">
-                                    <div className="px-2">
+                                    <div className="px-2 relative">
                                         <div className="border-b-1 border-black">
                                             <div className="text-sm">u/{username}</div>
                                             <div className="font-bold text-xl">{recipe.RecipeName}</div>
+                                            <div className='absolute top-5 right-5'>
+                                                <div className="flex items-center">
+                                                    {!recipe.IsPublic && <p className="mr-0">🌍</p>}
+                                                    {!recipe.AI_Generated && <p>🤖</p>}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="px-6 py-2 mb-2 h-11 overflow-y-clip">

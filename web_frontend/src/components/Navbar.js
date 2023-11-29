@@ -7,8 +7,10 @@ let currentUrl = window.location.href;
 let recipeLink = "https://www.megabytes.app/rec";
 let createLink = "https://www.megabytes.app/cre";
 let communityLink = "https://www.megabytes.app/com";
+let profileLink = "https://www.megabytes.app/profile";
+
 const navigation = [
-	{ name: 'Recipes', href: recipeLink, current: (currentUrl == recipeLink)},
+	{ name: 'Recipes', href: recipeLink, current: (currentUrl == recipeLink) },
 	{ name: 'Create', href: createLink, current: (currentUrl == createLink) },
 	{ name: 'Community', href: communityLink, current: (currentUrl == communityLink) },
 ]
@@ -21,7 +23,7 @@ const doLogout = event => {
 
 const goToProfile = event => {
 	event.preventDefault();
-	window.location.href = 'profile';
+	window.location.href = '/profile';
 };
 
 function classNames(...classes) {
@@ -29,20 +31,17 @@ function classNames(...classes) {
 }
 
 export default function NavBar() {
-	var userData = localStorage.getItem('user_data');
-	var user = JSON.parse(userData);
-	
-	if (user === null) {
-	  window.location.href = '/';
-	  return null; // Stop rendering if there's no user data
+	var _ud = localStorage.getItem('user_data');
+	var ud = JSON.parse(_ud);
+	if (ud === null) {
+		window.location.href = '/';
+	} else {
+		var username = ud.username;
+
 	}
-	
-	// Access the username property of the user object
-	var username = user.username;
-  
 
 	return (
-		<Disclosure as="nav" className="bg-amber-800">
+		<Disclosure as="nav" className="bg-amber-800 fixed w-screen z-50">
 			{({ open }) => (
 				<>
 					<div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -50,7 +49,11 @@ export default function NavBar() {
 							<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 								<div className="flex flex-shrink-0 items-center">
 									<a href='https://www.megabytes.app/i'>
-										
+										<img
+											className="h-8 w-auto"
+											src=" "
+											alt="Megabytes"
+										/>
 									</a>
 								</div>
 								<div className="hidden sm:ml-6 sm:block">
@@ -73,18 +76,19 @@ export default function NavBar() {
 							</div>
 							<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
 								{/* Profile dropdown */}
-								{'rtfghfghbj'}
 								<Menu as="div" className="relative ml-3">
 									<div>
-										<Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+
+										<Menu.Button className={classNames(
+											profileLink == currentUrl ? 'relative flex rounded-full border-3 border-white px-2 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800' :
+												'relative flex rounded-full border-3 border-black px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800',
+											'rounded-md px-3 py-1 text-sm font-medium'
+										)}>
 											<span className="absolute -inset-1.5" />
 											<span className="sr-only">Open user menu</span>
-											<img
-												className="h-8 w-8 rounded-full"
-												src="" //Profile picture goes here
-												alt="profile pic"
-											/>
+											{username}
 										</Menu.Button>
+
 									</div>
 									<Transition
 										as={Fragment}
@@ -94,20 +98,20 @@ export default function NavBar() {
 										leaveFrom="transform opacity-100 scale-100"
 										leaveTo="transform opacity-0 scale-95"
 									>
-										<Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+										<Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
 											<Menu.Item>
 												{({ active }) => (
-													<button type="button" id="profile" class="buttons"
-													className={classNames(active ? 'bg-gray-100 pl-3' : '', 'pl-3 block px-4 py-2 text-sm text-gray-700')} 
-													onClick={goToProfile}> MyProfile </button>
+													<p id="profile-go" class="buttons"
+														className={classNames(active ? 'bg-gray-100 cursor-pointer' : '', ' cursor-pointer block px-4 py-2 text-sm text-gray-700')}
+														onClick={goToProfile}> MyProfile </p>
 												)}
 											</Menu.Item>
 
 											<Menu.Item>
 												{({ active }) => (
-													<button type="button" id="logoutButton" class="buttons"
-													className={classNames(active ? 'bg-gray-100 pl-3' : '', 'pl-3 block px-4 py-2 text-sm text-gray-700')} 
-													onClick={doLogout}> Log Out </button>
+													<p id="logout-go" class="buttons"
+														className={classNames(active ? 'bg-gray-100 cursor-pointer' : '', ' cursor-pointer block px-4 py-2 text-sm text-gray-700')}
+														onClick={doLogout}> Log Out </p>
 												)}
 											</Menu.Item>
 										</Menu.Items>
