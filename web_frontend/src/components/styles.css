@@ -1,0 +1,14 @@
+/* src/styles.css */
+
+@font-face {
+	font-family: 'Tilt-Neon';
+	src: url('./fonts/TiltNeon-Regular-VariableFont.ttf') format('truetype');
+	/* Add more formats if needed (e.g., .ttf, .otf) */
+	font-weight: normal;
+	font-style: normal;
+}
+
+body {
+	font-family: 'Tilt-Neon';
+	/* Specify fallback fonts if necessary */
+}

@@ -1,4 +1,3 @@
-
 const app_name = 'https://www.megabytes.app/'
 exports.buildPath =
 	function buildPath(route) {

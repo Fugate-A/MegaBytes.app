@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import './styles.css';
 const Profile = () => {
+const user = JSON.parse(userData);
+	const navigate = useNavigate();
+=======
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState('')
   const [ifedit, setIfEdit] = useState(false)
@@ -43,10 +46,11 @@ const Profile = () => {
     getUserInfo()
   }, []);
 
-  const doLogout = () => {
-    localStorage.removeItem('user_data');
-    navigate('/');
-  };
+
+	const doLogout = () => {
+		localStorage.removeItem('user_data');
+		navigate('/');
+	};
 
   const changeEdit = () => {
     // Update the state to toggle the visibility of the HTML

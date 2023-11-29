@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import UserInfo from '../components/UserDetails';
+import './styles.css';
 function Register() {
 	var regUsername;
 	var regPassword;

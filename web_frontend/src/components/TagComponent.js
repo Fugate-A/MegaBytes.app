@@ -1,5 +1,5 @@
 import React from "react";
-
+import './styles.css';
 function TagComponent({ name, emoji, color, isSelected }) {
 	return (
 		<div
