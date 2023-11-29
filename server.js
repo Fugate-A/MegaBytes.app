@@ -44,7 +44,6 @@ app.use((req, res, next) => {
 // Serve static files from your React app's "build" directory
 app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
 
-
 // Create an HTTPS server with SSL configuration
 const httpsOptions = {
 key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
@@ -68,7 +67,6 @@ app.get('*', (req, res) => {
 httpsServer.listen(httpsPort, () => {
 console.log(`HTTPS Server is running on port ${httpsPort}`);
 });
- 
 
 // Start the HTTP server on port 5000
 app.listen(httpPort, () => {
