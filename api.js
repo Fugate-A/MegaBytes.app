@@ -445,25 +445,20 @@ exports.setApp = function (app, client) {
 	app.post('/api/getPublicRecipes', async (req, res, netx) => {
 		// incoming: 
 		// outgoing: results[], error
-
 		try {
 			const db = client.db('MegaBitesLibrary');
-
 			const publicRecipes = await db.collection('Recipes').find({ IsPublic: true}).toArray();
-
 			const results = [];
-			
-			for (let i = 0; i < publicRecipes.length; i++)
-			{
-				results.push(publicRecipes[i]._id);
+			for (let i = 0; i < publicRecipes.length; i++) {
+				results.push(publicRecipes[i]);
 			}
-
 			res.json({ results: results, error: '' });
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({ error: 'Internal error' });
 		}
 	});
+	
 
 	app.post('/api/getRecipeByID', async (req, res, next) => {
 		// incoming recipeID
