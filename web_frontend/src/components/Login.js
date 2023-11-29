@@ -46,14 +46,27 @@ function Login() {
 		}
 	};
 
-	return (
-		<div id="loginDiv">
+	const style = `
+    .text-outline-white {
+        text-shadow: 
+        -1px -1px 0 #fff, 
+         1px -1px 0 #fff,
+        -1px 1px 0 #fff, 
+         1px 1px 0 #fff;
+    }
+`;
+
+
+return (
+    <>
+        <style>{style}</style>
+        <div id="loginDiv">
 			<form onSubmit={doLogin}>
 				<div className="flex min-h-full flex-1 flex-col justify-center px-6 pt-10 pb-6 lg:px-8">
 					<div className="sm:mx-auto sm:w-full sm:max-w-sm">
-						<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
-							Get to Cookin
-						</h2>
+					<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950 text-outline-white">
+    Get to Cookin
+</h2>
 					</div>
 
 					<div className="mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-sm bg-orange-100 border-4 border-neutral-950 rounded-lg">
@@ -127,6 +140,7 @@ function Login() {
 			</form>
 
 		</div>
+		</>
 	);
 };
 export default Login;
