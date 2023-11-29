@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-
+import './styles.css';
 //name for location, href: location address, current: if active on that page
 let currentUrl = window.location.href;
 let recipeLink = "https://www.megabytes.app/rec";
@@ -66,14 +66,14 @@ export default function NavBar() {
 									</div>
 								</div>
 							</div>
-	
+
 							{/* Center - MegaBytes Text */}
-<div className="flex-none text-center">
-    <a href="/rec" className="text-3xl font-bold no-underline hover:underline">
-        MegaBytes
-    </a>
-</div>
-	
+							<div className="flex-none text-center">
+								<a href="/rec" className="text-3xl font-bold no-underline hover:underline">
+									MegaBytes
+								</a>
+							</div>
+
 							{/* Right side - Account information with dropdown */}
 							<div className="flex-1 flex items-center justify-end">
 								<Menu as="div" className="relative inline-block text-left">
@@ -148,5 +148,5 @@ export default function NavBar() {
 			)}
 		</Disclosure>
 	);
-	
+
 }

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import TagComponent from './TagComponent';
-
+import './styles.css';
 function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }) {
 	const [tags, setTags] = useState([]);
 	const [recipeTags, setRecipeTags] = useState(currentTags || []);
 	const [loading, setLoading] = useState(true);
-	
+
 	const fetchTags = async () => {
 		try {
 			const response = await fetch('https://megabytes.app/api/tags');
@@ -22,7 +22,7 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 			setLoading(false);
 		}
 	};
-	
+
 	useEffect(() => {
 		fetchTags();
 	}, []);
@@ -34,16 +34,16 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 
 	const toggleTagSelection = (tagIndex) => {
 
-        if (recipeTags.includes(tagIndex)) {
-            setRecipeTags(recipeTags.filter(index => index !== tagIndex));
+		if (recipeTags.includes(tagIndex)) {
+			setRecipeTags(recipeTags.filter(index => index !== tagIndex));
 
-        } else {
-            setRecipeTags([...recipeTags, tagIndex]);
-        }
+		} else {
+			setRecipeTags([...recipeTags, tagIndex]);
+		}
 
-        onUpdateRecipeTags(recipeTags);
-		
-    };
+		onUpdateRecipeTags(recipeTags);
+
+	};
 
 	const renderItem = ({ item, index }) => {
 		const isSelected = recipeTags.includes(index);
@@ -69,11 +69,10 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 
 	return (
 		<div
-			className={`fixed inset-0 flex items-center justify-center ${
-				visible ? 'visible' : 'invisible'
-			}`}
+			className={`fixed inset-0 flex items-center justify-center ${visible ? 'visible' : 'invisible'
+				}`}
 		>
-			
+
 			<div style={{
 				backgroundColor: '#E3E3E3',
 				padding: 20,
@@ -92,7 +91,7 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 					<p style={{
 						marginRight: 5,
 						fontSize: 36,
-						
+
 					}}>Tags</p>
 					<button
 						onClick={onClose}
@@ -116,11 +115,11 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 					marginLeft: '10%'
 				}}>
 					{tags.map((item, index) => (
-						renderItem({item, index})
+						renderItem({ item, index })
 					))}
 				</div>
-				
-				
+
+
 			</div>
 		</div>
 	);
