@@ -6,7 +6,7 @@ const CommunityPage= () => {
 	return (
 		<div className='bg-page-background h-screen'>
 			<NavBar />
-			<LoggedInName />
+		
 			<Community />
 		</div>
 	);
