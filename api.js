@@ -212,6 +212,60 @@ exports.setApp = function (app, client) {
 		res.status(200).json(ret);
 	});
 
+	app.post('/api/duplicateEmail', async (req, res, next) => {
+		// incoming: email
+		// outgoing: error
+		let error = '';
+		const { email } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const user = await db.collection('User').find({ Email: email }).toArray()
+
+			if (!user) {
+				return res.status(401).json({ error: 'Invalid Check ' });
+			}
+
+			if (user.length == 0) {
+				res.status(200).json({ error: '' });
+			} else {
+				res.status(401).json({ error: 'Duplicate Email' });
+			}
+
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal Server Error' });
+		}
+	});
+
+	app.post('/api/duplicateUsername', async (req, res, next) => {
+		// incoming: username
+		// outgoing: error
+		let error = '';
+		const { username } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const user = await db.collection('User').find({ Username: username }).toArray()
+
+			if (!user) {
+				return res.status(401).json({ error: 'Invalid Check ' });
+			}
+
+			if (user.length == 0) {
+				res.status(200).json({ error: '' });
+			} else {
+				res.status(401).json({ error: 'Duplicate Username' });
+			}
+
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal Server Error' });
+		}
+	});
+
 	app.post('/api/deleteUser', async (req, res, next) => {
 		// incoming:  userId
 		// outgoing: error
@@ -263,16 +317,21 @@ exports.setApp = function (app, client) {
 		// outgoing: id, error
 		let error = '';
 		const { username, password } = req.body;
-		const isEmail = username.includes('@');
+		//const isEmail = username.includes('@');
 
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const user = await (isEmail
-				? db.collection('User').find({ Email: username.toLowerCase() }).toArray()
-				: db.collection('User').find({ Username: username.toLowerCase() }).toArray());
 
-			if(!user){
-				return res.status(401).json({ error: 'Invalid credentials '});
+			const isUser = db.collection('User').find({ Username: username.toLowerCase() }).toArray();
+			const isEmail = db.collection('User').find({ Email: username.toLowerCase() }).toArray();
+
+			var user
+			if (!isEmail && isUser) {
+				user = isUser;
+			} else if (isEmail && !isUser) {
+				user = isEmail
+			} else {
+				return res.status(401).json({ error: 'Invalid credentials ' });
 			}
 			
 			const passwordMatch = await bcrypt.compare(password, user[0].Password);
