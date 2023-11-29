@@ -46,7 +46,7 @@ function Register() {
 
     sendVerificationEmail(regUsername, regPassword, regEmail);
   };
-
+/*for main*/
   return (
     <div id="registerDiv">
       <form onSubmit={registerUser}>
