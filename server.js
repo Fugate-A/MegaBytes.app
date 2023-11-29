@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const https = require('https');
+// const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +9,7 @@ const app = express();
 require('dotenv').config();
 
 const httpPort = 5000;
-const httpsPort = 443;
+// const httpsPort = 443;
 
 // Middleware
 app.use(cors());
@@ -46,17 +46,17 @@ app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
 
 /*
 // Create an HTTPS server with SSL configuration
-const httpsOptions = {
-	key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
-	cert: fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-	ca: [
-		fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-		fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
-	],
-};
+// const httpsOptions = {
+// 	key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
+// 	cert: fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+// 	ca: [
+// 		fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+// 		fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
+// 	],
+// };
 
-const httpsServer = https.createServer(httpsOptions, app);
-*/
+// const httpsServer = https.createServer(httpsOptions, app);
+
 
 // Serve the React application for both root URL and "/megabytes.app"
 app.get('*', (req, res) => {
@@ -65,12 +65,12 @@ app.get('*', (req, res) => {
 
 /*
 // Start the HTTPS server on port 443
-httpsServer.listen(httpsPort, () => {
-	console.log(`HTTPS Server is running on port ${httpsPort}`);
-});
-*/
+// httpsServer.listen(httpsPort, () => {
+// 	console.log(`HTTPS Server is running on port ${httpsPort}`);
+// });
+
 
 // Start the HTTP server on port 5000
 app.listen(httpPort, () => {
 	console.log(`HTTP Server is running on port ${httpPort}`);
-});
+});*/
