@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 function Login() {
     let loginInfo;
     let loginPassword;
+    const navigate = useNavigate(); // Use navigate for redirection
     const [message, setMessage] = useState('');
     const [iserror, setIsError] = useState(false);
 
@@ -15,10 +17,10 @@ function Login() {
     // Check for 'success' query parameter on component mount
     useEffect(() => {
         if (getQueryParam('success') === 'true') {
-            setMessage('Email verified successfully and account created!');
-            setIsError(false);
+            alert('Email verified successfully and account created!'); // Using alert for success message
+            navigate('/'); // Redirect to the home page or any other page
         }
-    }, []);
+    }, [navigate]);
 
     const doLogin = async event => {
         event.preventDefault();
@@ -141,6 +143,15 @@ function Login() {
                     </div>
                 )}
             </form>
+
+			{/* Error message display */}
+            {iserror && (
+                <div className='p-1 sm:mx-auto sm:w-full text-center sm:max-w-sm bg-orange-100 border-4 border-neutral-950 rounded-lg'>
+                    <span id="regResult" className='text-xl font-bold leading-9 tracking-tight text-red-500'>
+                        {message}
+                    </span>
+                </div>
+            )}
         </div>
     );
 };
