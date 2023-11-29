@@ -60,7 +60,7 @@ function Community() {
         <div id="RecipeListDiv" className=' bg-orange-100 pt-20 min-h-screen'>
 
             <h1 className=" text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
-                Your Recipes!
+                Explore the Community Recipes!
             </h1>
             <div className="mt-2 mb-3 flex justify-center">
                 <input
