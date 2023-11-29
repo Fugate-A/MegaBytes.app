@@ -196,7 +196,8 @@ exports.setApp = function (app, client) {
 				if (error) {
 					res.status(500).json({ error });
 				} else {
-					res.status(200).json('Email verified successfully and account created! Please return to the login page 👍');
+					//res.status(200)//.json('Email verified successfully and account created! Please return to the login page 👍');
+					res.redirect('https://megabytes.app');
 				}
 			}
 		});
