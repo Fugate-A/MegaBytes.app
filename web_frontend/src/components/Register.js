@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Register() {
   const [message, setMessage] = useState('');
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
   const navigate = useNavigate();
 
   const sendVerificationEmail = async (username, password, email) => {
@@ -43,8 +43,7 @@ function Register() {
     const isValid = passwordRegex.test(password);
     setIsPasswordValid(isValid);
     return isValid;
-};
-
+  };
 
   const registerUser = (event) => {
     event.preventDefault();
@@ -53,18 +52,26 @@ function Register() {
     const regEmail = event.target.email.value;
 
     if (!validatePassword(regPassword)) {
-      setMessage('Please review the password requirments and try again.');
+      setMessage('Please review the password requirements and try again.');
       return;
-  }
-  
+    } else {
+      setMessage('');
+    }
 
     sendVerificationEmail(regUsername, regPassword, regEmail);
   };
 
-  
-    return (
-      <div id="registerDiv" className="flex justify-center items-center h-screen" /*style={{ backgroundColor: '#b840117' }}*/> {/* Tan background for the entire screen */}
-        <form onSubmit={registerUser} style={{ backgroundColor: '#dfaa7c', border: '2px solid black', borderRadius: '8px', padding: '16px', maxWidth: '400px', margin: 'auto' }}>
+  // This variable determines the class for requirements text based on the message and validity of the password
+  const requirementsClass = message ? 'text-red-500' : 'text-black';
+
+  return (
+    <div id="registerDiv" className="flex min-h-full flex-1 flex-col justify-center px-6 pt-10 pb-20 lg:px-8 h-screen" /*style={{ backgroundColor: '#FFF0DC' }}*/> {/* Updated background color */}
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+						<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
+							Get to Cookin'
+						</h2>
+					</div>
+      <form onSubmit={registerUser} style={{ backgroundColor: '#FFE6C5', border: '2px solid black', borderRadius: '8px', padding: '16px', width: '400px', maxWidth: '400px', margin: 'auto' }}>
         <div className="mb-4">
           <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
             Username
@@ -91,18 +98,13 @@ function Register() {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             onChange={(e) => validatePassword(e.target.value)}
           />
-          <p className={`text-xs italic ${isPasswordValid ? 'text-green-500' : 'text-red-500'}`}>
-    {isPasswordValid ? 'Password is valid' : (
-        <>
+          <p className={`text-xs italic ${requirementsClass}`}>
             Password must: <br />
             - Be 8 characters long <br />
             - Include at least 1 uppercase letter <br />
             - Include at least 1 lowercase letter <br />
             - Include at least 1 number
-        </>
-    )}
-</p>
-
+          </p>
         </div>
         <div className="mb-6">
           <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
@@ -120,13 +122,15 @@ function Register() {
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-4 mr-5 rounded focus:outline-none focus:shadow-outline"
           >
             Register
           </button>
-          <span id="registerResult" className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
-            {message}
-          </span>
+          {message && (
+            <span id="registerResult" className="inline-block align-baseline font-bold text-sm text-red-500">
+              {message}
+            </span>
+          )}
         </div>
       </form>
     </div>
