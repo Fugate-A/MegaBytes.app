@@ -113,10 +113,10 @@ function AddRecipe() {
 	return (
 		<div id="AddCustomDiv" className='h-screen bg-orange-300'>
 			<NavBar />
-			<h1 className="text-6xl font-bold leading-9 tracking-tight text-black p-5 bg-orange-300">
+			<h1 className="text-6xl font-bold leading-9 tracking-tight text-black pt-20 bg-orange-300">
 				Create a Custom Recipe
 			</h1>
-			<div className="mt-2 mb-3 flex justify-center">
+			<div className="mt-2 mb-3 flex justify-center pt-5">
 				{<div className="container mx-auto p-4">
 					<div className="mt-4 p-4 bg-white shadow-md rounded-md">
 
