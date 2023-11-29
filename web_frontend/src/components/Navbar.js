@@ -41,7 +41,7 @@ export default function NavBar() {
 	}
 
 	return (
-		<Disclosure as="nav" className="bg-#E79B11 fixed w-screen z-50">
+		<Disclosure as="nav" className="bg-#E79B11 fixed w-screen z-50 border-b-4 border-black">
 			{({ open }) => (
 				<>
 					<div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
