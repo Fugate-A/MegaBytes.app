@@ -159,41 +159,39 @@ exports.setApp = function (app, client) {
 	  });
 	
 	  app.get('/verify', (req, res) => {
-		console.log('Received a request to /verify');
-		const token = req.query.token;
-	  
-		jwt.verify(token, process.env.KeyTheJWT, async (err, decoded) => {
-			if (err) {
-				console.error('Error verifying token:', err);
-				res.status(400).json({ error: 'Invalid token' }); // Return a JSON response for error
-			} else {
-				// Extract user information from the decoded token
-				const { username, password, email } = decoded;
-			
-				// Log the decoded token and extracted user information
-				console.log('Decoded Token:', decoded);
-				console.log('Extracted User Info - Username:', username);
-				console.log('Extracted User Info - Password:', password);
-				console.log('Extracted User Info - Email:', email);
-			
-				
-				// Proceed with registration using the extracted information
-				const newUser = { Username: username, Password: password, Email: email.toLowerCase(), RecipeList: [] };
-				var error = '';
-				try {
-					const db = client.db('MegaBitesLibrary');
-					db.collection('User').insertOne(newUser);
-				} catch (e) {
-					error = e.toString();
-				}
-				if (error) {
-					res.status(500).json({ error }); // Return a JSON response for error
-				} else {
-					res.status(200).json('Email verified succesfully and account created! Pleae return to the login page 👍'); // Return a JSON response for success
-				}
-			}
-		});
-	  });
+    console.log('Received a request to /verify');
+    const token = req.query.token;
+
+    jwt.verify(token, process.env.KeyTheJWT, async (err, decoded) => {
+        if (err) {
+            console.error('Error verifying token:', err);
+            // Do not redirect, let the default behavior occur (e.g., showing a blank screen)
+        } else {
+            // Extract user information from the decoded token
+            const { username, password, email } = decoded;
+
+            // Log the decoded token and extracted user information
+            console.log('Decoded Token:', decoded);
+            console.log('Extracted User Info - Username:', username);
+            console.log('Extracted User Info - Password:', password);
+            console.log('Extracted User Info - Email:', email);
+
+            // Proceed with registration using the extracted information
+            const newUser = { Username: username, Password: password, Email: email.toLowerCase(), RecipeList: [] };
+            var error = '';
+            try {
+                const db = client.db('MegaBitesLibrary');
+                await db.collection('User').insertOne(newUser);
+            } catch (e) {
+                error = e.toString();
+            }
+            if (!error) {
+                res.redirect('https://megabytes.app'); // Redirect to the specified URL on success
+            }
+        }
+    });
+});
+	
 
 	app.post('/api/register', async (req, res, next) => {
 		// incoming:  username, password, email

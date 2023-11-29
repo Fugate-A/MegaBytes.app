@@ -48,7 +48,6 @@ function RecipeList() {
         }
     }
 
-
     const handleChange = (event) => {
         setInputValue(event.target.value); // Update the state with the input value
     };
@@ -59,7 +58,7 @@ function RecipeList() {
     }, []);
 
     return (
-        <div id="RecipeListDiv" className=' bg-#ffe4bf pt-20 min-h-screen'>
+        <div id="RecipeListDiv" className=' bg-orange-100 pt-20 min-h-screen'>
 
             <h1 className=" text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
                 Your Recipes!
@@ -72,7 +71,7 @@ function RecipeList() {
                     value={inputValue}
                     onChange={handleChange}
                     required
-                    className="pl-2 block w-full sm:max-w-md rounded-md py-1.5 text-gray-900 shadow-sm ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-sm  sm:leading-6"
+                    className="pl-2 block w-full sm:max-w-md rounded-md py-1.5 text-gray-900 shadow-sm ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-sm sm:leading-6 border-2 border-black"
                 />
                 <button
                     type="submit"
