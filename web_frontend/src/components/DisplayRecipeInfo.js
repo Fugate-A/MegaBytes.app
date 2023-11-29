@@ -21,7 +21,7 @@ function DisplayRecipe() {
 
   const fetchTags = async () => {
 	try {
-		const response = await fetch('http://164.90.130.112:5000/api/tags');
+		const response = await fetch('https://megabytes.app/api/tags');
 		const data = await response.json();
 
 		if (response.ok) {
@@ -62,7 +62,7 @@ function DisplayRecipe() {
     try {
       const allComments = await Promise.all(
         recipe.CommentList.map(async (commentID) => {
-          const response = await fetch('http://164.90.130.112:5000/api/getCommentByID', {
+          const response = await fetch('https://megabytes.app/api/getCommentByID', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ function DisplayRecipe() {
 	
 
 	try {
-		const response = await fetch('http://164.90.130.112:5000/api/getUser', {
+		const response = await fetch('https://megabytes.app/api/getUser', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

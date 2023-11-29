@@ -14,7 +14,7 @@ function Community() {
 
         try {
             //const response = await fetch(bp.buildPath('api/getPublicRecipesWeb'), {
-                const response = await fetch(bp.buildPath('api/getRecipes'), {
+                const response = await fetch('https://megabytes.app/api/getRecipes', {
                 method: 'POST', 
                 body: js, 
                 headers: {
@@ -31,7 +31,7 @@ function Community() {
 
     const Tags = async () => {
         try {
-            const response = await fetch(bp.buildPath('api/tags'), {});
+            const response = await fetch('https://megabytes.app/api/tags', {});
             setTagList(JSON.parse(await response.text()));
         }
         catch (e) {

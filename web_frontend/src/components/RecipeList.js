@@ -36,7 +36,7 @@ function RecipeList() {
 
     const Tags = async event => {
         try {
-            const response = await fetch(bp.buildPath('api/tags'),
+            const response = await fetch('https://megabytes.app/api/tags',
                 {});
             setTagList(JSON.parse(await response.text()))
 
