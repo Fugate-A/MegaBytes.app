@@ -46,8 +46,21 @@ function Login() {
 		}
 	};
 
-	return (
-		<div id="loginDiv">
+	const style = `
+    .text-outline-white {
+        text-shadow: 
+        -1px -1px 0 #fff, 
+         1px -1px 0 #fff,
+        -1px 1px 0 #fff, 
+         1px 1px 0 #fff;
+    }
+`;
+
+
+return (
+    <>
+        <style>{style}</style>
+        <div id="loginDiv">
 			<form onSubmit={doLogin}>
 				<div className="flex min-h-full flex-1 flex-col justify-center px-6 pt-10 pb-6 lg:px-8">
 					<div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -127,6 +140,7 @@ function Login() {
 			</form>
 
 		</div>
+		</>
 	);
 };
 export default Login;
