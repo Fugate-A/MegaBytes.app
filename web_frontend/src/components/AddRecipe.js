@@ -105,15 +105,9 @@ function AddRecipe() {
 		setAIgenerated(true);
 	}
 
-	const handleTagSelection = () => {
-
-	}
-
 	const closeTagSelectionModal = () => {
 		setShowTagSelectionModal(false);
 	}
-
-
 
 	return (
 		<div id="AddCustomDiv" className='h-screen bg-orange-300'>
@@ -129,7 +123,7 @@ function AddRecipe() {
 							<AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={handleAIInput} />
 						)}
 						{showTagSelectionModal && (
-							<TagSelectionModal visible={showTagSelectionModal} onClose={closeTagSelectionModal} handleTagSelection={handleTagSelection} />
+							<TagSelectionModal visible={showTagSelectionModal} onClose={closeTagSelectionModal} onUpdateRecipeTags={handleUpdateRecipeTags} />
 						)}
 						<button onClick={openAIModal} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
 							Generate with AI
