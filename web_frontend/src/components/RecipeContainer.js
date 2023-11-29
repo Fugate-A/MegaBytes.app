@@ -3,6 +3,28 @@ import React, { useState, useEffect } from 'react';
 function RecipeContainer( {recipe} ) {
 
     const [author, setAuthor] = useState('');
+    const [allTags, setAllTags] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
+    console.log(recipe);
+    
+    const fetchTags = async () => {
+        try {
+            const response = await fetch('https://megabytes.app/api/tags');
+            const data = await response.json();
+    
+            if (response.ok) {
+                setAllTags(data);
+            } else {
+                console.error('Error retrieving tags from server');
+            }
+        } catch (error) {
+            console.error('Error connecting to server', error);
+        } finally{
+            setLoading(false);
+        }
+    };
 
     const fetchUser = async () => {
         try {
@@ -25,17 +47,22 @@ function RecipeContainer( {recipe} ) {
             }
         } catch(error){
             console.error('Error connecting to database', error);
-        }
+        } 
     };
 
     useEffect(() => {
+        fetchTags();
         fetchUser();
     }, []);
+
+    if(loading){
+        return null;
+    }
 
     return (
         <div style={{
             width: '100%',
-            height: 150,
+            height: 250,
             padding: 10,
             borderWidth: 2,
             borderRadius: 15,
@@ -60,13 +87,33 @@ function RecipeContainer( {recipe} ) {
             </div>
 
             <div style={{
-                maxHeight: '80%',
+                maxHeight: '60%',
+                overflow: 'auto',
             }}>
                 <pre style={{
                      fontSize: 14,
                 }}>
                     {recipe.RecipeContents}
                 </pre>
+            </div>
+
+            <div style={{
+                borderTopWidth: 1,
+                borderColor: 'black',
+            }}>
+                {allTags && recipe.TagList && recipe.TagList.length > 0 && (
+
+                recipe.TagList.slice(0, 3).map((val) => (
+                        <div 
+                            className='inline-block' key={val}
+                            style={{
+                                marginRight: 3,
+                            }
+                        }>
+                         <p className='text-sm rounded text-center' style={{ backgroundColor: allTags[val].color }}>{allTags[val].name}{allTags[val].emoji}</p>
+                        </div>
+                    ))
+                )}
             </div>
 
             <div style={{
