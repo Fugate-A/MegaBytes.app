@@ -49,7 +49,7 @@ function Community() {
     }, []);
 
     return (
-        <div id="CommunityDiv" className='bg-page-background pt-20 min-h-screen'>
+        <div id="CommunityDiv" className='bg-orange-100 pt-20 min-h-screen'>
             <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
                 Community Recipes
             </h1>
@@ -61,7 +61,7 @@ function Community() {
                     value={inputValue}
                     onChange={handleChange}
                     required
-                    className="pl-2 block w-full sm:max-w-md rounded-md py-1.5 text-gray-900 shadow-sm ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-sm sm:leading-6"
+                    className="pl-2 block w-full sm:max-w-md rounded-md py-1.5 text-gray-900 shadow-sm ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-sm sm:leading-6 border-2 border-black"
                 />
                 <button
                     type="submit"
@@ -79,7 +79,7 @@ function Community() {
                     <div role="grid" className="grid grid-cols-4 gap-3">
                         {recipes.map((recipe, index) => (
                             <Link to={`/dis/${recipe._id}`} key={index}>
-                                <div className="rounded shadow-lg px-1 border-3 border-black transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 bg-orange-100">
+                                <div className="rounded shadow-lg px-1 border-3 border-black transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 bg-#ffe4bf">
                                     <div className="px-2">
                                         <div className="border-b-1 border-black">
                                             <div className="text-sm">Community Recipe</div>
