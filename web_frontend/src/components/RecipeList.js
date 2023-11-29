@@ -97,8 +97,8 @@ function RecipeList() {
                                             <div className="font-bold text-xl">{recipe.RecipeName}</div>
                                             <div className='absolute top-5 right-5'>
                                                 <div className="flex items-center">
-                                                    {!recipe.IsPublic && <p className="mr-0">🌍</p>}
-                                                    {!recipe.AI_Generated && <p>🤖</p>}
+                                                    {recipe.IsPublic && <p className="mr-0">🌍</p>}
+                                                    {recipe.AI_Generated && <p>🤖</p>}
                                                 </div>
                                             </div>
                                         </div>
