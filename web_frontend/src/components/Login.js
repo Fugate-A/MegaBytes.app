@@ -19,7 +19,7 @@ function Login() {
 		var obj = { username: loginInfo.value, password: loginPassword.value };
 		var js = JSON.stringify(obj);
 		try {
-			const response = await fetch(bp.buildPath('api/login'),
+			const response = await fetch('https://megabytes.app/api/login',
 				{
 					method: 'POST', body: js, headers: {
 						'Content-Type':

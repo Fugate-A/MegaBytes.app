@@ -18,7 +18,7 @@ function RecipeList() {
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch(bp.buildPath('api/getRecipes'),
+            const response = await fetch('https://megabytes.app/api/getRecipes',
                 {
                     method: 'POST', body: js, headers: {
                         'Content-Type':

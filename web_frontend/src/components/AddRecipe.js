@@ -12,17 +12,27 @@ function AddRecipe() {
 	const [recipeTags, setRecipeTags] = useState([]);
 	const [visibility, setVisibility] = useState(false);
 	const [AIgenerated, setAIgenerated] = useState(false);
+
+
 	const [showErrorModal, setShowErrorModal] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 	const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
-	const [showAIModal, setShowAIModal] = useState(false)
+
+	const [showAIModal, setShowAIModal] = useState(false);
+
 
 	const [userID, setUserID] = useState(null);
 	useEffect(() => {
 		const fetchUserID = async () => {
 			try {
-				const storedUserID = localStorage.getItem('userID');
-				setUserID(storedUserID);
+				const storedUser = localStorage.getItem('user_data');
+
+				if (storedUser) {
+					const userObject = JSON.parse(storedUser);
+					const userId = userObject.id;
+					setUserID(userId);
+				}
+
 			} catch (error) {
 				console.error('Error retrieving userID from cache', error);
 			}
@@ -30,40 +40,6 @@ function AddRecipe() {
 
 		fetchUserID();
 	}, []);
-
-	const handleAIRecipe = async event => {
-		try {
-			const response = await fetch('https://megabytes.app/api/gpt_recipe', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					userId: userID,
-					recipeName: title,
-					recipeContents: content,
-					tagList: recipeTags || [],
-					likeList: [],
-					isPublic: visibility,
-				}),
-			});
-
-			console.log('Adding Recipe');
-			const data = await response.json();
-
-			if (response.ok) {
-				console.log('Success');
-				window.location.href = '/rec';
-			} else {
-				console.error('Error adding Recipe');
-
-				setErrorMessage('Error adding Recipe');
-				setShowErrorModal(true);
-			}
-		} catch (error) {
-			console.error('\tERROR CONNECTING TO DATABASE\n', error);
-		}
-	}
 
 	const handleAddRecipe = async event => {
 		try {
@@ -79,6 +55,7 @@ function AddRecipe() {
 					tagList: recipeTags || [],
 					likeList: [],
 					isPublic: visibility,
+					ai_generated: AIgenerated,
 				}),
 			});
 
@@ -95,7 +72,7 @@ function AddRecipe() {
 				setShowErrorModal(true);
 			}
 		} catch (error) {
-			console.error('\tERROR CONNECTING TO DATABASE\n', error);
+			console.error('ERROR CONNECTING TO DATABASE', error);
 		}
 	};
 
@@ -129,6 +106,10 @@ function AddRecipe() {
 		setShowAIModal(false);
 	}
 
+	const closeTagSelectionModal = () => {
+		setShowTagSelectionModal(false);
+	}
+
 	return (
 		<div id="AddCustomDiv" className='h-screen bg-orange-300'>
 			<NavBar />
@@ -139,6 +120,12 @@ function AddRecipe() {
 				{<div className="container mx-auto p-4">
 					<div className="mt-4 p-4 bg-white shadow-md rounded-md">
 
+						{showAIModal && (
+							<AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={handleAIInput} />
+						)}
+						{showTagSelectionModal && (
+							<TagSelectionModal visible={showTagSelectionModal} onClose={closeTagSelectionModal} onUpdateRecipeTags={handleUpdateRecipeTags} />
+						)}
 						<button onClick={openAIModal} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
 							Generate with AI
 						</button>
@@ -173,15 +160,6 @@ function AddRecipe() {
 						>
 							Add Tags
 						</button>
-
-						{showTagSelectionModal && (
-							<TagSelectionModal
-								visible={true}
-								onUpdateRecipeTags={handleUpdateRecipeTags}
-								onClose={() => setShowTagSelectionModal(false)}
-								currentTags={recipeTags}
-							/>
-						)}
 
 						<div className="flex items-center mt-4">
 							<span className="mr-2 font-bold">Visibility:</span>
