@@ -159,38 +159,38 @@ exports.setApp = function (app, client) {
 	  });
 	
 	  app.get('/verify', (req, res) => {
-		console.log('Received a request to /verify');
-		const token = req.query.token;
-	
-		jwt.verify(token, process.env.KeyTheJWT, async (err, decoded) => {
-			if (err) {
-				console.error('Error verifying token:', err);
-				res.status(500).json({ error }); // Return a JSON response for error
-			} else {
-				// Extract user information from the decoded token
-				const { username, password, email } = decoded;
-	
-				// Log the decoded token and extracted user information
-				console.log('Decoded Token:', decoded);
-				console.log('Extracted User Info - Username:', username);
-				console.log('Extracted User Info - Password:', password);
-				console.log('Extracted User Info - Email:', email);
-	
-				// Proceed with registration using the extracted information
-				const newUser = { Username: username, Password: password, Email: email.toLowerCase(), RecipeList: [] };
-				var error = '';
-				try {
-					const db = client.db('MegaBitesLibrary');
-					await db.collection('User').insertOne(newUser);
-				} catch (e) {
-					error = e.toString();
-				}
-				if (!error) {
-					res.redirect('https://megabytes.app'); // Redirect to the specified URL on success
-				}
-			}
-		});
-	});
+    console.log('Received a request to /verify');
+    const token = req.query.token;
+
+    jwt.verify(token, process.env.KeyTheJWT, async (err, decoded) => {
+        if (err) {
+            console.error('Error verifying token:', err);
+            // Do not redirect, let the default behavior occur (e.g., showing a blank screen)
+        } else {
+            // Extract user information from the decoded token
+            const { username, password, email } = decoded;
+
+            // Log the decoded token and extracted user information
+            console.log('Decoded Token:', decoded);
+            console.log('Extracted User Info - Username:', username);
+            console.log('Extracted User Info - Password:', password);
+            console.log('Extracted User Info - Email:', email);
+
+            // Proceed with registration using the extracted information
+            const newUser = { Username: username, Password: password, Email: email.toLowerCase(), RecipeList: [] };
+            var error = '';
+            try {
+                const db = client.db('MegaBitesLibrary');
+                await db.collection('User').insertOne(newUser);
+            } catch (e) {
+                error = e.toString();
+            }
+            if (!error) {
+                res.redirect('https://megabytes.app'); // Redirect to the specified URL on success
+            }
+        }
+    });
+});
 	
 
 	app.post('/api/register', async (req, res, next) => {
@@ -208,60 +208,6 @@ exports.setApp = function (app, client) {
 		}
 		var ret = { error: error };
 		res.status(200).json(ret);
-	});
-
-	app.post('/api/duplicateEmail', async (req, res, next) => {
-		// incoming: email
-		// outgoing: error
-		let error = '';
-		const { email } = req.body;
-
-		try {
-			const db = client.db('MegaBitesLibrary');
-			const user = await db.collection('User').find({ Email: email }).toArray()
-
-			if (!user) {
-				return res.status(401).json({ error: 'Invalid Check ' });
-			}
-
-			if (user.length == 0) {
-				res.status(200).json({ error: '' });
-			} else {
-				res.status(401).json({ error: 'Duplicate Email' });
-			}
-
-		}
-		catch (error) {
-			console.error(error);
-			res.status(500).json({ error: 'Internal Server Error' });
-		}
-	});
-
-	app.post('/api/duplicateUsername', async (req, res, next) => {
-		// incoming: username
-		// outgoing: error
-		let error = '';
-		const { username } = req.body;
-
-		try {
-			const db = client.db('MegaBitesLibrary');
-			const user = await db.collection('User').find({ Username: username }).toArray()
-
-			if (!user) {
-				return res.status(401).json({ error: 'Invalid Check ' });
-			}
-
-			if (user.length == 0) {
-				res.status(200).json({ error: '' });
-			} else {
-				res.status(401).json({ error: 'Duplicate Username' });
-			}
-
-		}
-		catch (error) {
-			console.error(error);
-			res.status(500).json({ error: 'Internal Server Error' });
-		}
 	});
 
 	app.post('/api/deleteUser', async (req, res, next) => {
@@ -323,15 +269,15 @@ exports.setApp = function (app, client) {
 				? db.collection('User').find({ Email: username.toLowerCase() }).toArray()
 				: db.collection('User').find({ Username: username.toLowerCase() }).toArray());
 
-			if (!user) {
-				return res.status(401).json({ error: 'Invalid credentials ' });
+			if(!user){
+				return res.status(401).json({ error: 'Invalid credentials '});
 			}
-
+			
 			const passwordMatch = await bcrypt.compare(password, user[0].Password);
 
-			if (passwordMatch) {
-				res.status(200).json({ id: user[0]._id, username: user[0].Username, error: '' });
-			} else {
+			if(passwordMatch){
+				res.status(200).json({ id: user[0]._id, error: '' });
+			} else{
 				res.status(401).json({ error: 'Invalid credentials' });
 			}
 
