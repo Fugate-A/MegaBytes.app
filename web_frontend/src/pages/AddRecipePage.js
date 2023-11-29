@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import AddRecipe from '../components/AddRecipe';
+import NavBar from '../components/Navbar';
 const AddRecipePage = () => {
-
-	useEffect(() => {
-        console.log('pooop');
-    }, []);
 	
 	return (
-		<div className='bg-page-background h-screen'>
+		<div>
+			<NavBar />
 			<AddRecipe />
 		</div>
 	);
