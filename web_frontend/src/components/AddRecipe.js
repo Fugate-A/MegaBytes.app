@@ -79,6 +79,7 @@ function AddRecipe() {
 
 	const handleUpdateRecipeTags = (updatedTags) => {
 		setRecipeTags(updatedTags);
+		console.log(recipeTags);
 	}
 
 	const handleAIInput = (updatedTitle, updatedContent) => {
@@ -128,7 +129,7 @@ function AddRecipe() {
 							<AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={handleAIInput} />
 						)}
 						{showTagSelectionModal && (
-							<TagSelectionModal visible={showTagSelectionModal} onClose={closeTagSelectionModal} onUpdateRecipeTags={handleUpdateRecipeTags} />
+							<TagSelectionModal visible={showTagSelectionModal} onClose={closeTagSelectionModal} onUpdateRecipeTags={handleUpdateRecipeTags} currentTags={recipeTags}/>
 						)}
 						<button onClick={openAIModal} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-4 px-6 rounded-xl text-3xl">
 							Generate with AI
