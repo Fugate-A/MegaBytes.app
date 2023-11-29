@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import TagComponent from './TagComponent';
- /*for web commit to main*/
+
 function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }) {
 	const [tags, setTags] = useState([]);
 	const [recipeTags, setRecipeTags] = useState(currentTags || []);
 	const [loading, setLoading] = useState(true);
-	useEffect(() => {
-		fetchTags();
-	}, []);
-
+	
 	const fetchTags = async () => {
 		try {
-			const response = await fetch('http://164.90.130.112:5000/api/tags');
+			const response = await fetch('https://megabytes.app/api/tags');
 			const data = await response.json();
 
 			if (response.ok) {
@@ -25,24 +22,28 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 			setLoading(false);
 		}
 	};
+	
+	useEffect(() => {
+		fetchTags();
+	}, []);
 
-	fetchTags();
 
 	useEffect(() => {
 		onUpdateRecipeTags(recipeTags);
 	}, [recipeTags, onUpdateRecipeTags]);
 
 	const toggleTagSelection = (tagIndex) => {
-		if (recipeTags && recipeTags[Symbol.iterator] === 'function')
-			if (recipeTags && recipeTags.includes(tagIndex)) {
-				setRecipeTags(recipeTags.filter((index) => index !== tagIndex));
-			} else {
-				setRecipeTags([...recipeTags, tagIndex]);
-			}
-		else {
-			console.log(typeof recipeTags);
-		}
-	};
+
+        if (recipeTags.includes(tagIndex)) {
+            setRecipeTags(recipeTags.filter(index => index !== tagIndex));
+
+        } else {
+            setRecipeTags([...recipeTags, tagIndex]);
+        }
+
+        onUpdateRecipeTags(recipeTags);
+		
+    };
 
 	const renderItem = ({ item, index }) => {
 		const isSelected = recipeTags.includes(index);
@@ -67,32 +68,62 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 	}
 
 	return (
-		<div className={`fixed inset-0 flex items-center justify-center ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-			<div className="bg-white p-12 rounded-lg w-128 max-h-80 overflow-y-auto overflow-x-hidden shadow-lg">
-				<div className="flex justify-between items-center mb-4 border-b-2 border-black pb-2">
-					<h2 className="text-xl font-semibold text-gray-800">Tags</h2>
-					<button className="p-2 cursor-pointer" onClick={onClose}>
-						<span className="text-gray-600">X</span>
+		<div
+			className={`fixed inset-0 flex items-center justify-center ${
+				visible ? 'visible' : 'invisible'
+			}`}
+		>
+			
+			<div style={{
+				backgroundColor: '#E3E3E3',
+				padding: 20,
+				borderRadius: 15,
+				width: '70%',
+				height: '70%',
+			}}>
+				<div style={{
+					display: 'flex',
+					flex: 1,
+					flexDirection: 'row',
+					justifyContent: 'space-between',
+					borderBottomWidth: 1,
+					borderBottomColor: 'black'
+				}}>
+					<p style={{
+						marginRight: 5,
+						fontSize: 36,
+						
+					}}>Tags</p>
+					<button
+						onClick={onClose}
+						style={{
+							marginTop: 5,
+							fontSize: 36,
+							color: 'blue'
+						}}
+					>
+						X
 					</button>
 				</div>
-				<div className="grid grid-cols-3 gap-4 mt-4">
+
+				<div style={{
+					width: '80%',
+					maxHeight: '80%',
+					overflow: 'auto',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					alignItems: 'center',
+					marginLeft: '10%'
+				}}>
 					{tags.map((item, index) => (
-						<button
-							key={index}
-							className="mx-2 mb-2 overflow-hidden"
-							onClick={() => toggleTagSelection(index)}
-						>
-							<TagComponent name={item.name} emoji={item.emoji} color={item.color} isSelected={false} />
-						</button>
+						renderItem({item, index})
 					))}
 				</div>
-				<div className="mt-4">{JSON.stringify(recipeTags)}</div>
+				
+				
 			</div>
 		</div>
 	);
-
-
-
 
 }
 
