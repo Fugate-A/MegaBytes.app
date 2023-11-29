@@ -1,0 +1,85 @@
+/* styles.css */
+.container {
+    background-color: #FFF0DC;
+    padding: 20px;
+    padding-top: 40px;
+    height: 100%; 
+    width: 100%;
+    overflow-y: auto; 
+}
+
+.recipeAuthorContainer {
+    padding: 10;
+    margin-bottom: 10;
+}
+
+.topBar {
+    flex-direction: row;
+    justify-content: space-between;
+    flex: 1;
+    border-bottom-width: 1px;
+    border-bottom-color: gray;
+    padding-right: 10px;
+}
+
+.recipeTitleText {
+    font-size: 24;
+    width: 90%;
+}
+
+.recipeTitleContainer {
+    border-bottom-color: gray;
+    border-width: 1px;
+    border-color: gray;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #FFE6C5;
+}
+
+.tagsContainer {
+    flex-direction: 'row';
+    flex-wrap: 'wrap';
+    margin-top: 5;
+    border-top-width: 1;
+    border-top-color: 'gray';
+}
+
+.recipe-content-container {
+    border-bottom-width: 1px;
+    border-bottom-color: gray;
+    border-right-width: 1px;
+    border-right-color: gray;
+    border-left-width: 1px;
+    border-left-color: gray;
+    border-width: 1px;
+    border-color: gray;
+    padding: 10px;
+    background-color: #FFE6C5;
+}
+
+.extrasBar {
+    flex-direction: row;
+    border-bottom-width: 1px;
+    border-bottom-color: gray;
+    border-right-width: 1px;
+    border-right-color: gray;
+    border-left-width: 1px;
+    border-left-color: gray;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #FFE6C5;
+}
+
+.commentSection {
+    flex: 1;
+    margin-bottom: 60;
+}
+
+.commentSectionHeader {
+    border-bottom-width: 0.5;
+    width: '50%';
+    border-color: 'gray';
+    margin-bottom: 5;
+}
+

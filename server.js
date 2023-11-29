@@ -1,4 +1,4 @@
-const express = require('express'); 
+const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const https = require('https');
@@ -16,7 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const MongoClient = require('mongodb').MongoClient;
-const url =	process.env.MongoURL;
+const url = process.env.MongoURL;
 const client = new MongoClient(url);
 client.connect();
 
@@ -68,7 +68,6 @@ app.get('*', (req, res) => {
 // httpsServer.listen(httpsPort, () => {
 // console.log(`HTTPS Server is running on port ${httpsPort}`);
 // });
-
 
 // Start the HTTP server on port 5000
 app.listen(httpPort, () => {
