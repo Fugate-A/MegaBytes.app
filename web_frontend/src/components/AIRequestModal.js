@@ -10,7 +10,7 @@ const AIRequestModal = ({ visible, onClose, handleAIInput }) => {
 			setLoading(true);
 			setInputFrozen(true);
 
-			const response = await fetch('http://164.90.130.112:5000/api/gpt_recipe', {
+			const response = await fetch('https://megabytes.app/api/gpt_recipe', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
