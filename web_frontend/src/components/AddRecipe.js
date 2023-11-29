@@ -97,23 +97,31 @@ function AddRecipePage() {
     setVisibility(!visibility);
   };
 
+  const handleGoHome = () => {
+    window.location.href = 'rec'; 
+  };
+
   return (
-    <div style={{ backgroundColor: '#FFF0DC', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ width: '60%', padding: '20px', backgroundColor: 'white', borderRadius: '15px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-          <button
-            onClick={openAIModal}
-            style={{ flex: '1', marginRight: '15px', padding: '10px', backgroundColor: '#51E4E5', borderRadius: '15px', border: 'none' }}
-          >
-            <p style={{ fontSize: '14px', fontFamily: 'Tilt-Neon', margin: 0 }}>Generate with AI 🤖</p>
-          </button>
-
-          {showAIModal && <AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={handleAIInput} />}
-
-          <button onClick={handleAddRecipe} style={{ flex: '1', padding: '10px', backgroundColor: '#51E564', borderRadius: '15px', border: 'none' }}>
-            <p style={{ fontSize: '14px', fontFamily: 'Tilt-Neon', margin: 0 }}>Submit</p>
-          </button>
+    
+    <div style={{ backgroundColor: '#FFF0DC', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 90, paddingBottom: 50 }}>
+      <h1 style={{ fontSize: '32px', fontFamily: 'Tilt-Neon', marginBottom: '20px' }}>Create a recipe</h1>
+      <div style={{ position: 'relative', width: '60%', padding: '20px', backgroundColor: 'white', borderRadius: '15px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+        <div style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}>
+          <p onClick={handleGoHome} style={{ fontSize: 24, fontFamily: 'Tilt-Neon', color: '#FF0000', margin: 0 }}>X</p>
         </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+            <button
+                onClick={openAIModal}
+                style={{ flex: '1', marginRight: '15px', padding: '10px', backgroundColor: '#51E4E5', borderRadius: '15px', borderWidth: 1, borderColor: 'black' }}
+            >
+                <p style={{ fontSize: 24, fontFamily: 'Tilt-Neon', margin: 0 }}>Generate with AI 🤖</p>
+            </button>
+
+            {showAIModal && <AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={handleAIInput} />}
+
+            
+            </div>
 
         <input
           type="text"
@@ -130,16 +138,24 @@ function AddRecipePage() {
             fontSize: '30px',
             fontFamily: 'Tilt-Neon',
             fontWeight: 'bold',
-            borderBottomColor: 'black',
-            borderBottomWidth: '2px',
-            border: 'none',
+            
+            borderRightWidth: 2,
+            borderRightColor: 'gray', 
+
+            borderLeftWidth: 2,
+            borderLeftColor: 'gray', 
           }}
         />
 
         <div style={{ 
             backgroundColor: '#FFE6C5', 
             height: '80%', 
-            borderRadius: '15px', 
+            borderRadius: '15px',
+            borderRightWidth: 2,
+            borderRightColor: 'gray', 
+
+            borderLeftWidth: 2,
+            borderLeftColor: 'gray', 
         }}>
             <textarea
                 placeholder="Ingredients and Directions"
@@ -152,8 +168,6 @@ function AddRecipePage() {
                     padding: '8px', 
                     fontFamily: 'Tilt-Neon', 
                     fontSize: '16px', 
-                    borderRightWidth: 1,
-                    borderRightColor: 'gray',
                     backgroundColor: '#FFE6C5' 
                 }}
             />
@@ -164,33 +178,67 @@ function AddRecipePage() {
           style={{
             display: 'flex',
             backgroundColor: '#FFE6C5',
-            borderWidth: '0.5px',
+            borderWidth: 1,
             borderRadius: '15px',
+            borderColor: 'black',
             padding: '10px',
             marginTop: '10px',
-            width: '60%',
+            width: '15%',
             cursor: 'pointer',
           }}
         >
-          <p style={{ fontSize: '20px', fontFamily: 'Tilt-Neon', marginLeft: '10px', color: 'gray' }}>Add Tags</p>
+          <p style={{ fontSize: '20px', fontFamily: 'Tilt-Neon', marginLeft: '10px', color: 'black' }}>Add Tags</p>
         </button>
 
         {showTagSelectionModal && (
           <TagSelectionModal visible={true} onUpdateRecipeTags={handleUpdateRecipeTags} onClose={() => setShowTagSelectionModal(false)} currentTags={recipeTags} />
         )}
+        <div style={{
+					display: 'flex',
+					flex: 1,
+					flexDirection: 'row',
+					justifyContent: 'space-between',
+					borderBottomWidth: 1,
+					borderBottomColor: 'black'
+			}}>
 
-        <div style={{ backgroundColor: '#FFE6C5', display: 'flex', alignItems: 'center', marginTop: '10px', padding: '10px', borderRadius: '15px', borderWidth: '0.5px' }}>
-          <p style={{ fontSize: '16px', marginRight: '10px', fontFamily: 'Tilt-Neon' }}>Privacy:</p>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button onClick={toggleVisibility} className="flex items-center" style={{ cursor: 'pointer', border: 'none', backgroundColor: 'transparent' }}>
-              <div
-                className={`w-4 h-4 px-4 py-4 rounded-full border border-black mr-2 ${visibility ? 'bg-green-500' : 'bg-white'}`}
-                style={{ cursor: 'pointer' }}
-              />
-              <span className="text-2xl">{visibility ? 'Public' : 'Private'}</span>
+            <div style={{ backgroundColor: '#FFE6C5', display: 'flex', alignItems: 'center', marginTop: 10,marginBottom: 10,  padding: '10px', borderRadius: '15px', borderWidth: 1, width: '30%', borderColor: 'black', }}>
+                <p style={{ fontSize: '24px', marginRight: '10px', fontFamily: 'Tilt-Neon' }}>Privacy:</p>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <button onClick={toggleVisibility} className="flex items-center" style={{ cursor: 'pointer', border: 'none', backgroundColor: 'transparent' }}>
+                    <div
+                        className={`w-4 h-4 px-4 py-4 rounded-full border border-black mr-2 ${visibility ? 'bg-green-500' : 'bg-white'}`}
+                        style={{ cursor: 'pointer' }}
+                    />
+                    <span className="text-2xl">{visibility ? 'Public' : 'Private'}</span>
+                    </button>
+
+                </div>
+                    
+            </div>
+
+            <button
+                onClick={handleAddRecipe}
+                style={{
+                    padding: '10px',
+                    backgroundColor: '#51E564',
+                    borderRadius: '15px',
+                    borderWidth: 1,
+                    borderColor: 'black',
+                    width: '25%',
+                    height: 50,
+                    marginTop: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',  // Center the text horizontally
+                }}
+            >
+                <p style={{ fontSize: 24, fontFamily: 'Tilt-Neon', padding: 5, margin: 0 }}>Submit</p>
             </button>
-          </div>
+
         </div>
+
+       
       </div>
 
       <ErrorMessageModal visible={showErrorModal} message={errorMessage} onClose={closeErrorModal} />
