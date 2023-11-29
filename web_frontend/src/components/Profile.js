@@ -1,66 +1,44 @@
-// Profile.js in components folder
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const userData = localStorage.getItem('user_data');
   const user = JSON.parse(userData);
+  const navigate = useNavigate();
 
-  // Function to handle logout
   const doLogout = () => {
     localStorage.removeItem('user_data');
-    window.location.href = '/'; // Redirect to home page
+    navigate('/');
   };
 
-  // Check if user data is available
   if (!user) {
-    return <div>User not found. Please log in.</div>;
+    return <div className="text-center text-xl text-black">User not found. Please log in.</div>;
   }
 
-  // Define styles directly in the component
-  const profilePageStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    backgroundColor: '#f9f9f9',
-  };
-
-  const profileCardStyle = {
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center',
-    backgroundColor: '#fff',
-  };
-
-  const logoutButtonStyle = {
-    marginTop: '20px',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#f0a',
-    color: '#fff',
-    cursor: 'pointer',
-  };
-
-  const navigationBarStyle = {
-    position: 'fixed',
-    bottom: '0',
-    width: '100%',
-    backgroundColor: '#ffc107',
-  };
-
   return (
-    <div style={profilePageStyle}>
-      <div style={profileCardStyle}>
-        <div className="profile-icon"> {/* Add an image or icon here */}</div>
-        <h2>Username: {user.username}</h2>
-        <p>Email: {user.email}</p>
-        <button style={logoutButtonStyle} onClick={doLogout}>Logout</button>
-      </div>
-      <div style={navigationBarStyle}>
-        {/* Add navigation items here */}
+    <div id="combinedDiv" className="flex min-h-full flex-col items-center justify-start bg-beige px-4 py-8 bg-page-background pt-20 min-h-screen">
+      <h2 className="text-3xl font-bold text-black">Megabytes</h2>
+      <div className="mt-6 w-full max-w-xs rounded-lg bg-orange-100 border-4 border-black p-4">
+        <div className="mb-4">
+          <h3 className="text-lg font-bold text-gray-900">Username</h3>
+          <div className="mt-2 rounded-md bg-white p-2 text-lg text-gray-900">
+            {user.username}
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="text-lg font-bold text-gray-900">Email address</h3>
+          <div className="mt-2 rounded-md bg-white p-2 text-lg text-gray-900">
+            {user.email}
+          </div>
+        </div>
+
+        <button
+          onClick={doLogout}
+          className="w-full rounded-md bg-yellow-600 px-4 py-2 text-lg font-semibold text-white hover:bg-yellow-700"
+        >
+          Logout
+        </button>
       </div>
     </div>
   );
