@@ -14,7 +14,7 @@ function Community() {
 
     const FindRecipe = async event => {
 
-        let obj = { search: inputValue, userId: userId, isPublic: false };
+        let obj = { search: inputValue, /*userId: userId,*/ isPublic: true /*false*/ };
         var js = JSON.stringify(obj);
 
         try {
@@ -60,7 +60,7 @@ function Community() {
         <div id="RecipeListDiv" className=' bg-page-background pt-20 min-h-screen'>
 
             <h1 className=" text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
-                Browse the Communities Recipe's!
+                Your Recipes!
             </h1>
             <div className="mt-2 mb-3 flex justify-center">
                 <input
