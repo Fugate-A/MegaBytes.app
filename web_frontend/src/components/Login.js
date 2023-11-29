@@ -77,7 +77,7 @@ function Login() {
 							<div>
 								<div className="flex items-center justify-between">
 									<label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-										Password
+										Password:
 									</label>
 									<div className="text-sm">
 										<a href="/forgotPassword" className="font-semibold text-orange-500 hover:text-orange-500">
