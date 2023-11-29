@@ -9,11 +9,12 @@ function Community() {
 
     // Function to fetch public recipes
     const FetchPublicRecipes = async () => {
-        let obj = { search: inputValue }; // No need for userId or isPublic here
+        let obj = { search: inputValue, userId: "", isPublic: true }; // No need for userId or isPublic here
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch(bp.buildPath('api/getPublicRecipesWeb'), {
+            //const response = await fetch(bp.buildPath('api/getPublicRecipesWeb'), {
+                const response = await fetch(bp.buildPath('api/getRecipes'), {
                 method: 'POST', 
                 body: js, 
                 headers: {
