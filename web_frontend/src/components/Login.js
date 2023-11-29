@@ -60,7 +60,7 @@ function Login() {
 						<div className="space-y-6" method="POST">
 							<div>
 								<label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-									Email address
+									Username or Email:
 								</label>
 								<div className="mt-2">
 									<input
@@ -77,7 +77,7 @@ function Login() {
 							<div>
 								<div className="flex items-center justify-between">
 									<label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-										Password
+										Password:
 									</label>
 									<div className="text-sm">
 										<a href="/forgotPassword" className="font-semibold text-orange-500 hover:text-orange-500">

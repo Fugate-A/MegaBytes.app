@@ -12,152 +12,152 @@ const fs = require('fs').promises;
 
 exports.setApp = function (app, client) {
 
-	 transporter = nodemailer.createTransport({
-	   host: 'smtp.forwardemail.net',
-	   port: 587,
-	   secure: false,
-	   auth: {
-		 user: process.env.VerificationEmail,
-		 pass: process.env.VerificationEmailPassword
-	   },
-	   from: process.env.VerificationEmail
-	 });
+	transporter = nodemailer.createTransport({
+		host: 'smtp.forwardemail.net',
+		port: 587,
+		secure: false,
+		auth: {
+			user: process.env.VerificationEmail,
+			pass: process.env.VerificationEmailPassword
+		},
+		from: process.env.VerificationEmail
+	});
 
-	 app.post('/api/updatePassword', async (req, res) => {
+	app.post('/api/updatePassword', async (req, res) => {
 		const { token, password } = req.body;
-	  
+
 		if (!token || !password) {
-		  return res.status(400).json({ error: 'Request missing token or password.' });
+			return res.status(400).json({ error: 'Request missing token or password.' });
 		}
-	  
-		try {
-		  // Verify the token is valid and not expired
-		  const decoded = jwt.verify(token, process.env.KeyTheJWT);
-		  const userId = decoded.userId;
-	  
-		  // Check if the user exists
-		  const db = client.db('MegaBitesLibrary');
-		  const user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
-	  
-		  if (!user) {
-			return res.status(404).json({ error: 'User not found.' });
-		  }
-	  
-		  const updatePassHash = await bcrypt.hash(password, 10);
 
-		  // Update the user's password in the database
-		  // Instead of hashing the new password, we directly set the Password field
-		  await db.collection('User').updateOne(
-			{ _id: user._id },
-			{ $set: { Password: updatePassHash } } // Overwrite the old password with the new one
-		  );
-	  
-		  console.log('Password updated successfully for user:', user.Username);
-		  res.status(200).json({ message: 'Password updated successfully.' });
-		} catch (error) {
-		  if (error.name === 'JsonWebTokenError') {
-			res.status(400).json({ error: 'Invalid token.' });
-		  } else if (error.name === 'TokenExpiredError') {
-			res.status(400).json({ error: 'Token expired.' });
-		  } else {
-			console.error('Update Password error:', error);
-			res.status(500).json({ error: 'Error updating password.' });
-		  }
-		}
-	  });
-
-	 app.post('/api/forgotPassword', async (req, res) => {
-		const { email } = req.body;
-		
 		try {
-		  const db = client.db('MegaBitesLibrary');
-		  const user = await db.collection('User').findOne({ Email: email.toLowerCase() });
-		  
-		  if (!user) {
-			return res.status(404).json({ error: 'User with that email does not exist.' });
-		  }
-		  
-		  const token = jwt.sign({ userId: user._id }, process.env.KeyTheJWT, {
-			expiresIn: '1h', // The token will expire in 1 hour
-		  });
-		  
-		  await db.collection('User').updateOne(
-			{ _id: user._id },
-			{
-			  $set: {
-				resetPasswordToken: token,
-				resetPasswordExpires: new Date(Date.now() + 3600000), // 1 hour from now
-			  },
+			// Verify the token is valid and not expired
+			const decoded = jwt.verify(token, process.env.KeyTheJWT);
+			const userId = decoded.userId;
+
+			// Check if the user exists
+			const db = client.db('MegaBitesLibrary');
+			const user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
+
+			if (!user) {
+				return res.status(404).json({ error: 'User not found.' });
 			}
-		  );
-		  
-		  const resetLink = `http://megabytes.app/resetPassword?token=${token}`;
-		  //const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
-		  //const resetLink = `http://localhost:3000/resetPassword?token=${token}`;
-		  
-		  const mailOptions = {
-			from: process.env.VerificationEmail,
-			to: email,
-			subject: 'Password Reset',
-			text: `Please use the following link to reset your password: ${resetLink}`,
-		  };
-		  
-		  await new Promise((resolve, reject) => {
-			transporter.sendMail(mailOptions, (error, info) => {
-			  if (error) {
-				reject(error);
-			  } else {
-				resolve(info);
-			  }
-			});
-		  });
-		  
-		  console.log('Password reset email sent successfully');
-		  res.status(200).json({ message: 'Password reset email sent successfully, please wait here to be redirected.' });
+
+			const updatePassHash = await bcrypt.hash(password, 10);
+
+			// Update the user's password in the database
+			// Instead of hashing the new password, we directly set the Password field
+			await db.collection('User').updateOne(
+				{ _id: user._id },
+				{ $set: { Password: updatePassHash } } // Overwrite the old password with the new one
+			);
+
+			console.log('Password updated successfully for user:', user.Username);
+			res.status(200).json({ message: 'Password updated successfully.' });
 		} catch (error) {
-		  console.error('Forgot Password error:', error);
-		  res.status(500).json({ error: 'Error processing forgot password.' });
+			if (error.name === 'JsonWebTokenError') {
+				res.status(400).json({ error: 'Invalid token.' });
+			} else if (error.name === 'TokenExpiredError') {
+				res.status(400).json({ error: 'Token expired.' });
+			} else {
+				console.error('Update Password error:', error);
+				res.status(500).json({ error: 'Error updating password.' });
+			}
 		}
-	  });
-	  
-	 app.post('/api/verifyEmail', async (req, res) => {
+	});
+
+	app.post('/api/forgotPassword', async (req, res) => {
+		const { email } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const user = await db.collection('User').findOne({ Email: email.toLowerCase() });
+
+			if (!user) {
+				return res.status(404).json({ error: 'User with that email does not exist.' });
+			}
+
+			const token = jwt.sign({ userId: user._id }, process.env.KeyTheJWT, {
+				expiresIn: '1h', // The token will expire in 1 hour
+			});
+
+			await db.collection('User').updateOne(
+				{ _id: user._id },
+				{
+					$set: {
+						resetPasswordToken: token,
+						resetPasswordExpires: new Date(Date.now() + 3600000), // 1 hour from now
+					},
+				}
+			);
+
+			const resetLink = `http://megabytes.app/resetPassword?token=${token}`;
+			//const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
+			//const resetLink = `http://localhost:3000/resetPassword?token=${token}`;
+
+			const mailOptions = {
+				from: process.env.VerificationEmail,
+				to: email,
+				subject: 'Password Reset',
+				text: `Please use the following link to reset your password: ${resetLink}`,
+			};
+
+			await new Promise((resolve, reject) => {
+				transporter.sendMail(mailOptions, (error, info) => {
+					if (error) {
+						reject(error);
+					} else {
+						resolve(info);
+					}
+				});
+			});
+
+			console.log('Password reset email sent successfully');
+			res.status(200).json({ message: 'Password reset email sent successfully, please wait here to be redirected.' });
+		} catch (error) {
+			console.error('Forgot Password error:', error);
+			res.status(500).json({ error: 'Error processing forgot password.' });
+		}
+	});
+
+	app.post('/api/verifyEmail', async (req, res) => {
 		const { username, password, email } = req.body;
 
 		const hashedPassword = await bcrypt.hash(password, 10);
-	
+
 		// Include user information in the token payload
 		const tokenPayload = {
 			username,
 			password: hashedPassword,
 			email,
 		};
-	
+
 		const token = jwt.sign(tokenPayload, process.env.KeyTheJWT, {
 			expiresIn: '1h',
 		});
-	
+
 		const verificationLink = `https://megabytes.app/verify?token=${token}`;
 		//const verificationLink = `http://localhost:5000/verify?token=${token}`;
-	
+
 		const mailOptions = {
 			from: process.env.VerificationEmail,
 			to: email,
 			subject: 'Email Verification',
 			text: `Please use the following link to verify your email and create your account: ${verificationLink}`,
 		};
-	
+
 		transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
-			  console.error('Error sending email:', error);
-			  res.status(500).json({ error: 'Error sending email' }); // Send JSON response here
+				console.error('Error sending email:', error);
+				res.status(500).json({ error: 'Error sending email' }); // Send JSON response here
 			} else {
-			  console.log('Email sent: ' + info.response);
-			  res.status(200).json({ message: 'Email sent successfully, please verify your account and then return to the login page.' }); // Send JSON response here
+				console.log('Email sent: ' + info.response);
+				res.status(200).json({ message: 'Email sent successfully, please verify your account and then return to the login page.' }); // Send JSON response here
 			}
-		  });
-		  
-	  });
-	
+		});
+
+	});
+
 	app.get('/verify', (req, res) => {
 		console.log('Received a request to /verify');
 		const token = req.query.token;
@@ -184,9 +184,6 @@ exports.setApp = function (app, client) {
 				if(checkEmail || checkUsername){
 					return;
 				}
-
-				
-
 				const newUser = { Username: username, Password: password, Email: email.toLowerCase(), RecipeList: [] };
 				var error = '';
 				try {
@@ -201,24 +198,6 @@ exports.setApp = function (app, client) {
 			}
 		});
 	});
-	
-
-	app.post('/api/register', async (req, res, next) => {
-		// incoming:  username, password, email
-		// outgoing: error
-		const { username, password, email } = req.body;
-		const newUser = { Username: username, Password: password, Email: email, RecipeList: [] };
-		var error = '';
-		try {
-			const db = client.db('MegaBitesLibrary');
-			db.collection('User').insertOne(newUser);
-		}
-		catch (e) {
-			error = e.toString();
-		}
-		var ret = { error: error };
-		res.status(200).json(ret);
-	});
 
 	app.post('/api/deleteUser', async (req, res, next) => {
 		// incoming:  userId
@@ -231,7 +210,7 @@ exports.setApp = function (app, client) {
 		const results = await db.collection('User').findOne(filter);
 		const recipes = results.RecipeList;
 
-		if(recipes){
+		if (recipes) {
 			for (let i = 0; i < recipes.length; i++) {
 				var obj = { recipeId: recipes[i]._id };
 				var js = JSON.stringify(obj);
@@ -250,7 +229,7 @@ exports.setApp = function (app, client) {
 					res.status(500).json(ret);
 				}
 			}
-	
+
 		}
 
 		db.collection('User').deleteOne(filter, (err, result) => {
@@ -279,15 +258,15 @@ exports.setApp = function (app, client) {
 				? db.collection('User').find({ Email: username.toLowerCase() }).toArray()
 				: db.collection('User').find({ Username: username.toLowerCase() }).toArray());
 
-			if(!user){
-				return res.status(401).json({ error: 'Invalid credentials '});
+			if (!user) {
+				return res.status(401).json({ error: 'Invalid credentials ' });
 			}
-			
+
 			const passwordMatch = await bcrypt.compare(password, user[0].Password);
 
-			if(passwordMatch){
+			if (passwordMatch) {
 				res.status(200).json({ id: user[0]._id, error: '' });
-			} else{
+			} else {
 				res.status(401).json({ error: 'Invalid credentials' });
 			}
 
@@ -385,7 +364,7 @@ exports.setApp = function (app, client) {
 
 		const comments = results.CommentList;
 
-		if(comments){
+		if (comments) {
 			for (let i = 0; i < comments.length; i++) {
 				let commentFilter = comments[i];
 				db.collection('Comments').deleteOne(commentFilter, (err, result) => {
@@ -394,14 +373,14 @@ exports.setApp = function (app, client) {
 					} else {
 						console.log('Deleted document successfully');
 					}
-	
+
 				});
 			}
 		}
 
 		const user = await db.collection('User').findOne({ _id: results.UserId });
-		
-		if(user){
+
+		if (user) {
 			await db.collection('User').updateOne(
 				{ _id: user._id },
 				{ $pull: { RecipeList: { _id: new ObjectId(recipeId) } } }
@@ -449,13 +428,13 @@ exports.setApp = function (app, client) {
 			res.status(500).json({ error: 'Internal error' });
 		}
 	});
-  
+
 	app.post('/api/getPublicRecipesWeb', async (req, res, netx) => {
 		// incoming: 
 		// outgoing: results[], error
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const publicRecipes = await db.collection('Recipes').find({ IsPublic: true}).toArray();
+			const publicRecipes = await db.collection('Recipes').find({ IsPublic: true }).toArray();
 			const results = [];
 			for (let i = 0; i < publicRecipes.length; i++) {
 				results.push(publicRecipes[i]);
@@ -474,12 +453,11 @@ exports.setApp = function (app, client) {
 		try {
 			const db = client.db('MegaBitesLibrary');
 
-			const publicRecipes = await db.collection('Recipes').find({ IsPublic: true}).toArray();
+			const publicRecipes = await db.collection('Recipes').find({ IsPublic: true }).toArray();
 
 			const results = [];
-			
-			for (let i = 0; i < publicRecipes.length; i++)
-			{
+
+			for (let i = 0; i < publicRecipes.length; i++) {
 				results.push(publicRecipes[i]._id);
 			}
 
@@ -489,7 +467,7 @@ exports.setApp = function (app, client) {
 			res.status(500).json({ error: 'Internal error' });
 		}
 	});
-	
+
 
 	app.post('/api/getRecipeByID', async (req, res, next) => {
 		// incoming recipeID
@@ -520,7 +498,7 @@ exports.setApp = function (app, client) {
 
 	app.post('/api/getUser', async (req, res, next) => {
 		// incoming userId
-		// outgoing: recipe, error
+		// outgoing: user, error
 
 		try {
 			const { userId } = req.body;
@@ -580,7 +558,7 @@ exports.setApp = function (app, client) {
 			res.status(500).json({ e: 'Internal error' });
 		}
 
-		var ret = { results: results, error: error,  };
+		var ret = { results: results, error: error, };
 		res.status(200).json(ret);
 	});
 

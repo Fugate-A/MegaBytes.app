@@ -70,7 +70,7 @@ function RecipeContainer( {recipe} ) {
             backgroundColor: '#FFE6C5',
             borderColor: 'black',
             overflow: 'hidden',
-        }}>
+        }} className='transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300'>
 
             <div style={{
                  borderBottomWidth: 1,
