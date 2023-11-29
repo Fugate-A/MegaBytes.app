@@ -61,9 +61,10 @@ function Register() {
     sendVerificationEmail(regUsername, regPassword, regEmail);
   };
 
-  return (
-    <div id="registerDiv" className="flex justify-center items-center h-screen">
-      <form onSubmit={registerUser} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+  
+    return (
+      <div id="registerDiv" className="flex justify-center items-center h-screen" /*style={{ backgroundColor: '#b840117' }}*/> {/* Tan background for the entire screen */}
+        <form onSubmit={registerUser} style={{ backgroundColor: '#dfaa7c', border: '2px solid black', borderRadius: '8px', padding: '16px', maxWidth: '400px', margin: 'auto' }}>
         <div className="mb-4">
           <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
             Username
