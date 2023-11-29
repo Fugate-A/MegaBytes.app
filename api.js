@@ -442,7 +442,7 @@ exports.setApp = function (app, client) {
 		}
 	});
 
-	/*app.post('/api/getPublicRecipes', async (req, res, netx) => {
+	app.post('/api/getPublicRecipesWeb', async (req, res, netx) => {
 		// incoming: 
 		// outgoing: results[], error
 		try {
@@ -457,7 +457,7 @@ exports.setApp = function (app, client) {
 			console.error(error);
 			res.status(500).json({ error: 'Internal error' });
 		}
-	});*/
+	});
 
 	app.post('/api/getPublicRecipes', async (req, res, netx) => {
 		// incoming: 

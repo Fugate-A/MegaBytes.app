@@ -9,48 +9,24 @@ function Community() {
 
     // Function to fetch public recipes
     const FetchPublicRecipes = async () => {
-        //const getRecipes = async () => {
+        let obj = { search: inputValue }; // No need for userId or isPublic here
+        var js = JSON.stringify(obj);
 
-            try {
-                const response = await fetch('http://164.90.130.112:5000/api/getPublicRecipes', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-                
-                const data = await response.json();
-                if(response.ok){
-                    const detailedRecipes = await Promise.all(
-                        data.results.map(async (recipeID) => {
-                            const recipeResponse = await fetch('http://164.90.130.112:5000/api/getRecipeByID', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    recipeID: recipeID,
-                                }),
-                            });
-                            const recipeData = await recipeResponse.json();
-    
-                            if(recipeResponse.ok){
-                                return recipeData.results;
-                            }else{
-                                console.error('\tFailed to fetch recipe details', recipeData.error);
-                                return null;
-                            }
-                        })
-                    );
-                    setRecipes(detailedRecipes.filter(recipe => recipe != null));
-                }else{
-                    console.error('Failed to fetch recipes', data.error);
+        try {
+            const response = await fetch(bp.buildPath('api/getPublicRecipesWeb'), {
+                method: 'POST', 
+                body: js, 
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            } catch(error){
-                console.error('Error fetching recipes', error);
-            }
-    
+            });
+            var res = JSON.parse(await response.text());
+            setRecipes(res.results);
         }
+        catch (e) {
+            alert(e.toString());
+        }
+    }
 
     const Tags = async () => {
         try {
