@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './styles.css';
 function Login() {
 	var loginInfo;
 	var loginPassword;
@@ -46,21 +47,34 @@ function Login() {
 		}
 	};
 
-	return (
-		<div id="loginDiv">
+	const style = `
+    .text-outline-white {
+        text-shadow: 
+        -1px -1px 0 #fff, 
+         1px -1px 0 #fff,
+        -1px 1px 0 #fff, 
+         1px 1px 0 #fff;
+    }
+`;
+
+
+return (
+    <>
+        <style>{style}</style>
+        <div id="loginDiv">
 			<form onSubmit={doLogin}>
 				<div className="flex min-h-full flex-1 flex-col justify-center px-6 pt-10 pb-6 lg:px-8">
 					<div className="sm:mx-auto sm:w-full sm:max-w-sm">
-						<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
+						<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950 bg-orange-100 border-2 border-neutral-950 rounded-lg">
 							Get to Cookin
 						</h2>
 					</div>
 
-					<div className="mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-sm bg-orange-100 border-4 border-neutral-950 rounded-lg">
+					<div className="mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-sm bg-orange-100 border-2 border-neutral-950 rounded-lg">
 						<div className="space-y-6" method="POST">
 							<div>
 								<label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-									Email address
+									Username or Email:
 								</label>
 								<div className="mt-2">
 									<input
@@ -68,7 +82,7 @@ function Login() {
 										id="loginInfo"
 										placeholder=" Username/Email"
 										ref={(c) => loginInfo = c}
-										
+
 										className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
 									/>
 								</div>
@@ -77,7 +91,7 @@ function Login() {
 							<div>
 								<div className="flex items-center justify-between">
 									<label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-										Password
+										Password:
 									</label>
 									<div className="text-sm">
 										<a href="/forgotPassword" className="font-semibold text-orange-500 hover:text-orange-500">
@@ -91,7 +105,7 @@ function Login() {
 										id="loginPassword"
 										placeholder=" Password"
 										ref={(c) => loginPassword = c}
-										
+
 										className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
 									/>
 								</div>
@@ -127,6 +141,7 @@ function Login() {
 			</form>
 
 		</div>
+		</>
 	);
 };
 export default Login;

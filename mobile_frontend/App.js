@@ -31,14 +31,14 @@ export default function App() {
 
 	if (!fontsLoaded) {
 		return undefined;
-	}else{
+	} else {
 		SplashScreen.hideAsync();
-	}	
+	}
 
 	return (
 		<NavigationContainer>
 
-		
+
 
 			<Stack.Navigator initialRouteName="Auth">
 				<Stack.Screen name="Auth" component={AuthPage} options={{ headerShown: false }} />

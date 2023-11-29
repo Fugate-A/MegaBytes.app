@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './styles.css';
 const AIRequestModal = ({ visible, onClose, handleAIInput }) => {
 	const [foodInput, setFoodInput] = useState('');
 	const [inputFrozen, setInputFrozen] = useState(false);

@@ -12,10 +12,11 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import DisplayRecipe from './pages/DisplayRecipe';
 import VerifyEmail from './components/VerifyEmail';
-import AddRecipePage from './components/AddRecipe';
+import AddRecipePage from './pages/AddRecipePage';
 import ProfilePage from './pages/ProfilePage';
 
 function App() {
+
 	return (
 		<BrowserRouter>
 			<Routes>

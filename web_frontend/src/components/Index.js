@@ -1,5 +1,5 @@
 import React from 'react';
-
+import './styles.css';
 function IndexInfo() {
 	return (
 		<div className='bg-page-background indexdiv flex items-center justify-center h-screen bg-orange-300'>

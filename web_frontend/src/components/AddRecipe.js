@@ -1,182 +1,249 @@
 import React, { useState, useEffect } from 'react';
-import ErrorMessageModal from '../components/ErrorMessageModal';
-import TagSelectionModal from '../components/TagSelectionModal';
-import NavBar from '../components/Navbar';
-import AIRequestModal from '../components/AIRequestModal';
-const cors = require('cors');
+import ErrorMessageModal from './ErrorMessageModal';
+import TagSelectionModal from './TagSelectionModal';
+import AIRequestModal from './AIRequestModal';
 
+function AddRecipePage() {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [recipeTags, setRecipeTags] = useState([]);
+  const [visibility, setVisibility] = useState(false);
+  const [AIgenerated, setAIgenerated] = useState(false);
 
-function AddRecipe() {
-	const [title, setTitle] = useState('');
-	const [content, setContent] = useState('');
-	const [recipeTags, setRecipeTags] = useState([]);
-	const [visibility, setVisibility] = useState(false);
-	const [AIgenerated, setAIgenerated] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
 
+  const [userID, setUserID] = useState(null);
+  useEffect(() => {
+    const fetchUserID = async () => {
+      try {
+        const storedUser = localStorage.getItem('user_data');
 
-	const [showErrorModal, setShowErrorModal] = useState(false);
-	const [errorMessage, setErrorMessage] = useState('');
-	const [showTagSelectionModal, setShowTagSelectionModal] = useState(false);
+        if (storedUser) {
+          const userObject = JSON.parse(storedUser);
+          const userId = userObject.id;
+          setUserID(userId);
+        }
+      } catch (error) {
+        console.error('Error retrieving userID from cache', error);
+      }
+    };
 
-	const [showAIModal, setShowAIModal] = useState(false);
+    fetchUserID();
+  }, []);
 
+  const handleAddRecipe = async () => {
+    try {
+      const response = await fetch('https://megabytes.app/api/addRecipe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userID,
+          recipeName: title,
+          recipeContents: content,
+          tagList: recipeTags || [],
+          likeList: [],
+          isPublic: visibility,
+          ai_generated: AIgenerated,
+        }),
+      });
 
-	const [userID, setUserID] = useState(null);
-	useEffect(() => {
-		const fetchUserID = async () => {
-			try {
-				const storedUser = localStorage.getItem('user_data');
+      console.log('Adding Recipe');
 
-				if (storedUser) {
-					const userObject = JSON.parse(storedUser);
-					const userId = userObject.id;
-					setUserID(userId);
-				}
+      if (response.ok) {
+        window.location.href = '/rec';
+      } else {
+        console.error('Error adding Recipe');
 
-			} catch (error) {
-				console.error('Error retrieving userID from cache', error);
-			}
-		};
+        setErrorMessage('Error adding Reicpe');
+        setShowErrorModal(true);
+      }
+    } catch (error) {
+      console.error('ERROR CONNECTING TO DATABASE', error);
+    }
+  };
 
-		fetchUserID();
-	}, []);
+  const handleUpdateRecipeTags = (updatedTags) => {
+    setRecipeTags(updatedTags);
+  };
 
-	const handleAddRecipe = async event => {
-		try {
-			const response = await fetch('https://megabytes.app/api/addRecipe', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					userId: userID,
-					recipeName: title,
-					recipeContents: content,
-					tagList: recipeTags || [],
-					likeList: [],
-					isPublic: visibility,
-					ai_generated: AIgenerated,
-				}),
-			});
+  const handleAIInput = (updatedTitle, updatedContent) => {
+    setTitle(updatedTitle);
+    setContent(updatedContent);
+    setAIgenerated(true);
+  };
 
-			console.log('Adding Recipe');
-			const data = await response.json();
+  const closeErrorModal = () => {
+    setShowErrorModal(false);
+  };
 
-			if (response.ok) {
-				console.log('Success');
-				window.location.href = '/rec';
-			} else {
-				console.error('Error adding Recipe');
+  const closeAIModal = () => {
+    setShowAIModal(false);
+  };
 
-				setErrorMessage('Error adding Recipe');
-				setShowErrorModal(true);
-			}
-		} catch (error) {
-			console.error('ERROR CONNECTING TO DATABASE', error);
-		}
-	};
+  const openAIModal = () => {
+    setShowAIModal(true);
+  };
 
-	const handleUpdateRecipeTags = (updatedTags) => {
-		setRecipeTags(updatedTags);
-	}
+  const openTagSelectionModal = () => {
+    setShowTagSelectionModal(true);
+  };
 
-	const handleAIInput = (updatedTitle, updatedContent) => {
-		setTitle(updatedTitle);
-		setContent(updatedContent);
-		setAIgenerated(true);
-	}
+  const toggleVisibility = () => {
+    setVisibility(!visibility);
+  };
 
-	const closeErrorModal = () => {
-		setShowErrorModal(false);
-	}
+  const handleGoHome = () => {
+    window.location.href = 'rec'; 
+  };
 
-	const openTagSelectionModal = () => {
-		setShowTagSelectionModal(true);
-	}
+  return (
+    
+    <div style={{ backgroundColor: '#FFF0DC', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 90, paddingBottom: 50 }}>
+      <h1 style={{ fontSize: '32px', fontFamily: 'Tilt-Neon', marginBottom: '20px' }}>Create a recipe</h1>
+      <div style={{ position: 'relative', width: '60%', padding: '20px', backgroundColor: 'white', borderRadius: '15px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+        <div style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}>
+          <p onClick={handleGoHome} style={{ fontSize: 24, fontFamily: 'Tilt-Neon', color: '#FF0000', margin: 0 }}>X</p>
+        </div>
 
-	const toggleVisibility = () => {
-		setVisibility(!visibility);
-	}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+            <button
+                onClick={openAIModal}
+                style={{ flex: '1', marginRight: '15px', padding: '10px', backgroundColor: '#51E4E5', borderRadius: '15px', borderWidth: 1, borderColor: 'black' }}
+            >
+                <p style={{ fontSize: 24, fontFamily: 'Tilt-Neon', margin: 0 }}>Generate with AI 🤖</p>
+            </button>
 
-	const openAIModal = () => {
-		setShowAIModal(true);
-	}
+            {showAIModal && <AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={handleAIInput} />}
 
-	const closeAIModal = () => {
-		setShowAIModal(false);
-	}
+            
+            </div>
 
-	const closeTagSelectionModal = () => {
-		setShowTagSelectionModal(false);
-	}
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          style={{
+            backgroundColor: '#FFE6C5',
+            borderRadius: '15px',
+            width: '100%',
+            height: '80px',
+            marginBottom: '10px',
+            padding: '8px',
+            fontSize: '30px',
+            fontFamily: 'Tilt-Neon',
+            fontWeight: 'bold',
+            
+            borderRightWidth: 2,
+            borderRightColor: 'gray', 
 
-	return (
-		<div id="AddCustomDiv" className='h-screen bg-orange-300'>
-			<NavBar />
-			<h1 className="text-6xl font-bold leading-9 tracking-tight text-black pt-20 bg-orange-300">
-				Create a Custom Recipe
-			</h1>
-			<div className="mt-2 mb-3 flex justify-center pt-5">
-				{<div className="container mx-auto p-4">
-					<div className="mt-4 p-4 bg-white shadow-md rounded-md">
+            borderLeftWidth: 2,
+            borderLeftColor: 'gray', 
+          }}
+        />
 
-						{showAIModal && (
-							<AIRequestModal visible={showAIModal} onClose={closeAIModal} handleAIInput={handleAIInput} />
-						)}
-						{showTagSelectionModal && (
-							<TagSelectionModal visible={showTagSelectionModal} onClose={closeTagSelectionModal} onUpdateRecipeTags={handleUpdateRecipeTags} />
-						)}
-						<button onClick={openAIModal} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-							Generate with AI
-						</button>
+        <div style={{ 
+            backgroundColor: '#FFE6C5', 
+            height: '80%', 
+            borderRadius: '15px',
+            borderRightWidth: 2,
+            borderRightColor: 'gray', 
 
-						{showAIModal && (
-							<AIRequestModal
-								visible={showAIModal}
-								onClose={closeAIModal}
-								handleAIInput={handleAIInput}
-							/>
-						)}
+            borderLeftWidth: 2,
+            borderLeftColor: 'gray', 
+        }}>
+            <textarea
+                placeholder="Ingredients and Directions"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                style={{ 
+                    width: '100%', 
+                    height: 150,
+                    margin: '10px 0', 
+                    padding: '8px', 
+                    fontFamily: 'Tilt-Neon', 
+                    fontSize: '16px', 
+                    backgroundColor: '#FFE6C5' 
+                }}
+            />
+        </div>
 
-						<input
-							type="text"
-							placeholder="Title"
-							value={title}
-							onChange={(e) => setTitle(e.target.value)}
-							className="w-full h-12 p-2 mb-4 border-b-2 border-black"
-						/>
+        <button
+          onClick={openTagSelectionModal}
+          style={{
+            display: 'flex',
+            backgroundColor: '#FFE6C5',
+            borderWidth: 1,
+            borderRadius: '15px',
+            borderColor: 'black',
+            padding: '10px',
+            marginTop: '10px',
+            width: '15%',
+            cursor: 'pointer',
+          }}
+        >
+          <p style={{ fontSize: '20px', fontFamily: 'Tilt-Neon', marginLeft: '10px', color: 'black' }}>Add Tags</p>
+        </button>
 
-						<textarea
-							placeholder="Ingredients and Directions"
-							value={content}
-							onChange={(e) => setContent(e.target.value)}
-							className="w-full h-32 p-2 mb-4 border-2 border-gray-400 rounded"
-							rows="4"
-						/>
+        {showTagSelectionModal && (
+          <TagSelectionModal visible={true} onUpdateRecipeTags={handleUpdateRecipeTags} onClose={() => setShowTagSelectionModal(false)} currentTags={recipeTags} />
+        )}
+        <div style={{
+					display: 'flex',
+					flex: 1,
+					flexDirection: 'row',
+					justifyContent: 'space-between',
+					borderBottomWidth: 1,
+					borderBottomColor: 'black'
+			}}>
 
-						<button
-							onClick={openTagSelectionModal}
-							className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-						>
-							Add Tags
-						</button>
+            <div style={{ backgroundColor: '#FFE6C5', display: 'flex', alignItems: 'center', marginTop: 10,marginBottom: 10,  padding: '10px', borderRadius: '15px', borderWidth: 1, width: '30%', borderColor: 'black', }}>
+                <p style={{ fontSize: '24px', marginRight: '10px', fontFamily: 'Tilt-Neon' }}>Privacy:</p>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <button onClick={toggleVisibility} className="flex items-center" style={{ cursor: 'pointer', border: 'none', backgroundColor: 'transparent' }}>
+                    <div
+                        className={`w-4 h-4 px-4 py-4 rounded-full border border-black mr-2 ${visibility ? 'bg-green-500' : 'bg-white'}`}
+                        style={{ cursor: 'pointer' }}
+                    />
+                    <span className="text-2xl">{visibility ? 'Public' : 'Private'}</span>
+                    </button>
 
-						<div className="flex items-center mt-4">
-							<span className="mr-2 font-bold">Visibility:</span>
-							<button onClick={toggleVisibility} className="flex items-center">
-								<div className={`w-4 h-4 rounded-full border border-black mr-2 ${visibility ? 'bg-green-500' : 'bg-white'}`} />
-								<span>{visibility ? 'Public' : 'Private'}</span>
-							</button>
-						</div>
-						<button onClick={handleAddRecipe} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-							Submit
-						</button>
-					</div>
+                </div>
+                    
+            </div>
 
-					<ErrorMessageModal visible={showErrorModal} message={errorMessage} onClose={closeErrorModal} />
-				</div>}
-			</div>
-		</div >
-	);
-};
-export default AddRecipe;
+            <button
+                onClick={handleAddRecipe}
+                style={{
+                    padding: '10px',
+                    backgroundColor: '#51E564',
+                    borderRadius: '15px',
+                    borderWidth: 1,
+                    borderColor: 'black',
+                    width: '25%',
+                    height: 50,
+                    marginTop: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',  // Center the text horizontally
+                }}
+            >
+                <p style={{ fontSize: 24, fontFamily: 'Tilt-Neon', padding: 5, margin: 0 }}>Submit</p>
+            </button>
+
+        </div>
+
+       
+      </div>
+
+      <ErrorMessageModal visible={showErrorModal} message={errorMessage} onClose={closeErrorModal} />
+    </div>
+  );
+}
+
+export default AddRecipePage;
