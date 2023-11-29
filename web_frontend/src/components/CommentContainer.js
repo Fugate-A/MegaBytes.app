@@ -31,7 +31,6 @@ function CommentBox({ comment }) {
       }
     };
     fetchUser();
-    console.log(comment);
     setContent(comment.CommentText);
   }, [comment.UserId]);
 

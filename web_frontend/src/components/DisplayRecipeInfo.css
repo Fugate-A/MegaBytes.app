@@ -6,6 +6,7 @@
     height: 100%; 
     width: 100%;
     overflow-y: auto; 
+    margin-left: 50px;
 }
 
 .recipeAuthorContainer {
@@ -14,6 +15,7 @@
 }
 
 .topBar {
+    margin-top: 30px;
     flex-direction: row;
     justify-content: space-between;
     flex: 1;

@@ -88,7 +88,7 @@ function RecipeContainer( {recipe} ) {
 
             <div style={{
                 maxHeight: '60%',
-                overflow: 'auto',
+                overflow: 'hidden',
             }}>
                 <pre style={{
                      fontSize: 14,
