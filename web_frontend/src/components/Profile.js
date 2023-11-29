@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './styles.css';
+
 const Profile = () => {
-const user = JSON.parse(userData);
-	const navigate = useNavigate();
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState('')
   const [ifedit, setIfEdit] = useState(false)
   var _ud = localStorage.getItem('user_data');
@@ -44,11 +43,10 @@ const user = JSON.parse(userData);
     getUserInfo()
   }, []);
 
-
-	const doLogout = () => {
-		localStorage.removeItem('user_data');
-		navigate('/');
-	};
+  const doLogout = () => {
+    localStorage.removeItem('user_data');
+    navigate('/');
+  };
 
   const changeEdit = () => {
     // Update the state to toggle the visibility of the HTML
@@ -118,7 +116,7 @@ const user = JSON.parse(userData);
       {!ifedit ? (
         <div className="">
           <h2 className="text-3xl text-center font-bold text-black">User Information:</h2>
-          <div className="mt-6 w-full max-w-xs rounded-lg bg-orange-100 border-2 border-black p-4">
+          <div className="mt-6 w-full max-w-xs rounded-lg bg-orange-100 border-4 border-black p-4">
             <div className="mb-4">
               <h3 className="text-lg font-bold text-gray-900">Username:</h3>
               <div className="mt-2 rounded-md bg-white p-2 text-lg text-gray-900">
