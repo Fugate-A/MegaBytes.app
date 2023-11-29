@@ -1,13 +1,13 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const cors = require('cors');
+
 const bcrypt = require('bcrypt');
 
 let transporter;
 
 const { ObjectId } = require('mongodb');
-const bp = require('./web_frontend/src/components/Path.js');
+const bp = require('./frontend/src/components/Path.js');
 const fs = require('fs').promises;
 
 exports.setApp = function (app, client) {
@@ -23,153 +23,43 @@ exports.setApp = function (app, client) {
 		from: process.env.VerificationEmail
 	});
 
-	app.post('/api/updatePassword', async (req, res) => {
-		const { token, password } = req.body;
+	app.post('/api/verifyEmail', (req, res) => {
+		const { to, subject, text } = req.body;
 
-		if (!token || !password) {
-			return res.status(400).json({ error: 'Request missing token or password.' });
-		}
-
-		try {
-			// Verify the token is valid and not expired
-			const decoded = jwt.verify(token, process.env.KeyTheJWT);
-			const userId = decoded.userId;
-
-			// Check if the user exists
-			const db = client.db('MegaBitesLibrary');
-			const user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
-
-			if (!user) {
-				return res.status(404).json({ error: 'User not found.' });
-			}
-
-			const updatePassHash = await bcrypt.hash(password, 10);
-
-			// Update the user's password in the database
-			// Instead of hashing the new password, we directly set the Password field
-			await db.collection('User').updateOne(
-				{ _id: user._id },
-				{ $set: { Password: updatePassHash } } // Overwrite the old password with the new one
-			);
-
-			console.log('Password updated successfully for user:', user.Username);
-			res.status(200).json({ message: 'Password updated successfully.' });
-		} catch (error) {
-			if (error.name === 'JsonWebTokenError') {
-				res.status(400).json({ error: 'Invalid token.' });
-			} else if (error.name === 'TokenExpiredError') {
-				res.status(400).json({ error: 'Token expired.' });
-			} else {
-				console.error('Update Password error:', error);
-				res.status(500).json({ error: 'Error updating password.' });
-			}
-		}
-	});
-
-	app.post('/api/forgotPassword', async (req, res) => {
-		const { email } = req.body;
-
-		try {
-			const db = client.db('MegaBitesLibrary');
-			const user = await db.collection('User').findOne({ Email: email.toLowerCase() });
-
-			if (!user) {
-				return res.status(404).json({ error: 'User with that email does not exist.' });
-			}
-
-			const token = jwt.sign({ userId: user._id }, process.env.KeyTheJWT, {
-				expiresIn: '1h', // The token will expire in 1 hour
-			});
-
-			await db.collection('User').updateOne(
-				{ _id: user._id },
-				{
-					$set: {
-						resetPasswordToken: token,
-						resetPasswordExpires: new Date(Date.now() + 3600000), // 1 hour from now
-					},
-				}
-			);
-
-			const resetLink = `http://megabytes.app/resetPassword?token=${token}`;
-			//const resetLink = `http://localhost:5000/resetPassword?token=${token}`;
-			//const resetLink = `http://localhost:3000/resetPassword?token=${token}`;
-
-			const mailOptions = {
-				from: process.env.VerificationEmail,
-				to: email,
-				subject: 'Password Reset',
-				text: `Please use the following link to reset your password: ${resetLink}`,
-			};
-
-			await new Promise((resolve, reject) => {
-				transporter.sendMail(mailOptions, (error, info) => {
-					if (error) {
-						reject(error);
-					} else {
-						resolve(info);
-					}
-				});
-			});
-
-			console.log('Password reset email sent successfully');
-			res.status(200).json({ message: 'Password reset email sent successfully, please wait here to be redirected.' });
-		} catch (error) {
-			console.error('Forgot Password error:', error);
-			res.status(500).json({ error: 'Error processing forgot password.' });
-		}
-	});
-
-	app.post('/api/verifyEmail', async (req, res) => {
-		const { username, password, email } = req.body;
-
-		const hashedPassword = await bcrypt.hash(password, 10);
-
-		// Include user information in the token payload
-		const tokenPayload = {
-			username,
-			password: hashedPassword,
-			email,
-		};
-
-		const token = jwt.sign(tokenPayload, process.env.KeyTheJWT, {
-			expiresIn: '1h',
-		});
+		const token = jwt.sign({ email: to }, process.env.KeyTheJWT, { expiresIn: '1h' });
 
 		const verificationLink = `https://megabytes.app/verify?token=${token}`;
-		//const verificationLink = `http://localhost:5000/verify?token=${token}`;
 
 		const mailOptions = {
 			from: process.env.VerificationEmail,
-			to: email,
-			subject: 'Email Verification',
-			text: `Please use the following link to verify your email and create your account: ${verificationLink}`,
+			to,
+			subject,
+			text: `${text}\n\nVerification Link: ${verificationLink}`
 		};
 
 		transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
 				console.error('Error sending email:', error);
-				res.status(500).json({ error: 'Error sending email' }); // Send JSON response here
+				res.status(500).send('Error sending email');
 			} else {
 				console.log('Email sent: ' + info.response);
-				res.status(200).json({ message: 'Email sent successfully, please verify your account and then return to the login page.' }); // Send JSON response here
+				res.status(200).send('Email sent successfully');
 			}
 		});
-
 	});
 
 	app.get('/verify', (req, res) => {
-		console.log('Received a request to /verify');
 		const token = req.query.token;
 
-		jwt.verify(token, process.env.KeyTheJWT, async (err, decoded) => {
+		jwt.verify(token, process.env.KeyTheJWT, (err, decoded) => {
 			if (err) {
 				console.error('Error verifying token:', err);
-				// Do not redirect, let the default behavior occur (e.g., showing a blank screen)
+				res.status(400).send('Invalid token');
 			} else {
-				// Extract user information from the decoded token
-				const { username, password, email } = decoded;
+				// Log the token to the console
+				console.log('Verified token:', decoded);
 
+<<<<<<< Updated upstream
 				// Log the decoded token and extracted user information
 				console.log('Decoded Token:', decoded);
 				console.log('Extracted User Info - Username:', username);
@@ -188,8 +78,79 @@ exports.setApp = function (app, client) {
 				if (!error) {
 					res.redirect('https://megabytes.app'); // Redirect to the specified URL on success
 				}
+=======
+				// You can also send a response to the client if needed
+				res.status(200).send(`Verification successful. Token: ${token}`);
+>>>>>>> Stashed changes
 			}
 		});
+	});
+
+	app.post('/api/addRecipe', async (req, res) => {
+		// incoming: userId, recipeName, recipeContents, tagList, likeList
+		// outgoing: error
+
+		const { userId, recipeName, recipeContents, tagList, likeList, isPublic, ai_generated } = req.body;
+		const newRecipe = {
+			UserId: new ObjectId(userId),
+			RecipeName: recipeName,
+			RecipeContents: recipeContents,
+			TagList: tagList,
+			LikeList: likeList,
+			IsPublic: isPublic,
+			CommentList: [],
+			AI_Generated: ai_generated,
+		};
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+
+			// Insert new recipe into Recipes collection
+			const insertResult = await db.collection('Recipes').insertOne(newRecipe);
+
+			const recipeId = insertResult.insertedId;
+
+			// Update the user's RecipeList with the new recipe
+			const updateResult = await db.collection('User').updateOne(
+				{ _id: new ObjectId(userId) },
+				{ $push: { RecipeList: { _id: recipeId } } }
+			);
+
+			console.log(updateResult);
+
+			res.status(200).json({ error: null });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal Server Error' });
+		}
+	});
+
+	app.post('/api/updateLogin', async (req, res, next) => {
+		// incoming:  loginInfo(username/email) password
+		// outgoing: error
+		const { loginInfo, password, } = req.body;
+		var salt = bcrypt.genSaltSync(10);
+		var hash = bcrypt.hashSync(password, salt);
+		var error = '';
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const res = await db.collection('User').updateOne(
+				{
+					$or: [
+						{ Username: loginInfo },
+						{ Email: loginInfo }
+					]
+				},
+				{ $set: { Password: hash } }
+			);
+		}
+		catch (e) {
+			error = e.toString();
+			var ret = { error: error };
+			res.status(500).json(ret);
+		}
+		var ret = { error: error };
+		res.status(200).json(ret);
 	});
 
 	app.post('/api/deleteUser', async (req, res, next) => {
@@ -202,27 +163,23 @@ exports.setApp = function (app, client) {
 		const db = client.db('MegaBitesLibrary');
 		const results = await db.collection('User').findOne(filter);
 		const recipes = results.RecipeList;
-
-		if (recipes) {
-			for (let i = 0; i < recipes.length; i++) {
-				var obj = { recipeId: recipes[i]._id };
-				var js = JSON.stringify(obj);
-				try {
-					await fetch(bp.buildPath('api/deleteRecipe'),
-						{
-							method: 'POST', body: js, headers: {
-								'Content-Type':
-									'application/json'
-							}
-						});
-				}
-				catch (e) {
-					error = e.toString();
-					var ret = { error: error };
-					res.status(500).json(ret);
-				}
+		for (let i = 0; i < recipes.length; i++) {
+			var obj = { recipeId: recipes[i]._id };
+			var js = JSON.stringify(obj);
+			try {
+				await fetch(bp.buildPath('api/deleteRecipe'),
+					{
+						method: 'POST', body: js, headers: {
+							'Content-Type':
+								'application/json'
+						}
+					});
 			}
-
+			catch (e) {
+				error = e.toString();
+				var ret = { error: error };
+				res.status(500).json(ret);
+			}
 		}
 
 		db.collection('User').deleteOne(filter, (err, result) => {
@@ -243,22 +200,31 @@ exports.setApp = function (app, client) {
 		// outgoing: id, error
 		let error = '';
 		const { username, password } = req.body;
-		const isEmail = username.includes('@');
+		//const isEmail = username.includes('@');
 
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const user = await (isEmail
-				? db.collection('User').find({ Email: username.toLowerCase() }).toArray()
-				: db.collection('User').find({ Username: username.toLowerCase() }).toArray());
 
-			if (!user) {
+			const isEmail = await db.collection('User').find({ Email: username }).toArray();
+			const isUser = await db.collection('User').find({ Username: username }).toArray();
+
+			res.status(401).json({ res: isEmail, error: 'Invalid credentials' });
+
+			var user
+
+			if (!isUser && !isEmail) {
 				return res.status(401).json({ error: 'Invalid credentials ' });
+			} else if (!isUser && isEmail) {
+				user = isEmail
+			} else {
+				user = isUser
 			}
+			res.status(200).json({ id: user[0]._id, username: user[0].Username, error: '' });
 
 			const passwordMatch = await bcrypt.compare(password, user[0].Password);
 
 			if (passwordMatch) {
-				res.status(200).json({ id: user[0]._id, error: '' });
+				res.status(200).json({ id: user[0]._id, username: user[0].Username, error: '' });
 			} else {
 				res.status(401).json({ error: 'Invalid credentials' });
 			}
@@ -270,11 +236,66 @@ exports.setApp = function (app, client) {
 		}
 	});
 
+
+	app.post('/api/duplicateEmail', async (req, res, next) => {
+		// incoming: email
+		// outgoing: error
+		let error = '';
+		const { email } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const user = await db.collection('User').find({ Email: email }).toArray()
+
+			if (!user) {
+				return res.status(401).json({ error: 'Invalid Check ' });
+			}
+
+			if (user.length == 0) {
+				res.status(200).json({ error: '' });
+			} else {
+				res.status(401).json({ error: 'Duplicate Email' });
+			}
+
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal Server Error' });
+		}
+	});
+
+	app.post('/api/duplicateUsername', async (req, res, next) => {
+		// incoming: username
+		// outgoing: error
+		let error = '';
+		const { username } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const user = await db.collection('User').find({ Username: username }).toArray()
+
+			if (!user) {
+				return res.status(401).json({ error: 'Invalid Check ' });
+			}
+
+			if (user.length == 0) {
+				res.status(200).json({ error: '' });
+			} else {
+				res.status(401).json({ error: 'Duplicate Username' });
+			}
+
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal Server Error' });
+		}
+	});
+
 	app.post('/api/addRecipe', async (req, res) => {
-		// incoming: userId, recipeName, recipeContents, tagList, likeList
+		// incoming: userId, recipeName, recipeContents, tagList, likeList, isPublic
 		// outgoing: error
 
-		const { userId, recipeName, recipeContents, tagList, likeList, isPublic, ai_generated } = req.body;
+		const { userId, recipeName, recipeContents, tagList, likeList, isPublic } = req.body;
 		const newRecipe = {
 			UserId: new ObjectId(userId),
 			RecipeName: recipeName,
@@ -283,7 +304,6 @@ exports.setApp = function (app, client) {
 			LikeList: likeList,
 			IsPublic: isPublic,
 			CommentList: [],
-			AI_Generated: ai_generated,
 		};
 
 		try {
@@ -356,29 +376,24 @@ exports.setApp = function (app, client) {
 		const results = await db.collection('Recipes').findOne(filter);
 
 		const comments = results.CommentList;
+		for (let i = 0; i < comments.length; i++) {
+			let commentFilter = comments[i];
+			db.collection('Comments').deleteOne(commentFilter, (err, result) => {
+				if (err) {
+					console.error('Error deleting document:', err);
+				} else {
+					console.log('Deleted document successfully');
+				}
 
-		if (comments) {
-			for (let i = 0; i < comments.length; i++) {
-				let commentFilter = comments[i];
-				db.collection('Comments').deleteOne(commentFilter, (err, result) => {
-					if (err) {
-						console.error('Error deleting document:', err);
-					} else {
-						console.log('Deleted document successfully');
-					}
-
-				});
-			}
+			});
 		}
-
 		const user = await db.collection('User').findOne({ _id: results.UserId });
 
-		if (user) {
-			await db.collection('User').updateOne(
-				{ _id: user._id },
-				{ $pull: { RecipeList: { _id: new ObjectId(recipeId) } } }
-			);
-		}
+		await db.collection('User').updateOne(
+			{ _id: user._id },
+			{ $pull: { RecipeList: { _id: new ObjectId(recipeId) } } }
+		);
+
 		db.collection('Recipes').deleteOne(filter, (err, result) => {
 			if (err) {
 				console.error('Error deleting document:', err);
@@ -422,23 +437,6 @@ exports.setApp = function (app, client) {
 		}
 	});
 
-	app.post('/api/getPublicRecipesWeb', async (req, res, netx) => {
-		// incoming: 
-		// outgoing: results[], error
-		try {
-			const db = client.db('MegaBitesLibrary');
-			const publicRecipes = await db.collection('Recipes').find({ IsPublic: true }).toArray();
-			const results = [];
-			for (let i = 0; i < publicRecipes.length; i++) {
-				results.push(publicRecipes[i]);
-			}
-			res.json({ results: results, error: '' });
-		} catch (error) {
-			console.error(error);
-			res.status(500).json({ error: 'Internal error' });
-		}
-	});
-
 	app.post('/api/getPublicRecipes', async (req, res, netx) => {
 		// incoming: 
 		// outgoing: results[], error
@@ -461,7 +459,6 @@ exports.setApp = function (app, client) {
 		}
 	});
 
-
 	app.post('/api/getRecipeByID', async (req, res, next) => {
 		// incoming recipeID
 		// outgoing: recipe, error
@@ -481,7 +478,7 @@ exports.setApp = function (app, client) {
 				return res.status(404).json({ error: 'Recipe not found' });
 			}
 
-			res.json({ results: recipe, error: '' });
+			res.status(200).json({ results: recipe, error: '' });
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({ error: 'Internal error' });
@@ -491,7 +488,7 @@ exports.setApp = function (app, client) {
 
 	app.post('/api/getUser', async (req, res, next) => {
 		// incoming userId
-		// outgoing: user, error
+		// outgoing: recipe, error
 
 		try {
 			const { userId } = req.body;
@@ -508,7 +505,7 @@ exports.setApp = function (app, client) {
 				return res.status(404).json({ error: 'User not found' });
 			}
 
-			res.json({ results: user, error: '' });
+			res.status(200).json({ results: user, error: '' });
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({ error: 'Internal error' });
@@ -735,25 +732,4 @@ exports.setApp = function (app, client) {
 		const tags = await getTags();
 		res.json(tags);
 	});
-
-	/*
-	app.post('/api/getComments', async (req, res, next) => {
-		// incoming: search
-		// outgoing: results[], error
-
-		var error = '';
-		const { search } = req.body;
-		var _search = search.trim();
-		const db = client.db('MegaBitesLibrary');
-		const results = await
-			db.collection('Comments').find({
-				"RecipeName": {
-					$regex: _search + '.*',
-					$options: 'i'
-				}
-			}).toArray();
-
-		var ret = { results: results, error: error };
-		res.status(200).json(ret);
-	});*/
 }
