@@ -3,7 +3,7 @@ import TagComponent from './TagComponent';
 
 function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }) {
 	const [tags, setTags] = useState([]);
-	const [recipeTags, setRecipeTags] = useState(currentTags);
+	const [recipeTags, setRecipeTags] = useState(currentTags || []);
 	const [loading, setLoading] = useState(true);
 	useEffect(() => {
 		fetchTags();
@@ -33,14 +33,13 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 	}, [recipeTags, onUpdateRecipeTags]);
 
 	const toggleTagSelection = (tagIndex) => {
-		if (recipeTags && recipeTags[Symbol.iterator] === 'function	')
+		if (recipeTags && recipeTags[Symbol.iterator] === 'function')
 			if (recipeTags && recipeTags.includes(tagIndex)) {
 				setRecipeTags(recipeTags.filter((index) => index !== tagIndex));
 			} else {
 				setRecipeTags([...recipeTags, tagIndex]);
 			}
 		else {
-			console.log("Not Iterable");
 			console.log(typeof recipeTags);
 		}
 	};
