@@ -45,12 +45,9 @@ export default function NavBar() {
 			{({ open }) => (
 				<>
 					<div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-						<div className="relative flex h-16 items-center justify-between">
-							<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">		
-								<div className="flex flex-shrink-0 items-center">							
-									<a href='https://www.megabytes.app/i'>
-									</a>
-								</div>
+						<div className="flex h-16 items-center justify-between">
+							{/* Left side - Navigation items */}
+							<div className="flex-1 flex items-center justify-start">
 								<div className="hidden sm:ml-6 sm:block">
 									<div className="flex space-x-4">
 										{navigation.map((item) => (
@@ -59,7 +56,7 @@ export default function NavBar() {
 												href={item.href}
 												className={classNames(
 													item.current ? 'outline outline-3 outline-black text-black' : 'text-black hover:outline hover:outline-3 hover:outline-black hover:text-black',
-													'rounded-md px-2 py-1 text-sm font-medium'
+													'rounded-md px-3 py-2 text-lg font-medium'
 												)}
 												aria-current={item.current ? 'page' : undefined}
 											>
@@ -69,22 +66,23 @@ export default function NavBar() {
 									</div>
 								</div>
 							</div>
-							<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-								{/* Profile dropdown */}
-								<Menu as="div" className="relative ml-3">
+	
+							{/* Center - MegaBytes Text */}
+<div className="flex-none text-center">
+    <a href="/rec" className="text-3xl font-bold no-underline hover:underline">
+        MegaBytes
+    </a>
+</div>
+	
+							{/* Right side - Account information with dropdown */}
+							<div className="flex-1 flex items-center justify-end">
+								<Menu as="div" className="relative inline-block text-left">
 									<div>
-
-										<Menu.Button className={classNames(
-											profileLink == currentUrl ? 'relative flex rounded-full outline outline-3 outline-black px-2 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800' :
-												'relative flex rounded-full  px-2 py-1 text-sm hover:outline hover:outline-3 hover:outline-black ',
-											'rounded-md px-3 py-1 text-sm font-medium'
-										)}>
-											<span className="absolute -inset-1.5" />
-											<span className="sr-only">Open user menu</span>
-											{username}
+										<Menu.Button className="inline-flex w-full justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-#E79B11">
+											Account: {username}
+											{/* Icon can be added here */}
 										</Menu.Button>
-
-									</div>	
+									</div>
 									<Transition
 										as={Fragment}
 										enter="transition ease-out duration-100"
@@ -93,27 +91,40 @@ export default function NavBar() {
 										leaveFrom="transform opacity-100 scale-100"
 										leaveTo="transform opacity-0 scale-95"
 									>
-										<Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+										<Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+											{/* Dropdown Menu Items */}
 											<Menu.Item>
 												{({ active }) => (
-													<p id="profile-go" class="buttons"
-														className={classNames(active ? 'bg-gray-100 cursor-pointer rounded-md' : '', ' rounded-md cursor-pointer block px-4 py-2 text-sm text-gray-700')}
-														onClick={goToProfile}> MyProfile </p>
+													<a
+														href="/profile"
+														className={classNames(
+															active ? 'bg-gray-100' : '',
+															'block px-4 py-2 text-sm text-gray-700'
+														)}
+													>
+														My Profile
+													</a>
 												)}
 											</Menu.Item>
-
 											<Menu.Item>
 												{({ active }) => (
-													<p id="logout-go" class="buttons"
-														className={classNames(active ? 'bg-gray-100 cursor-pointer rounded-md' : '', ' rounded-md cursor-pointer block px-4 py-2 text-sm text-gray-700')}
-														onClick={doLogout}> Log Out </p>
+													<a
+														href="/"
+														onClick={doLogout}
+														className={classNames(
+															active ? 'bg-gray-100' : '',
+															'block px-4 py-2 text-sm text-gray-700'
+														)}
+													>
+														Log Out
+													</a>
 												)}
 											</Menu.Item>
 										</Menu.Items>
 									</Transition>
-								</Menu>								
-							</div>							
-						</div>			
+								</Menu>
+							</div>
+						</div>
 					</div>
 					<Disclosure.Panel className="sm:hidden">
 						<div className="space-y-1 px-2 pb-3 pt-2">
@@ -136,5 +147,6 @@ export default function NavBar() {
 				</>
 			)}
 		</Disclosure>
-	)
+	);
+	
 }
