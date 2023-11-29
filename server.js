@@ -68,7 +68,6 @@ httpsServer.listen(httpsPort, () => {
 console.log(`HTTPS Server is running on port ${httpsPort}`);
 });
 
-
 // Start the HTTP server on port 5000
 app.listen(httpPort, () => {
 	console.log(`HTTP Server is running on port ${httpPort}`);
