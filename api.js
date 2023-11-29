@@ -263,20 +263,28 @@ exports.setApp = function (app, client) {
 		// outgoing: id, error
 		let error = '';
 		const { username, password } = req.body;
-		const isEmail = username.includes('@');
+		
 		try {
 			const db = client.db('MegaBitesLibrary');
-			const user = await (isEmail
-				? db.collection('User').find({ Email: username.toLowerCase() }).toArray()
-				: db.collection('User').find({ Username: username.toLowerCase() }).toArray());
-			if(!user){
-				return res.status(401).json({ error: 'Invalid credentials '});
+
+			const isEmail = await db.collection('User').find({ Email: username }).toArray();
+		    const isUser = await db.collection('User').find({ Username: username }).toArray();
+
+			var user
+
+			if (isUser.length == 0 && isEmail.length == 0) {
+				return res.status(401).json({ error: 'Invalid credentials ' });
+			} else if(isUser.length == 0){
+				user = isEmail
+			} else {
+				user = isUser
 			}
 			
 			const passwordMatch = await bcrypt.compare(password, user[0].Password);
-			if(passwordMatch){
-				res.status(200).json({ id: user[0]._id, error: '' });
-			} else{
+
+			if (passwordMatch) {
+				res.status(200).json({ id: user[0]._id, username: user[0].Username, error: '' });
+			} else {
 				res.status(401).json({ error: 'Invalid credentials' });
 			}
 		}
