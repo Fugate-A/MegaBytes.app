@@ -212,6 +212,60 @@ exports.setApp = function (app, client) {
 		res.status(200).json(ret);
 	});
 
+	app.post('/api/duplicateEmail', async (req, res, next) => {
+		// incoming: email
+		// outgoing: error
+		let error = '';
+		const { email } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const user = await db.collection('User').find({ Email: email }).toArray()
+
+			if (!user) {
+				return res.status(401).json({ error: 'Invalid Check ' });
+			}
+
+			if (user.length == 0) {
+				res.status(200).json({ error: '' });
+			} else {
+				res.status(401).json({ error: 'Duplicate Email' });
+			}
+
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal Server Error' });
+		}
+	});
+
+	app.post('/api/duplicateUsername', async (req, res, next) => {
+		// incoming: username
+		// outgoing: error
+		let error = '';
+		const { username } = req.body;
+
+		try {
+			const db = client.db('MegaBitesLibrary');
+			const user = await db.collection('User').find({ Username: username }).toArray()
+
+			if (!user) {
+				return res.status(401).json({ error: 'Invalid Check ' });
+			}
+
+			if (user.length == 0) {
+				res.status(200).json({ error: '' });
+			} else {
+				res.status(401).json({ error: 'Duplicate Username' });
+			}
+
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500).json({ error: 'Internal Server Error' });
+		}
+	});
+
 	app.post('/api/deleteUser', async (req, res, next) => {
 		// incoming:  userId
 		// outgoing: error
@@ -271,15 +325,15 @@ exports.setApp = function (app, client) {
 				? db.collection('User').find({ Email: username.toLowerCase() }).toArray()
 				: db.collection('User').find({ Username: username.toLowerCase() }).toArray());
 
-			if(!user){
-				return res.status(401).json({ error: 'Invalid credentials '});
+			if (!user) {
+				return res.status(401).json({ error: 'Invalid credentials ' });
 			}
-			
+
 			const passwordMatch = await bcrypt.compare(password, user[0].Password);
 
-			if(passwordMatch){
-				res.status(200).json({ id: user[0]._id, error: '' });
-			} else{
+			if (passwordMatch) {
+				res.status(200).json({ id: user[0]._id, username: user[0].Username, error: '' });
+			} else {
 				res.status(401).json({ error: 'Invalid credentials' });
 			}
 
