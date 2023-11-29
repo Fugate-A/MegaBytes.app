@@ -13,7 +13,7 @@ function Community() {
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch(bp.buildPath('api/getPublicRecipes'), {
+            const response = await fetch(bp.buildPath('api/getPublicRecipesWeb'), {
                 method: 'POST', 
                 body: js, 
                 headers: {
