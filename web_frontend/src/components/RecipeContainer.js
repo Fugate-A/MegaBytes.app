@@ -110,7 +110,7 @@ function RecipeContainer( {recipe} ) {
                                 marginRight: 3,
                             }
                         }>
-                         <p className='text-sm rounded text-center' style={{ backgroundColor: allTags[val].color }}>{allTags[val].name}{allTags[val].emoji}</p>
+                        <p className='text-sm rounded text-center' style={{ backgroundColor: allTags[val].color, marginLeft: 5, fontSize: 24, padding: 5, marginTop: 5, }}>{allTags[val].name}{allTags[val].emoji}</p>
                         </div>
                     ))
                 )}

@@ -55,6 +55,7 @@ function PasswordReset() {
   const requirementsClass = error ? 'text-red-500' : 'text-black';
 
   return (
+
     <div id="passwordResetDiv" className="flex min-h-full flex-1 flex-col justify-center px-6 pt-10 pb-20 lg:px-8 h-screen">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950">
