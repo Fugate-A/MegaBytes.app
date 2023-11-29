@@ -6,25 +6,27 @@ function TagSelectionModal({ visible, onClose, onUpdateRecipeTags, currentTags }
 	const [recipeTags, setRecipeTags] = useState(currentTags);
 	const [loading, setLoading] = useState(true);
 	useEffect(() => {
-		const fetchTags = async () => {
-			try {
-				const response = await fetch('http://164.90.130.112:5000/api/tags');
-				const data = await response.json();
-
-				if (response.ok) {
-					setTags(data);
-				} else {
-					console.error('Error retrieving tags from server');
-				}
-			} catch (error) {
-				console.error('Error connecting to server', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
 		fetchTags();
 	}, []);
+
+	const fetchTags = async () => {
+		try {
+			const response = await fetch('http://164.90.130.112:5000/api/tags');
+			const data = await response.json();
+
+			if (response.ok) {
+				setTags(data);
+			} else {
+				console.error('Error retrieving tags from server');
+			}
+		} catch (error) {
+			console.error('Error connecting to server', error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	fetchTags();
 
 	useEffect(() => {
 		onUpdateRecipeTags(recipeTags);
