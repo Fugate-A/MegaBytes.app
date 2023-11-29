@@ -41,6 +41,7 @@ function RecipeContainer( {recipe} ) {
             borderRadius: 15,
             marginBottom: 10,
             backgroundColor: '#FFE6C5',
+            borderColor: 'black',
             overflow: 'hidden',
         }}>
 
