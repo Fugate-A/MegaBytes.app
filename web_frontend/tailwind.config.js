@@ -25,6 +25,7 @@ module.exports = {
         '3':'3px'
       },
       colors: {
+        "#E79B11": '#E79B11',
         '#ffe4bf': '#ffe4bf',
         '#FFE6C5': '#FFE6C5',
         '#4CAF50': '#4CAF50',
