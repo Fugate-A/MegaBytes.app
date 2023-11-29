@@ -56,7 +56,7 @@ function Login() {
 						</h2>
 					</div>
 
-					<div className="mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-sm bg-orange-100 border-4 border-neutral-950 rounded-lg">
+					<div className="mt-4 p-3 sm:mx-auto sm:w-full sm:max-w-sm bg-orange-100 border-2 border-neutral-950 rounded-lg">
 						<div className="space-y-6" method="POST">
 							<div>
 								<label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
