@@ -66,7 +66,7 @@ return (
 				<div className="flex min-h-full flex-1 flex-col justify-center px-6 pt-10 pb-6 lg:px-8">
 					<div className="sm:mx-auto sm:w-full sm:max-w-sm">
 						<h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-neutral-950 bg-orange-100 border-2 border-neutral-950 rounded-lg">
-							Get to Cookin
+							Get to Cookin'
 						</h2>
 					</div>
 
