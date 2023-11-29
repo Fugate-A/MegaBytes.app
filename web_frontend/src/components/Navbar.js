@@ -41,19 +41,14 @@ export default function NavBar() {
 	}
 
 	return (
-		<Disclosure as="nav" className="bg-amber-800 fixed w-screen z-50">
+		<Disclosure as="nav" className="bg-#E79B11 fixed w-screen z-50">
 			{({ open }) => (
 				<>
 					<div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
 						<div className="relative flex h-16 items-center justify-between">
-							<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-								<div className="flex flex-shrink-0 items-center">
+							<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">		
+								<div className="flex flex-shrink-0 items-center">							
 									<a href='https://www.megabytes.app/i'>
-										<img
-											className="h-8 w-auto"
-											src=" "
-											alt="Megabytes"
-										/>
 									</a>
 								</div>
 								<div className="hidden sm:ml-6 sm:block">
@@ -63,8 +58,8 @@ export default function NavBar() {
 												key={item.name}
 												href={item.href}
 												className={classNames(
-													item.current ? 'bg-orange-200 text-black' : 'text-black hover:bg-orange-100 hover:text-black',
-													'rounded-md px-3 py-2 text-sm font-medium'
+													item.current ? 'outline outline-3 outline-black text-black' : 'text-black hover:outline hover:outline-3 hover:outline-black hover:text-black',
+													'rounded-md px-2 py-1 text-sm font-medium'
 												)}
 												aria-current={item.current ? 'page' : undefined}
 											>
@@ -80,8 +75,8 @@ export default function NavBar() {
 									<div>
 
 										<Menu.Button className={classNames(
-											profileLink == currentUrl ? 'relative flex rounded-full border-3 border-white px-2 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800' :
-												'relative flex rounded-full border-3 border-black px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800',
+											profileLink == currentUrl ? 'relative flex rounded-full outline outline-3 outline-black px-2 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800' :
+												'relative flex rounded-full  px-2 py-1 text-sm hover:outline hover:outline-3 hover:outline-black ',
 											'rounded-md px-3 py-1 text-sm font-medium'
 										)}>
 											<span className="absolute -inset-1.5" />
@@ -89,7 +84,7 @@ export default function NavBar() {
 											{username}
 										</Menu.Button>
 
-									</div>
+									</div>	
 									<Transition
 										as={Fragment}
 										enter="transition ease-out duration-100"
@@ -102,7 +97,7 @@ export default function NavBar() {
 											<Menu.Item>
 												{({ active }) => (
 													<p id="profile-go" class="buttons"
-														className={classNames(active ? 'bg-gray-100 cursor-pointer' : '', ' cursor-pointer block px-4 py-2 text-sm text-gray-700')}
+														className={classNames(active ? 'bg-gray-100 cursor-pointer rounded-md' : '', ' rounded-md cursor-pointer block px-4 py-2 text-sm text-gray-700')}
 														onClick={goToProfile}> MyProfile </p>
 												)}
 											</Menu.Item>
@@ -110,17 +105,16 @@ export default function NavBar() {
 											<Menu.Item>
 												{({ active }) => (
 													<p id="logout-go" class="buttons"
-														className={classNames(active ? 'bg-gray-100 cursor-pointer' : '', ' cursor-pointer block px-4 py-2 text-sm text-gray-700')}
+														className={classNames(active ? 'bg-gray-100 cursor-pointer rounded-md' : '', ' rounded-md cursor-pointer block px-4 py-2 text-sm text-gray-700')}
 														onClick={doLogout}> Log Out </p>
 												)}
 											</Menu.Item>
 										</Menu.Items>
 									</Transition>
-								</Menu>
-							</div>
-						</div>
+								</Menu>								
+							</div>							
+						</div>			
 					</div>
-
 					<Disclosure.Panel className="sm:hidden">
 						<div className="space-y-1 px-2 pb-3 pt-2">
 							{navigation.map((item) => (
