@@ -8,7 +8,7 @@ const path = require('path');
 const app = express();
 require('dotenv').config();
 
-const httpPort = 5000;
+const httpPort = 5001;
 const httpsPort = 443;
 
 // Middleware
@@ -46,16 +46,16 @@ app.use(express.static(path.join(__dirname, 'web_frontend', 'build')));
 
 
 // Create an HTTPS server with SSL configuration
-const httpsOptions = {
-key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
-cert: fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-ca: [
-fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
-fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
-],
-};
+// const httpsOptions = {
+// key: fs.readFileSync('/etc/ssl/private/generated-private-key.key'),
+// cert: fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+// ca: [
+// fs.readFileSync('/etc/ssl/certs/2541c4c881b019c0.crt'),
+// fs.readFileSync('/etc/ssl/certs/gd_bundle-g2-g1.crt'),
+// ],
+// };
 
-const httpsServer = https.createServer(httpsOptions, app);
+//const httpsServer = https.createServer(httpsOptions, app);
 
 
 // Serve the React application for both root URL and "/megabytes.app"
@@ -65,9 +65,9 @@ app.get('*', (req, res) => {
 
 
 // Start the HTTPS server on port 443
-httpsServer.listen(httpsPort, () => {
-console.log(`HTTPS Server is running on port ${httpsPort}`);
-});
+// httpsServer.listen(httpsPort, () => {
+// console.log(`HTTPS Server is running on port ${httpsPort}`);
+// });
  
 //comment to force push 
 
